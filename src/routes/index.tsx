@@ -18,18 +18,19 @@ function QuotePage() {
   const [empresa, setEmpresa] = useState("");
   const [obs, setObs] = useState("");
   const [filtro, setFiltro] = useState("");
+  const [possuiCnae, setPossuiCnae] = useState(false);
 
   const linhas = useMemo(
     () =>
       PRODUCTS.map((p) => {
         const qtde = qtds[p.codigo] ?? 0;
         const semDesconto = /sem desconto de cnae 10%/i.test(p.nome);
-        const psdDesc = semDesconto ? p.psd : p.psd * 0.9;
+        const psdDesc = possuiCnae && !semDesconto ? p.psd * 0.9 : p.psd;
         const custoTotal = psdDesc * qtde;
         const venda = psdDesc * (1 + margem / 100) * qtde;
         return { ...p, qtde, semDesconto, psdDesc, custoTotal, venda };
       }),
-    [qtds, margem],
+    [qtds, margem, possuiCnae],
   );
 
   const filtradas = useMemo(() => {
