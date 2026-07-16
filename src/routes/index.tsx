@@ -23,9 +23,11 @@ function QuotePage() {
     () =>
       PRODUCTS.map((p) => {
         const qtde = qtds[p.codigo] ?? 0;
-        const custoTotal = p.psd * qtde;
-        const venda = p.psd * (1 + margem / 100) * qtde;
-        return { ...p, qtde, custoTotal, venda };
+        const semDesconto = /sem desconto de cnae 10%/i.test(p.nome);
+        const psdDesc = semDesconto ? p.psd : p.psd * 0.9;
+        const custoTotal = psdDesc * qtde;
+        const venda = psdDesc * (1 + margem / 100) * qtde;
+        return { ...p, qtde, semDesconto, psdDesc, custoTotal, venda };
       }),
     [qtds, margem],
   );
