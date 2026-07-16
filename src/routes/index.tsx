@@ -216,6 +216,13 @@ function QuotePage() {
                     <td className="px-3 py-1.5 text-right tabular-nums">
                       {BRL(l.psd)}
                     </td>
+                    <td className="px-3 py-1.5 text-right tabular-nums">
+                      {l.semDesconto ? (
+                        <span className="text-slate-400">—</span>
+                      ) : (
+                        BRL(l.psdDesc)
+                      )}
+                    </td>
                     <td className="px-3 py-1.5 text-center">
                       <input
                         type="number"
