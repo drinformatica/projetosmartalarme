@@ -101,18 +101,18 @@ function QuotePage() {
     const columnStyles = possuiCnae
       ? {
           0: { cellWidth: 55 },
-          1: { cellWidth: "auto" },
-          2: { cellWidth: 35, halign: "center" },
-          3: { cellWidth: 65, halign: "right" },
-          4: { cellWidth: 65, halign: "right" },
-          5: { cellWidth: 65, halign: "right" },
+          1: { cellWidth: "auto" as const },
+          2: { cellWidth: 35, halign: "center" as const },
+          3: { cellWidth: 65, halign: "right" as const },
+          4: { cellWidth: 65, halign: "right" as const },
+          5: { cellWidth: 65, halign: "right" as const },
         }
       : {
           0: { cellWidth: 55 },
-          1: { cellWidth: "auto" },
-          2: { cellWidth: 35, halign: "center" },
-          3: { cellWidth: 65, halign: "right" },
-          4: { cellWidth: 65, halign: "right" },
+          1: { cellWidth: "auto" as const },
+          2: { cellWidth: 35, halign: "center" as const },
+          3: { cellWidth: 65, halign: "right" as const },
+          4: { cellWidth: 65, halign: "right" as const },
         };
 
     autoTable(doc, {
