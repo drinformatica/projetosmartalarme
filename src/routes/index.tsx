@@ -197,6 +197,7 @@ function QuotePage() {
                   <th className="px-3 py-2 text-left font-semibold">Código</th>
                   <th className="px-3 py-2 text-left font-semibold">Produto / Resumo</th>
                   <th className="px-3 py-2 text-right font-semibold">PSD</th>
+                  <th className="px-3 py-2 text-right font-semibold">PSD c/ Desc. 10%</th>
                   <th className="px-3 py-2 text-center font-semibold">Qtde</th>
                   <th className="px-3 py-2 text-right font-semibold">Total Custo</th>
                   <th className="px-3 py-2 text-right font-semibold">Venda</th>
