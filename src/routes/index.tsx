@@ -23,9 +23,11 @@ function QuotePage() {
     () =>
       PRODUCTS.map((p) => {
         const qtde = qtds[p.codigo] ?? 0;
-        const custoTotal = p.psd * qtde;
-        const venda = p.psd * (1 + margem / 100) * qtde;
-        return { ...p, qtde, custoTotal, venda };
+        const semDesconto = /sem desconto de cnae 10%/i.test(p.nome);
+        const psdDesc = semDesconto ? p.psd : p.psd * 0.9;
+        const custoTotal = psdDesc * qtde;
+        const venda = psdDesc * (1 + margem / 100) * qtde;
+        return { ...p, qtde, semDesconto, psdDesc, custoTotal, venda };
       }),
     [qtds, margem],
   );
@@ -76,12 +78,13 @@ function QuotePage() {
 
     autoTable(doc, {
       startY: y + 6,
-      head: [["Código", "Produto", "Qtde", "Valor Unit.", "Total"]],
+      head: [["Código", "Produto", "Qtde", "PSD c/ Desc.", "Valor Unit.", "Total"]],
       body: itens.map((l) => [
         l.codigo,
         l.nome,
         String(l.qtde),
-        BRL(l.psd * (1 + margem / 100)),
+        BRL(l.psdDesc),
+        BRL(l.psdDesc * (1 + margem / 100)),
         BRL(l.venda),
       ]),
       styles: { fontSize: 8, cellPadding: 4 },
@@ -90,8 +93,9 @@ function QuotePage() {
         0: { cellWidth: 55 },
         1: { cellWidth: "auto" },
         2: { cellWidth: 35, halign: "center" },
-        3: { cellWidth: 70, halign: "right" },
-        4: { cellWidth: 70, halign: "right" },
+        3: { cellWidth: 65, halign: "right" },
+        4: { cellWidth: 65, halign: "right" },
+        5: { cellWidth: 65, halign: "right" },
       },
     });
 
@@ -193,6 +197,7 @@ function QuotePage() {
                   <th className="px-3 py-2 text-left font-semibold">Código</th>
                   <th className="px-3 py-2 text-left font-semibold">Produto / Resumo</th>
                   <th className="px-3 py-2 text-right font-semibold">PSD</th>
+                  <th className="px-3 py-2 text-right font-semibold">PSD c/ Desc. 10%</th>
                   <th className="px-3 py-2 text-center font-semibold">Qtde</th>
                   <th className="px-3 py-2 text-right font-semibold">Total Custo</th>
                   <th className="px-3 py-2 text-right font-semibold">Venda</th>
@@ -210,6 +215,13 @@ function QuotePage() {
                     <td className="px-3 py-1.5">{l.nome}</td>
                     <td className="px-3 py-1.5 text-right tabular-nums">
                       {BRL(l.psd)}
+                    </td>
+                    <td className="px-3 py-1.5 text-right tabular-nums">
+                      {l.semDesconto ? (
+                        <span className="text-slate-400">—</span>
+                      ) : (
+                        BRL(l.psdDesc)
+                      )}
                     </td>
                     <td className="px-3 py-1.5 text-center">
                       <input
@@ -233,7 +245,7 @@ function QuotePage() {
               </tbody>
               <tfoot className="bg-slate-100 font-semibold">
                 <tr>
-                  <td colSpan={4} className="px-3 py-2 text-right">
+                  <td colSpan={5} className="px-3 py-2 text-right">
                     TOTAL GERAL
                   </td>
                   <td className="px-3 py-2 text-right tabular-nums">
