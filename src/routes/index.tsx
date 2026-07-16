@@ -245,7 +245,7 @@ function QuotePage() {
               </tbody>
               <tfoot className="bg-slate-100 font-semibold">
                 <tr>
-                  <td colSpan={4} className="px-3 py-2 text-right">
+                  <td colSpan={5} className="px-3 py-2 text-right">
                     TOTAL GERAL
                   </td>
                   <td className="px-3 py-2 text-right tabular-nums">
