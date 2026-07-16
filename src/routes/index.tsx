@@ -18,18 +18,19 @@ function QuotePage() {
   const [empresa, setEmpresa] = useState("");
   const [obs, setObs] = useState("");
   const [filtro, setFiltro] = useState("");
+  const [possuiCnae, setPossuiCnae] = useState(false);
 
   const linhas = useMemo(
     () =>
       PRODUCTS.map((p) => {
         const qtde = qtds[p.codigo] ?? 0;
         const semDesconto = /sem desconto de cnae 10%/i.test(p.nome);
-        const psdDesc = semDesconto ? p.psd : p.psd * 0.9;
+        const psdDesc = possuiCnae && !semDesconto ? p.psd * 0.9 : p.psd;
         const custoTotal = psdDesc * qtde;
         const venda = psdDesc * (1 + margem / 100) * qtde;
         return { ...p, qtde, semDesconto, psdDesc, custoTotal, venda };
       }),
-    [qtds, margem],
+    [qtds, margem, possuiCnae],
   );
 
   const filtradas = useMemo(() => {
@@ -72,6 +73,8 @@ function QuotePage() {
     if (cliente) { doc.text(`Cliente: ${cliente}`, 40, y); y += 14; }
     doc.text(`Data: ${data}`, 40, y);
     doc.text(`Margem: ${margem}%`, pageW - 140, y);
+    y += 14;
+    doc.text(`Desconto CNAE 10%: ${possuiCnae ? "SIM" : "NÃO"}`, 40, y);
     y += 10;
 
     const itens = linhas.filter((l) => l.qtde > 0);
@@ -187,6 +190,19 @@ function QuotePage() {
               placeholder="Código ou nome"
             />
           </div>
+        </section>
+
+        <section className="mb-4 flex items-center gap-3 rounded-lg border border-green-200 bg-green-50 p-4 shadow-sm">
+          <input
+            id="cnae"
+            type="checkbox"
+            checked={possuiCnae}
+            onChange={(e) => setPossuiCnae(e.target.checked)}
+            className="h-5 w-5 accent-green-700 cursor-pointer"
+          />
+          <label htmlFor="cnae" className="cursor-pointer text-sm font-semibold text-green-900">
+            Possui CNAE de monitoramento? (ativa desconto de 10% nos itens permitidos)
+          </label>
         </section>
 
         <section className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
