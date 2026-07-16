@@ -73,6 +73,8 @@ function QuotePage() {
     if (cliente) { doc.text(`Cliente: ${cliente}`, 40, y); y += 14; }
     doc.text(`Data: ${data}`, 40, y);
     doc.text(`Margem: ${margem}%`, pageW - 140, y);
+    y += 14;
+    doc.text(`Desconto CNAE 10%: ${possuiCnae ? "SIM" : "NÃO"}`, 40, y);
     y += 10;
 
     const itens = linhas.filter((l) => l.qtde > 0);
