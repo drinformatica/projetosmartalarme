@@ -192,6 +192,19 @@ function QuotePage() {
           </div>
         </section>
 
+        <section className="mb-4 flex items-center gap-3 rounded-lg border border-green-200 bg-green-50 p-4 shadow-sm">
+          <input
+            id="cnae"
+            type="checkbox"
+            checked={possuiCnae}
+            onChange={(e) => setPossuiCnae(e.target.checked)}
+            className="h-5 w-5 accent-green-700 cursor-pointer"
+          />
+          <label htmlFor="cnae" className="cursor-pointer text-sm font-semibold text-green-900">
+            Possui CNAE de monitoramento? (ativa desconto de 10% nos itens permitidos)
+          </label>
+        </section>
+
         <section className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm">
