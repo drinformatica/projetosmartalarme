@@ -10,7 +10,7 @@ import stepSensorImg from "@/assets/step-sensor.jpg";
 import stepCentralImg from "@/assets/step-central.jpg";
 import stepNotifImg from "@/assets/step-notif.png";
 import stepViewImg from "@/assets/step-view.jpg";
-import partnerBadgeImg from "@/assets/parceiro-credenciado.jpg";
+import partnerBadgeAsset from "@/assets/parceiro-credenciado.png.asset.json";
 
 const loadImg = (src: string): Promise<HTMLImageElement> =>
   new Promise((resolve, reject) => {
