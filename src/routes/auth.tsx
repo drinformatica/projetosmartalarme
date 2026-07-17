@@ -90,6 +90,21 @@ function AuthPage() {
               />
             </div>
           )}
+          {mode === "signup" && (
+            <div>
+              <label className="mb-1 block text-xs font-semibold text-slate-600">
+                CPF ou CNPJ <span className="text-red-500">*</span>
+              </label>
+              <input
+                required
+                inputMode="numeric"
+                placeholder="000.000.000-00 ou 00.000.000/0000-00"
+                className="w-full rounded border border-slate-300 px-3 py-2 text-sm"
+                value={cnpj}
+                onChange={(e) => setCnpj(formatCpfCnpj(e.target.value))}
+              />
+            </div>
+          )}
           <div>
             <label className="mb-1 block text-xs font-semibold text-slate-600">Email</label>
             <input
