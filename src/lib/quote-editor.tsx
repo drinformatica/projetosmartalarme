@@ -451,7 +451,7 @@ export function QuoteEditor({ id }: { id?: string }) {
             <Row label="Venda equipamentos" value={BRL(totalVenda)} />
             <Row label="Lucro venda equipamentos" value={BRL(lucro)} bold color="text-green-700" />
             <div className="my-2 border-t border-slate-200" />
-            <Row label="Investimento inicial (custo + inst.)" value={BRL(investimentoInicial)} />
+            <Row label="Investimento a recuperar (venda − inst.)" value={BRL(investimentoInicial)} />
             <Row label="Mensalidade monitoramento" value={BRL(Number(mensalidade))} />
             <Row
               label="Payback"
