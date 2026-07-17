@@ -153,6 +153,15 @@ export function QuoteEditor({ id }: { id?: string }) {
   };
 
   const gerarPDF = async () => {
+    // Auto-save antes de gerar o PDF. Se ainda não existir, entra como "rascunho".
+    if (!locked) {
+      try {
+        await persist({ status: savedId ? status : "rascunho", silent: true });
+      } catch (e) {
+        console.error("Falha ao salvar antes do PDF", e);
+      }
+    }
+
     const [stepSensor, stepCentral, stepNotif, stepView] = await Promise.all([
       loadImg(stepSensorImg),
       loadImg(stepCentralImg),
