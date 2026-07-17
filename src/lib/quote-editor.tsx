@@ -197,22 +197,23 @@ export function QuoteEditor({ id }: { id?: string }) {
     }
 
     // Badge "PROPOSTA COMERCIAL"
+    const badgeY = 34 + logoBandH;
     doc.setDrawColor(...GREEN);
     doc.setLineWidth(1);
-    doc.circle(50, 34, 9, "S");
+    doc.circle(50, badgeY, 9, "S");
     doc.setFillColor(...GREEN);
-    doc.circle(50, 34, 2.5, "F");
+    doc.circle(50, badgeY, 2.5, "F");
     doc.setTextColor(...GREEN);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(10);
-    doc.text("PROPOSTA COMERCIAL", 65, 38);
+    doc.text("PROPOSTA COMERCIAL", 65, badgeY + 4);
 
     // Título grande
     doc.setTextColor(255);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(36);
     const mainLines = doc.splitTextToSize(titleMain, pageW / 2 - 20);
-    let ty = 90;
+    let ty = 90 + logoBandH;
     (mainLines as string[]).forEach((l) => { doc.text(l, 40, ty); ty += 34; });
     if (titleAcc) {
       doc.setTextColor(...GREEN);
@@ -238,10 +239,10 @@ export function QuoteEditor({ id }: { id?: string }) {
     doc.setTextColor(180);
     doc.setFont("helvetica", "normal");
     doc.setFontSize(9);
-    doc.text(`Data: ${data}`, pageW - 40, 38, { align: "right" });
+    doc.text(`Data: ${data}`, pageW - 40, badgeY + 4, { align: "right" });
     if (clientCompany || clientName) {
       doc.setTextColor(200);
-      doc.text(`Para: ${clientCompany || clientName}`, pageW - 40, 54, { align: "right" });
+      doc.text(`Para: ${clientCompany || clientName}`, pageW - 40, badgeY + 20, { align: "right" });
     }
 
     // ============ FAIXA DE FEATURES (fundo escuro secundário) ============
