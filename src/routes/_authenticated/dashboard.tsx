@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { listQuotes, updateQuoteStatus, deleteQuote, type QuoteStatus } from "@/lib/quotes.functions";
 import { getMyRoles } from "@/lib/admin.functions";
+import ivpAsset from "@/assets/ivp-5000-smart-ld.png.asset.json";
+
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   component: Dashboard,
