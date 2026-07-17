@@ -35,9 +35,12 @@ function Dashboard() {
   const list = useServerFn(listQuotes);
   const setStatus = useServerFn(updateQuoteStatus);
   const remove = useServerFn(deleteQuote);
+  const fetchRoles = useServerFn(getMyRoles);
   const router = useRouter();
   const [quotes, setQuotes] = useState<Quote[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
+
 
   const load = async () => {
     setLoading(true);
