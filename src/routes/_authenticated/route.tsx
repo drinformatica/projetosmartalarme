@@ -1,5 +1,8 @@
 import { createFileRoute, Outlet, redirect, Link, useRouter } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
+import { getMyRoles } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -13,6 +16,15 @@ export const Route = createFileRoute("/_authenticated")({
 
 function AuthedLayout() {
   const router = useRouter();
+  const fetchRoles = useServerFn(getMyRoles);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    fetchRoles()
+      .then((rs) => setIsAdmin(rs.includes("super_admin") || rs.includes("admin")))
+      .catch(() => {});
+  }, [fetchRoles]);
+
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     router.navigate({ to: "/auth", replace: true });
@@ -46,6 +58,15 @@ function AuthedLayout() {
             >
               Perfil
             </Link>
+            {isAdmin && (
+              <Link
+                to="/admin"
+                className="rounded px-3 py-1.5 hover:bg-white/10"
+                activeProps={{ className: "rounded px-3 py-1.5 bg-white/20 font-semibold" }}
+              >
+                Admin
+              </Link>
+            )}
             <button
               onClick={handleSignOut}
               className="ml-2 rounded border border-white/40 px-3 py-1.5 hover:bg-white/10"
