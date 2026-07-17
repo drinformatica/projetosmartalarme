@@ -273,27 +273,36 @@ export function QuoteEditor({ id }: { id?: string }) {
     const stepW = (pageW - 80) / 4;
     steps.forEach((s, i) => {
       const sx = 40 + i * stepW;
+      const bx = sx + 10;
+      const by = y;
+      const bw = 40;
+      const bh = 40;
+      doc.setFillColor(...LIGHT);
+      doc.roundedRect(bx, by, bw, bh, 4, 4, "F");
       doc.setDrawColor(...GRAY);
       doc.setLineWidth(0.8);
-      doc.roundedRect(sx + 10, y, 40, 40, 4, 4, "S");
+      doc.roundedRect(bx, by, bw, bh, 4, 4, "S");
+      // imagem dentro do box
+      const pad = 4;
+      doc.addImage(stepImgs[i], stepFmts[i], bx + pad, by + pad, bw - pad * 2, bh - pad * 2);
       // seta
       if (i < steps.length - 1) {
         doc.setDrawColor(...GREEN);
         doc.setLineWidth(1);
         const ax = sx + stepW - 12;
-        doc.line(ax - 8, y + 20, ax, y + 20);
-        doc.line(ax - 4, y + 16, ax, y + 20);
-        doc.line(ax - 4, y + 24, ax, y + 20);
+        doc.line(ax - 8, by + 20, ax, by + 20);
+        doc.line(ax - 4, by + 16, ax, by + 20);
+        doc.line(ax - 4, by + 24, ax, by + 20);
       }
       doc.setTextColor(...DARK);
       doc.setFont("helvetica", "bold");
       doc.setFontSize(8);
-      doc.text(s, sx + 10, y + 58);
+      doc.text(s, bx, by + bh + 18);
       doc.setTextColor(...GRAY);
       doc.setFont("helvetica", "normal");
       doc.setFontSize(7.5);
       const dd = doc.splitTextToSize(stepsDesc[i], stepW - 20);
-      doc.text(dd, sx + 10, y + 70);
+      doc.text(dd, bx, by + bh + 30);
     });
     y += 100;
 
