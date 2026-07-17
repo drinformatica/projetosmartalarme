@@ -254,6 +254,7 @@ export function QuoteEditor({ id }: { id?: string }) {
     }
 
     // Logo — canto superior direito, abaixo da data
+    let logoBottomY = rightY;
     if (logoImg) {
       const maxH = 60;
       const maxW = 140;
@@ -263,6 +264,7 @@ export function QuoteEditor({ id }: { id?: string }) {
       if (w > maxW) { w = maxW; h = w / ratio; }
       const lx = pageW - 40 - w;
       const ly = rightY + 12;
+      logoBottomY = ly + h;
       const fmt = /png/i.test(profile?.logo_url || "") || (profile?.logo_url || "").startsWith("data:image/png")
         ? "PNG"
         : "JPEG";
@@ -270,6 +272,21 @@ export function QuoteEditor({ id }: { id?: string }) {
         doc.addImage(logoImg, fmt, lx, ly, w, h);
       } catch {
         try { doc.addImage(logoImg, "PNG", lx, ly, w, h); } catch {}
+      }
+    }
+
+    // Selo "Parceiro Credenciado Intelbras" — abaixo da logo, dentro do hero
+    if (partnerBadge) {
+      const sealSize = 45;
+      const sx = pageW - 40 - sealSize;
+      const sy = logoBottomY + 16;
+      // Garante que o selo não ultrapasse a faixa de features
+      if (sy + sealSize <= heroH - 20) {
+        try {
+          doc.addImage(partnerBadge, "JPEG", sx, sy, sealSize, sealSize);
+        } catch {
+          try { doc.addImage(partnerBadge, "PNG", sx, sy, sealSize, sealSize); } catch {}
+        }
       }
     }
 
