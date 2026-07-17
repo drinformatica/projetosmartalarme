@@ -195,42 +195,43 @@ export function QuoteEditor({ id }: { id?: string }) {
       try { logoImg = await loadImg(profile.logo_url); } catch { logoImg = null; }
     }
     const logoBandH = 0;
-    const heroH = 260;
+    const heroH = 220;
     doc.setFillColor(...DARK);
     doc.rect(0, 0, pageW, heroH, "F");
 
     // Badge "PROPOSTA COMERCIAL"
-    const badgeY = 34 + logoBandH;
+    const badgeY = 28 + logoBandH;
     doc.setDrawColor(...GREEN);
     doc.setLineWidth(1);
-    doc.circle(50, badgeY, 9, "S");
+    doc.circle(50, badgeY, 8, "S");
     doc.setFillColor(...GREEN);
-    doc.circle(50, badgeY, 2.5, "F");
+    doc.circle(50, badgeY, 2.2, "F");
     doc.setTextColor(...GREEN);
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(10);
-    doc.text("PROPOSTA COMERCIAL", 65, badgeY + 4);
+    doc.setFontSize(9);
+    doc.text("PROPOSTA COMERCIAL", 64, badgeY + 3);
 
     // Título grande
     doc.setTextColor(255);
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(22);
-    const mainLines = doc.splitTextToSize(titleMain, pageW / 2 - 20);
-    let ty = 76 + logoBandH;
-    (mainLines as string[]).forEach((l) => { doc.text(l, 40, ty); ty += 22; });
+    doc.setFontSize(16);
+    const titleW = pageW * 0.55;
+    const mainLines = doc.splitTextToSize(titleMain, titleW);
+    let ty = 58 + logoBandH;
+    (mainLines as string[]).forEach((l) => { doc.text(l, 40, ty); ty += 17; });
     if (titleAcc) {
       doc.setTextColor(...GREEN);
       doc.text(titleAcc, 40, ty);
-      ty += 22;
+      ty += 17;
     }
 
     // Subtítulo (intro curta)
     if (intro) {
       doc.setTextColor(230);
       doc.setFont("helvetica", "normal");
-      doc.setFontSize(11);
-      const sub = doc.splitTextToSize(intro, pageW / 2 - 20);
-      doc.text(sub, 40, ty + 10);
+      doc.setFontSize(10);
+      const sub = doc.splitTextToSize(intro, titleW);
+      doc.text(sub, 40, ty + 6);
     }
 
     // Linha verde decorativa
