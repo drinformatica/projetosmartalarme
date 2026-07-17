@@ -113,11 +113,13 @@ export function QuoteEditor({ id }: { id?: string }) {
   const setQtd = (codigo: string, v: number) =>
     setQtds((prev) => ({ ...prev, [codigo]: Math.max(0, v || 0) }));
 
-  const handleSave = async () => {
-    setMsg(null);
+  const locked = status === "fechado";
+
+  const persist = async (overrides?: { status?: QuoteStatus; silent?: boolean }) => {
     const items = linhas.filter((l) => l.qtde > 0).map((l) => ({
       codigo: l.codigo, nome: l.nome, psd: l.psd, qtde: l.qtde,
     }));
+    const effStatus = overrides?.status ?? status;
     const res = await save({
       data: {
         id: savedId,
@@ -130,16 +132,24 @@ export function QuoteEditor({ id }: { id?: string }) {
         taxa_instalacao: Number(taxaInstalacao),
         mensalidade: Number(mensalidade),
         observacoes: obs,
-        status,
+        status: effStatus,
         total_venda: totalVenda,
         total_custo: totalCusto,
       },
     });
     if (res?.id) setSavedId(res.id);
-    setMsg("Orçamento salvo!");
+    if (overrides?.status) setStatus(overrides.status);
+    if (!overrides?.silent) setMsg("Orçamento salvo!");
     if (!id && res?.id) {
       router.navigate({ to: "/orcamento/$id", params: { id: res.id }, replace: true });
     }
+    return res;
+  };
+
+  const handleSave = async () => {
+    if (locked) return;
+    setMsg(null);
+    await persist();
   };
 
   const gerarPDF = async () => {
