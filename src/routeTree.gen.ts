@@ -17,6 +17,7 @@ import { Route as AuthenticatedOrcamentoRouteImport } from './routes/_authentica
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedOrcamentoIdRouteImport } from './routes/_authenticated/orcamento.$id'
+import { Route as AuthenticatedAdminUserIdRouteImport } from './routes/_authenticated/admin.$userId'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -58,6 +59,12 @@ const AuthenticatedOrcamentoIdRoute =
     path: '/$id',
     getParentRoute: () => AuthenticatedOrcamentoRoute,
   } as any)
+const AuthenticatedAdminUserIdRoute =
+  AuthenticatedAdminUserIdRouteImport.update({
+    id: '/admin/$userId',
+    path: '/admin/$userId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -65,6 +72,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
   '/perfil': typeof AuthenticatedPerfilRoute
+  '/admin/$userId': typeof AuthenticatedAdminUserIdRoute
   '/orcamento/$id': typeof AuthenticatedOrcamentoIdRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
 }
@@ -74,6 +82,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
   '/perfil': typeof AuthenticatedPerfilRoute
+  '/admin/$userId': typeof AuthenticatedAdminUserIdRoute
   '/orcamento/$id': typeof AuthenticatedOrcamentoIdRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
 }
@@ -85,6 +94,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/orcamento': typeof AuthenticatedOrcamentoRouteWithChildren
   '/_authenticated/perfil': typeof AuthenticatedPerfilRoute
+  '/_authenticated/admin/$userId': typeof AuthenticatedAdminUserIdRoute
   '/_authenticated/orcamento/$id': typeof AuthenticatedOrcamentoIdRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
 }
@@ -96,6 +106,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/orcamento'
     | '/perfil'
+    | '/admin/$userId'
     | '/orcamento/$id'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
@@ -105,6 +116,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/orcamento'
     | '/perfil'
+    | '/admin/$userId'
     | '/orcamento/$id'
     | '/admin'
   id:
@@ -115,6 +127,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/orcamento'
     | '/_authenticated/perfil'
+    | '/_authenticated/admin/$userId'
     | '/_authenticated/orcamento/$id'
     | '/_authenticated/admin/'
   fileRoutesById: FileRoutesById
@@ -183,6 +196,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOrcamentoIdRouteImport
       parentRoute: typeof AuthenticatedOrcamentoRoute
     }
+    '/_authenticated/admin/$userId': {
+      id: '/_authenticated/admin/$userId'
+      path: '/admin/$userId'
+      fullPath: '/admin/$userId'
+      preLoaderRoute: typeof AuthenticatedAdminUserIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -204,6 +224,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedOrcamentoRoute: typeof AuthenticatedOrcamentoRouteWithChildren
   AuthenticatedPerfilRoute: typeof AuthenticatedPerfilRoute
+  AuthenticatedAdminUserIdRoute: typeof AuthenticatedAdminUserIdRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
 }
 
@@ -211,6 +232,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedOrcamentoRoute: AuthenticatedOrcamentoRouteWithChildren,
   AuthenticatedPerfilRoute: AuthenticatedPerfilRoute,
+  AuthenticatedAdminUserIdRoute: AuthenticatedAdminUserIdRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
 }
 
