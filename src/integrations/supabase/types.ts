@@ -14,7 +14,102 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          address: string | null
+          company_name: string | null
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          logo_url: string | null
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          company_name?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id: string
+          logo_url?: string | null
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          company_name?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          logo_url?: string | null
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      quotes: {
+        Row: {
+          client_company: string | null
+          client_name: string | null
+          created_at: string
+          id: string
+          intro: string
+          items: Json
+          margem: number
+          mensalidade: number
+          observacoes: string | null
+          possui_cnae: boolean
+          status: Database["public"]["Enums"]["quote_status"]
+          taxa_instalacao: number
+          title: string
+          total_custo: number
+          total_venda: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          client_company?: string | null
+          client_name?: string | null
+          created_at?: string
+          id?: string
+          intro?: string
+          items?: Json
+          margem?: number
+          mensalidade?: number
+          observacoes?: string | null
+          possui_cnae?: boolean
+          status?: Database["public"]["Enums"]["quote_status"]
+          taxa_instalacao?: number
+          title?: string
+          total_custo?: number
+          total_venda?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          client_company?: string | null
+          client_name?: string | null
+          created_at?: string
+          id?: string
+          intro?: string
+          items?: Json
+          margem?: number
+          mensalidade?: number
+          observacoes?: string | null
+          possui_cnae?: boolean
+          status?: Database["public"]["Enums"]["quote_status"]
+          taxa_instalacao?: number
+          title?: string
+          total_custo?: number
+          total_venda?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +118,12 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      quote_status:
+        | "rascunho"
+        | "enviado"
+        | "negociacao"
+        | "fechado"
+        | "perdido"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +250,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      quote_status: ["rascunho", "enviado", "negociacao", "fechado", "perdido"],
+    },
   },
 } as const
