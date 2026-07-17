@@ -2,6 +2,7 @@ import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { listQuotes, updateQuoteStatus, deleteQuote, type QuoteStatus } from "@/lib/quotes.functions";
+import { getMyRoles } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   component: Dashboard,
@@ -34,9 +35,12 @@ function Dashboard() {
   const list = useServerFn(listQuotes);
   const setStatus = useServerFn(updateQuoteStatus);
   const remove = useServerFn(deleteQuote);
+  const fetchRoles = useServerFn(getMyRoles);
   const router = useRouter();
   const [quotes, setQuotes] = useState<Quote[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
+
 
   const load = async () => {
     setLoading(true);
@@ -47,8 +51,10 @@ function Dashboard() {
 
   useEffect(() => {
     load();
+    fetchRoles().then((rs) => setIsAdmin(rs.includes("super_admin") || rs.includes("admin"))).catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
 
   const move = async (id: string, status: QuoteStatus) => {
     await setStatus({ data: { id, status } });
@@ -81,13 +87,24 @@ function Dashboard() {
           <h1 className="text-2xl font-bold">Pipeline de Vendas</h1>
           <p className="text-sm text-slate-500">Arraste seus orçamentos entre as etapas</p>
         </div>
-        <Link
-          to="/orcamento"
-          className="rounded-md bg-green-700 px-4 py-2 text-sm font-semibold text-white hover:bg-green-800"
-        >
-          + Novo Orçamento
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          {isAdmin && (
+            <Link
+              to="/admin"
+              className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+            >
+              Admin
+            </Link>
+          )}
+          <Link
+            to="/orcamento"
+            className="rounded-md bg-green-700 px-4 py-2 text-sm font-semibold text-white hover:bg-green-800"
+          >
+            + Novo Orçamento
+          </Link>
+        </div>
       </div>
+
 
       {loading ? (
         <div className="rounded-lg border border-slate-200 bg-white p-6 text-center text-slate-500">
