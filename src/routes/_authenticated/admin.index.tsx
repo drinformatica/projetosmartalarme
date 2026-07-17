@@ -2,6 +2,8 @@ import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { listAdminUsers, getMyRoles } from "@/lib/admin.functions";
+import { AdsManager } from "@/components/AdsManager";
+
 
 export const Route = createFileRoute("/_authenticated/admin/")({
   component: AdminList,
@@ -160,6 +162,11 @@ function AdminList() {
           </table>
         </div>
       )}
+
+      <div className="mt-8">
+        <AdsManager />
+      </div>
     </main>
   );
 }
+
