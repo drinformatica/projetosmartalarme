@@ -40,8 +40,14 @@ function AuthPage() {
           },
         });
         if (error) throw error;
-        setMsg("Cadastro realizado! Você já pode entrar.");
-        setMode("login");
+        // auto-confirm is on — sign in immediately
+        const { error: signErr } = await supabase.auth.signInWithPassword({ email, password });
+        if (signErr) {
+          setMsg("Cadastro criado! Faça login.");
+          setMode("login");
+        } else {
+          router.navigate({ to: "/dashboard", replace: true });
+        }
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
