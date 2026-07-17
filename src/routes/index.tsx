@@ -79,27 +79,54 @@ function QuotePage() {
 
     const itens = linhas.filter((l) => l.qtde > 0);
 
+    const head = possuiCnae
+      ? ["Código", "Produto", "Qtde", "PSD c/ Desc.", "Valor Unit.", "Total"]
+      : ["Código", "Produto", "Qtde", "Valor Unit.", "Total"];
+
+    const body = itens.map((l) => {
+      const unit = l.psdDesc * (1 + margem / 100);
+      if (possuiCnae) {
+        return [
+          l.codigo,
+          l.nome,
+          String(l.qtde),
+          BRL(l.psdDesc),
+          BRL(unit),
+          BRL(l.venda),
+        ];
+      }
+      return [l.codigo, l.nome, String(l.qtde), BRL(unit), BRL(l.venda)];
+    });
+
+    const columnStyles: {
+      [key: string]: Partial<{
+        cellWidth: number | "auto";
+        halign: "left" | "center" | "right";
+      }>;
+    } = possuiCnae
+      ? {
+          0: { cellWidth: 55 },
+          1: { cellWidth: "auto" },
+          2: { cellWidth: 35, halign: "center" },
+          3: { cellWidth: 65, halign: "right" },
+          4: { cellWidth: 65, halign: "right" },
+          5: { cellWidth: 65, halign: "right" },
+        }
+      : {
+          0: { cellWidth: 55 },
+          1: { cellWidth: "auto" },
+          2: { cellWidth: 35, halign: "center" },
+          3: { cellWidth: 65, halign: "right" },
+          4: { cellWidth: 65, halign: "right" },
+        };
+
     autoTable(doc, {
       startY: y + 6,
-      head: [["Código", "Produto", "Qtde", "PSD c/ Desc.", "Valor Unit.", "Total"]],
-      body: itens.map((l) => [
-        l.codigo,
-        l.nome,
-        String(l.qtde),
-        BRL(l.psdDesc),
-        BRL(l.psdDesc * (1 + margem / 100)),
-        BRL(l.venda),
-      ]),
+      head: [head],
+      body,
       styles: { fontSize: 8, cellPadding: 4 },
       headStyles: { fillColor: [34, 139, 34], textColor: 255 },
-      columnStyles: {
-        0: { cellWidth: 55 },
-        1: { cellWidth: "auto" },
-        2: { cellWidth: 35, halign: "center" },
-        3: { cellWidth: 65, halign: "right" },
-        4: { cellWidth: 65, halign: "right" },
-        5: { cellWidth: 65, halign: "right" },
-      },
+      columnStyles,
     });
 
     const finalY = (doc as unknown as { lastAutoTable: { finalY: number } })
@@ -213,7 +240,9 @@ function QuotePage() {
                   <th className="px-3 py-2 text-left font-semibold">Código</th>
                   <th className="px-3 py-2 text-left font-semibold">Produto / Resumo</th>
                   <th className="px-3 py-2 text-right font-semibold">PSD</th>
-                  <th className="px-3 py-2 text-right font-semibold">PSD c/ Desc. 10%</th>
+                  {possuiCnae && (
+                    <th className="px-3 py-2 text-right font-semibold">PSD c/ Desc. 10%</th>
+                  )}
                   <th className="px-3 py-2 text-center font-semibold">Qtde</th>
                   <th className="px-3 py-2 text-right font-semibold">Total Custo</th>
                   <th className="px-3 py-2 text-right font-semibold">Venda</th>
@@ -232,13 +261,15 @@ function QuotePage() {
                     <td className="px-3 py-1.5 text-right tabular-nums">
                       {BRL(l.psd)}
                     </td>
-                    <td className="px-3 py-1.5 text-right tabular-nums">
-                      {l.semDesconto ? (
-                        <span className="text-slate-400">—</span>
-                      ) : (
-                        BRL(l.psdDesc)
-                      )}
-                    </td>
+                    {possuiCnae && (
+                      <td className="px-3 py-1.5 text-right tabular-nums">
+                        {l.semDesconto ? (
+                          <span className="text-slate-400">—</span>
+                        ) : (
+                          BRL(l.psdDesc)
+                        )}
+                      </td>
+                    )}
                     <td className="px-3 py-1.5 text-center">
                       <input
                         type="number"
@@ -261,7 +292,7 @@ function QuotePage() {
               </tbody>
               <tfoot className="bg-slate-100 font-semibold">
                 <tr>
-                  <td colSpan={5} className="px-3 py-2 text-right">
+                  <td colSpan={possuiCnae ? 5 : 4} className="px-3 py-2 text-right">
                     TOTAL GERAL
                   </td>
                   <td className="px-3 py-2 text-right tabular-nums">
