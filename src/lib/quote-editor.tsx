@@ -6,6 +6,19 @@ import autoTable from "jspdf-autotable";
 import { PRODUCTS } from "@/lib/products";
 import { getQuote, saveQuote, type QuoteStatus } from "@/lib/quotes.functions";
 import { getProfile } from "@/lib/profile.functions";
+import stepSensorImg from "@/assets/step-sensor.jpg";
+import stepCentralImg from "@/assets/step-central.jpg";
+import stepNotifImg from "@/assets/step-notif.png";
+import stepViewImg from "@/assets/step-view.jpg";
+
+const loadImg = (src: string): Promise<HTMLImageElement> =>
+  new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
 
 const BRL = (n: number) =>
   (n || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
