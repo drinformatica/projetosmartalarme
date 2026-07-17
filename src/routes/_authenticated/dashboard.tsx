@@ -59,8 +59,37 @@ function Dashboard() {
 
 
   const move = async (id: string, status: QuoteStatus) => {
-    await setStatus({ data: { id, status } });
-    await load();
+    setQuotes((prev) => prev.map((q) => (q.id === id ? { ...q, status } : q)));
+    try {
+      await setStatus({ data: { id, status } });
+    } finally {
+      await load();
+    }
+  };
+
+  const onDragStart = (e: React.DragEvent, id: string) => {
+    setDraggingId(id);
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", id);
+  };
+  const onDragEnd = () => {
+    setDraggingId(null);
+    setDragOverCol(null);
+  };
+  const onDragOverCol = (e: React.DragEvent, col: QuoteStatus) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    if (dragOverCol !== col) setDragOverCol(col);
+  };
+  const onDropCol = (e: React.DragEvent, col: QuoteStatus) => {
+    e.preventDefault();
+    const id = e.dataTransfer.getData("text/plain") || draggingId;
+    setDragOverCol(null);
+    setDraggingId(null);
+    if (!id) return;
+    const q = quotes.find((x) => x.id === id);
+    if (!q || q.status === col) return;
+    move(id, col);
   };
 
   const del = async (id: string) => {
