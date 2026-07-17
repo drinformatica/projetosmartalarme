@@ -163,11 +163,12 @@ export function QuoteEditor({ id }: { id?: string }) {
       }
     }
 
-    const [stepSensor, stepCentral, stepNotif, stepView] = await Promise.all([
+    const [stepSensor, stepCentral, stepNotif, stepView, partnerBadge] = await Promise.all([
       loadImg(stepSensorImg),
       loadImg(stepCentralImg),
       loadImg(stepNotifImg),
       loadImg(stepViewImg),
+      loadImg(partnerBadgeImg),
     ]);
     const stepImgs = [stepSensor, stepCentral, stepNotif, stepView];
     const stepFmts = ["JPEG", "JPEG", "PNG", "JPEG"] as const;
