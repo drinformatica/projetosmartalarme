@@ -51,8 +51,10 @@ function Dashboard() {
 
   useEffect(() => {
     load();
+    fetchRoles().then((rs) => setIsAdmin(rs.includes("super_admin") || rs.includes("admin"))).catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
 
   const move = async (id: string, status: QuoteStatus) => {
     await setStatus({ data: { id, status } });
