@@ -214,14 +214,14 @@ export function QuoteEditor({ id }: { id?: string }) {
     // Título grande
     doc.setTextColor(255);
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(36);
+    doc.setFontSize(22);
     const mainLines = doc.splitTextToSize(titleMain, pageW / 2 - 20);
-    let ty = 90 + logoBandH;
-    (mainLines as string[]).forEach((l) => { doc.text(l, 40, ty); ty += 34; });
+    let ty = 76 + logoBandH;
+    (mainLines as string[]).forEach((l) => { doc.text(l, 40, ty); ty += 22; });
     if (titleAcc) {
       doc.setTextColor(...GREEN);
       doc.text(titleAcc, 40, ty);
-      ty += 34;
+      ty += 22;
     }
 
     // Subtítulo (intro curta)
@@ -230,7 +230,7 @@ export function QuoteEditor({ id }: { id?: string }) {
       doc.setFont("helvetica", "normal");
       doc.setFontSize(11);
       const sub = doc.splitTextToSize(intro, pageW / 2 - 20);
-      doc.text(sub, 40, ty + 6);
+      doc.text(sub, 40, ty + 10);
     }
 
     // Linha verde decorativa
