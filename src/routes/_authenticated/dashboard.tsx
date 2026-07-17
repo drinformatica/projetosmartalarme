@@ -40,6 +40,8 @@ function Dashboard() {
   const [quotes, setQuotes] = useState<Quote[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [draggingId, setDraggingId] = useState<string | null>(null);
+  const [dragOverCol, setDragOverCol] = useState<QuoteStatus | null>(null);
 
 
   const load = async () => {
@@ -57,8 +59,37 @@ function Dashboard() {
 
 
   const move = async (id: string, status: QuoteStatus) => {
-    await setStatus({ data: { id, status } });
-    await load();
+    setQuotes((prev) => prev.map((q) => (q.id === id ? { ...q, status } : q)));
+    try {
+      await setStatus({ data: { id, status } });
+    } finally {
+      await load();
+    }
+  };
+
+  const onDragStart = (e: React.DragEvent, id: string) => {
+    setDraggingId(id);
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", id);
+  };
+  const onDragEnd = () => {
+    setDraggingId(null);
+    setDragOverCol(null);
+  };
+  const onDragOverCol = (e: React.DragEvent, col: QuoteStatus) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    if (dragOverCol !== col) setDragOverCol(col);
+  };
+  const onDropCol = (e: React.DragEvent, col: QuoteStatus) => {
+    e.preventDefault();
+    const id = e.dataTransfer.getData("text/plain") || draggingId;
+    setDragOverCol(null);
+    setDraggingId(null);
+    if (!id) return;
+    const q = quotes.find((x) => x.id === id);
+    if (!q || q.status === col) return;
+    move(id, col);
   };
 
   const del = async (id: string) => {
@@ -126,7 +157,15 @@ function Dashboard() {
             const items = quotes.filter((q) => q.status === col.id);
             const t = totals[col.id];
             return (
-              <div key={col.id} className="rounded-lg border border-slate-200 bg-white">
+              <div
+                key={col.id}
+                onDragOver={(e) => onDragOverCol(e, col.id)}
+                onDragLeave={() => setDragOverCol((c) => (c === col.id ? null : c))}
+                onDrop={(e) => onDropCol(e, col.id)}
+                className={`rounded-lg border bg-white transition ${
+                  dragOverCol === col.id ? "border-green-500 ring-2 ring-green-300" : "border-slate-200"
+                }`}
+              >
                 <div className={`flex items-center justify-between rounded-t-lg px-3 py-2 text-xs font-semibold ${col.color}`}>
                   <span>{col.label}</span>
                   <span>{t.count}</span>
@@ -135,9 +174,17 @@ function Dashboard() {
                   <div>Venda + Inst.: {BRL(t.venda)}</div>
                   <div>MRR: {BRL(t.mrr)}</div>
                 </div>
-                <div className="space-y-2 p-2">
+                <div className="min-h-[80px] space-y-2 p-2">
                   {items.map((q) => (
-                    <div key={q.id} className="rounded border border-slate-200 bg-slate-50 p-2 text-sm">
+                    <div
+                      key={q.id}
+                      draggable
+                      onDragStart={(e) => onDragStart(e, q.id)}
+                      onDragEnd={onDragEnd}
+                      className={`cursor-grab rounded border border-slate-200 bg-slate-50 p-2 text-sm active:cursor-grabbing ${
+                        draggingId === q.id ? "opacity-40" : ""
+                      }`}
+                    >
                       <div
                         className="cursor-pointer font-semibold text-slate-800 hover:text-green-700"
                         onClick={() => router.navigate({ to: "/orcamento/$id", params: { id: q.id } })}
