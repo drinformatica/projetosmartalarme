@@ -557,6 +557,7 @@ export function QuoteEditor({ id }: { id?: string }) {
       )}
       {msg && <div className="mb-3 rounded bg-green-50 p-2 text-sm text-green-700">{msg}</div>}
 
+      <fieldset disabled={locked} className={locked ? "opacity-70" : ""}>
       {/* Título e intro editáveis */}
       <section className="mb-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
         <h2 className="mb-3 text-sm font-semibold text-slate-700">Cabeçalho da Proposta</h2>
