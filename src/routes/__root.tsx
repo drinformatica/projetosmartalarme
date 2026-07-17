@@ -80,9 +80,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "Intrusão 2.0 - Orçamentos & Pipeline" },
       { name: "description", content: "Plataforma para geração de propostas comerciais em PDF e pipeline de vendas de sistemas de alarme e monitoramento." },
       { property: "og:title", content: "Intrusão 2.0 - Orçamentos & Pipeline" },
-      { property: "og:description", content: "Gere propostas comerciais e acompanhe seu pipeline de vendas." },
+      { property: "og:description", content: "Plataforma para geração de propostas comerciais em PDF e pipeline de vendas de sistemas de alarme e monitoramento." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Intrusão 2.0 - Orçamentos & Pipeline" },
+      { name: "twitter:description", content: "Plataforma para geração de propostas comerciais em PDF e pipeline de vendas de sistemas de alarme e monitoramento." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/4eff2be6-7064-4629-a3f4-97fcb1b82818/id-preview-54a161b6--c6140a8a-6d4f-43d4-89c4-fb60dd6e59c9.lovable.app-1784247446886.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/4eff2be6-7064-4629-a3f4-97fcb1b82818/id-preview-54a161b6--c6140a8a-6d4f-43d4-89c4-fb60dd6e59c9.lovable.app-1784247446886.png" },
     ],
     links: [
       {
