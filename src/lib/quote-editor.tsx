@@ -90,7 +90,8 @@ export function QuoteEditor({ id }: { id?: string }) {
   const totalCusto = linhas.reduce((s, l) => s + l.custoTotal, 0);
   const totalVenda = linhas.reduce((s, l) => s + l.venda, 0);
   const lucro = totalVenda - totalCusto;
-  const investimentoInicial = totalCusto + Number(taxaInstalacao || 0);
+  // Investimento a recuperar = preço de venda (com margem) menos a taxa de instalação já cobrada do cliente
+  const investimentoInicial = Math.max(0, totalVenda - Number(taxaInstalacao || 0));
   const paybackMeses = mensalidade > 0 ? investimentoInicial / mensalidade : 0;
   const receita12 = mensalidade * 12;
   const receita24 = mensalidade * 24;
