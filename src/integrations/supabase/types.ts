@@ -17,6 +17,7 @@ export type Database = {
       profiles: {
         Row: {
           address: string | null
+          cnpj: string | null
           company_name: string | null
           created_at: string
           email: string | null
@@ -28,6 +29,7 @@ export type Database = {
         }
         Insert: {
           address?: string | null
+          cnpj?: string | null
           company_name?: string | null
           created_at?: string
           email?: string | null
@@ -39,6 +41,7 @@ export type Database = {
         }
         Update: {
           address?: string | null
+          cnpj?: string | null
           company_name?: string | null
           created_at?: string
           email?: string | null
