@@ -321,22 +321,30 @@ export function QuoteEditor({ id }: { id?: string }) {
     doc.setFontSize(11);
     doc.text("INVESTIMENTO", 60, finalY + 28);
 
-    doc.setTextColor(220);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(9);
-    doc.text("Valor do Sistema Completo", 60, finalY + 48);
+    // Taxa de instalação (se houver)
+    if (Number(taxaInstalacao) > 0) {
+      doc.setTextColor(220);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+      doc.text("Taxa de Instalação", 60, finalY + 48);
 
-    doc.setTextColor(255);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(28);
-    doc.text(BRL(totalVenda + Number(taxaInstalacao)), 60, finalY + 82);
+      doc.setTextColor(255);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(28);
+      doc.text(BRL(Number(taxaInstalacao)), 60, finalY + 82);
 
-    doc.setTextColor(180);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(8);
-    doc.text("Condições de pagamento", 60, finalY + 100);
-    doc.setTextColor(220);
-    doc.text("À vista ou em até 12x no cartão", 60, finalY + 112);
+      doc.setTextColor(180);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8);
+      doc.text("Condições de pagamento", 60, finalY + 100);
+      doc.setTextColor(220);
+      doc.text("À vista ou em até 12x no cartão", 60, finalY + 112);
+    } else {
+      doc.setTextColor(180);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+      doc.text("Taxa de instalação não aplicada.", 60, finalY + 52);
+    }
 
     // Divisor
     doc.setDrawColor(60, 70, 78);
