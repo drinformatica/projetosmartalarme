@@ -39,7 +39,7 @@ export function QuoteEditor({ id }: { id?: string }) {
   const load = useServerFn(getQuote);
   const loadProfile = useServerFn(getProfile);
 
-  const [title, setTitle] = useState("Proposta Comercial - Sistema de Alarme");
+  const [title, setTitle] = useState("Proposta Comercial - Sistema de Alarme Smart");
   const [intro, setIntro] = useState(
     "Apresentamos nossa proposta para instalação do sistema de segurança com monitoramento profissional 24h.",
   );
