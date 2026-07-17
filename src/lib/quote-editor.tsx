@@ -168,7 +168,7 @@ export function QuoteEditor({ id }: { id?: string }) {
       loadImg(stepCentralImg),
       loadImg(stepNotifImg),
       loadImg(stepViewImg),
-      loadImg(partnerBadgeImg),
+      loadImg(partnerBadgeAsset.url),
     ]);
     const stepImgs = [stepSensor, stepCentral, stepNotif, stepView];
     const stepFmts = ["JPEG", "JPEG", "PNG", "JPEG"] as const;
