@@ -756,6 +756,7 @@ export function QuoteEditor({ id }: { id?: string }) {
           placeholder="Condições de pagamento, prazo de validade, etc."
         />
       </section>
+      </fieldset>
     </main>
   );
 }
