@@ -170,9 +170,31 @@ export function QuoteEditor({ id }: { id?: string }) {
     const titleAcc = titleAccent.toUpperCase();
 
     // ============ HERO (topo escuro) ============
-    const heroH = 260;
+    // Carrega logo do perfil (arquivo local em data URL ou URL externa)
+    let logoImg: HTMLImageElement | null = null;
+    if (profile?.logo_url) {
+      try { logoImg = await loadImg(profile.logo_url); } catch { logoImg = null; }
+    }
+    const logoBandH = logoImg ? 70 : 0;
+    const heroH = 260 + logoBandH;
     doc.setFillColor(...DARK);
     doc.rect(0, 0, pageW, heroH, "F");
+
+    // Logo no topo, acima do título
+    if (logoImg) {
+      const maxH = 50;
+      const ratio = logoImg.width / logoImg.height || 1;
+      const h = maxH;
+      const w = Math.min(180, h * ratio);
+      const fmt = /png/i.test(profile?.logo_url || "") || (profile?.logo_url || "").startsWith("data:image/png")
+        ? "PNG"
+        : "JPEG";
+      try {
+        doc.addImage(logoImg, fmt, 40, 15, w, h);
+      } catch {
+        try { doc.addImage(logoImg, "PNG", 40, 15, w, h); } catch {}
+      }
+    }
 
     // Badge "PROPOSTA COMERCIAL"
     doc.setDrawColor(...GREEN);
