@@ -116,6 +116,33 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+function Footer() {
+  return (
+    <footer className="border-t border-slate-200 bg-white py-4 text-center text-sm text-slate-600">
+      <p>
+        Plataforma desenvolvido pelo executivo{" "}
+        <a
+          href="https://www.linkedin.com/in/david-ramon-nascimento-6982b5164/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-medium text-green-700 hover:underline"
+        >
+          David Nascimento
+        </a>{" "}
+        e Executivo{" "}
+        <a
+          href="https://www.linkedin.com/in/thiago-garcia-7131b3184?utm_source=share_via&utm_content=profile&utm_medium=member_ios"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-medium text-green-700 hover:underline"
+        >
+          Thiago Brito
+        </a>
+      </p>
+    </footer>
+  );
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
@@ -123,6 +150,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
+      <Footer />
     </QueryClientProvider>
   );
 }
