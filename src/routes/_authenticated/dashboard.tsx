@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { listQuotes, updateQuoteStatus, deleteQuote, type QuoteStatus } from "@/lib/quotes.functions";
 import { getMyRoles } from "@/lib/admin.functions";
-import ivpAsset from "@/assets/ivp-5000-smart-ld.png.asset.json";
+import { AdsCarousel } from "@/components/AdsCarousel";
 
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
@@ -230,34 +230,8 @@ function Dashboard() {
         </div>
       )}
 
-      <section className="mt-10">
-        <div className="mb-3 flex items-center gap-2">
-          <span className="inline-block rounded-full bg-green-600 px-3 py-0.5 text-[11px] font-bold uppercase tracking-wider text-white">
-            Lançamento
-          </span>
-          <h2 className="text-lg font-bold text-slate-800">Veja agora esse lançamento</h2>
-        </div>
-        <a
-          href="https://backend.intelbras.com/sites/default/files/2026-03/datasheet-ivp-5000SMARTLD%2001.26-pt.pdf"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Baixar datasheet do sensor IVP 5000 SMART LD"
-          className="group block overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg"
-        >
-          <img
-            src={ivpAsset.url}
-            alt="Sensor Intelbras IVP 5000 SMART LD - lançamento"
-            loading="lazy"
-            className="block h-auto w-full object-contain"
-          />
-          <div className="flex items-center justify-between gap-3 border-t border-slate-100 bg-slate-50 px-4 py-3 text-sm">
-            <span className="font-semibold text-slate-700">
-              IVP 5000 SMART LD — clique para ver o datasheet completo
-            </span>
-            <span className="whitespace-nowrap text-green-700 group-hover:underline">Abrir PDF →</span>
-          </div>
-        </a>
-      </section>
+      <AdsCarousel />
+
     </main>
 
   );
