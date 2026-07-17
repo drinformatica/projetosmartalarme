@@ -517,18 +517,27 @@ export function QuoteEditor({ id }: { id?: string }) {
   return (
     <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-bold">{savedId ? "Editar Orçamento" : "Novo Orçamento"}</h1>
+        <h1 className="text-2xl font-bold">
+          {savedId ? "Editar Orçamento" : "Novo Orçamento"}
+          {locked && (
+            <span className="ml-2 rounded bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-800 align-middle">
+              FECHADO — somente leitura
+            </span>
+          )}
+        </h1>
         <div className="flex gap-2">
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value as QuoteStatus)}
-            className="rounded border border-slate-300 bg-white px-3 py-2 text-sm"
+            disabled={locked}
+            className="rounded border border-slate-300 bg-white px-3 py-2 text-sm disabled:opacity-60"
           >
             {STATUS_OPTS.map((s) => <option key={s.v} value={s.v}>{s.l}</option>)}
           </select>
           <button
             onClick={handleSave}
-            className="rounded-md bg-green-700 px-4 py-2 text-sm font-semibold text-white hover:bg-green-800"
+            disabled={locked}
+            className="rounded-md bg-green-700 px-4 py-2 text-sm font-semibold text-white hover:bg-green-800 disabled:opacity-50"
           >
             Salvar
           </button>
@@ -541,6 +550,11 @@ export function QuoteEditor({ id }: { id?: string }) {
           </button>
         </div>
       </div>
+      {locked && (
+        <div className="mb-3 rounded border border-green-300 bg-green-50 p-3 text-sm text-green-800">
+          Este orçamento foi marcado como <strong>fechado</strong> e não pode mais ser alterado. Para editar, mova-o para outra etapa no pipeline.
+        </div>
+      )}
       {msg && <div className="mb-3 rounded bg-green-50 p-2 text-sm text-green-700">{msg}</div>}
 
       {/* Título e intro editáveis */}
