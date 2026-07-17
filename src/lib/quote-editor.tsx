@@ -135,123 +135,292 @@ export function QuoteEditor({ id }: { id?: string }) {
     const pageH = doc.internal.pageSize.getHeight();
     const data = new Date().toLocaleDateString("pt-BR");
 
-    // Header
-    doc.setFillColor(21, 87, 36);
-    doc.rect(0, 0, pageW, 90, "F");
-    doc.setTextColor(255);
-    doc.setFontSize(18);
+    // Paleta
+    const DARK: [number, number, number] = [15, 20, 25];
+    const DARK2: [number, number, number] = [28, 34, 40];
+    const GREEN: [number, number, number] = [0, 168, 104];
+    const GRAY: [number, number, number] = [110, 118, 125];
+    const LIGHT: [number, number, number] = [245, 247, 246];
+
+    // Divide o título: última palavra em verde
+    const words = title.trim().split(/\s+/);
+    const titleAccent = words.length > 1 ? words.pop()! : "";
+    const titleMain = words.join(" ").toUpperCase();
+    const titleAcc = titleAccent.toUpperCase();
+
+    // ============ HERO (topo escuro) ============
+    const heroH = 260;
+    doc.setFillColor(...DARK);
+    doc.rect(0, 0, pageW, heroH, "F");
+
+    // Badge "PROPOSTA COMERCIAL"
+    doc.setDrawColor(...GREEN);
+    doc.setLineWidth(1);
+    doc.circle(50, 34, 9, "S");
+    doc.setFillColor(...GREEN);
+    doc.circle(50, 34, 2.5, "F");
+    doc.setTextColor(...GREEN);
     doc.setFont("helvetica", "bold");
-    doc.text(title, 40, 40, { maxWidth: pageW - 80 });
-    if (profile?.company_name) {
-      doc.setFontSize(11);
-      doc.setFont("helvetica", "normal");
-      doc.text(profile.company_name, 40, 62);
-    }
-    doc.setFontSize(9);
-    doc.text(`Data: ${data}`, pageW - 40, 40, { align: "right" });
+    doc.setFontSize(10);
+    doc.text("PROPOSTA COMERCIAL", 65, 38);
 
-    doc.setTextColor(30);
-    let y = 120;
-
-    // Client block
-    if (clientName || clientCompany) {
-      doc.setFontSize(10);
-      doc.setFont("helvetica", "bold");
-      doc.text("PARA:", 40, y);
-      doc.setFont("helvetica", "normal");
-      y += 14;
-      if (clientCompany) { doc.text(clientCompany, 40, y); y += 12; }
-      if (clientName) { doc.text(clientName, 40, y); y += 12; }
-      y += 6;
+    // Título grande
+    doc.setTextColor(255);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(36);
+    const mainLines = doc.splitTextToSize(titleMain, pageW / 2 - 20);
+    let ty = 90;
+    (mainLines as string[]).forEach((l) => { doc.text(l, 40, ty); ty += 34; });
+    if (titleAcc) {
+      doc.setTextColor(...GREEN);
+      doc.text(titleAcc, 40, ty);
+      ty += 34;
     }
 
-    // Intro
+    // Subtítulo (intro curta)
     if (intro) {
-      doc.setFontSize(10);
-      const lines = doc.splitTextToSize(intro, pageW - 80);
-      doc.text(lines, 40, y);
-      y += lines.length * 12 + 12;
+      doc.setTextColor(230);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(11);
+      const sub = doc.splitTextToSize(intro, pageW / 2 - 20);
+      doc.text(sub, 40, ty + 6);
     }
 
-    // Items table — no cost shown
+    // Linha verde decorativa
+    doc.setDrawColor(...GREEN);
+    doc.setLineWidth(2);
+    doc.line(40, heroH - 30, 90, heroH - 30);
+
+    // Data topo direito
+    doc.setTextColor(180);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    doc.text(`Data: ${data}`, pageW - 40, 38, { align: "right" });
+    if (clientCompany || clientName) {
+      doc.setTextColor(200);
+      doc.text(`Para: ${clientCompany || clientName}`, pageW - 40, 54, { align: "right" });
+    }
+
+    // ============ FAIXA DE FEATURES (fundo escuro secundário) ============
+    const featY = heroH;
+    const featH = 90;
+    doc.setFillColor(...DARK2);
+    doc.rect(0, featY, pageW, featH, "F");
+
+    const features = [
+      { t: "PROTEÇÃO 24H", d: "Monitoramento contínuo e inteligente" },
+      { t: "CONTROLE TOTAL", d: "Gerencie tudo pelo aplicativo" },
+      { t: "ALERTAS EM TEMPO REAL", d: "Notificações instantâneas" },
+      { t: "INTEGRAÇÃO COM CÂMERAS", d: "Visualize de onde estiver" },
+    ];
+    const fW = (pageW - 80) / 4;
+    features.forEach((f, i) => {
+      const fx = 40 + i * fW;
+      // ícone (quadrado verde)
+      doc.setDrawColor(...GREEN);
+      doc.setLineWidth(1.2);
+      doc.roundedRect(fx, featY + 16, 20, 20, 3, 3, "S");
+      doc.setFillColor(...GREEN);
+      doc.circle(fx + 10, featY + 26, 3, "F");
+
+      doc.setTextColor(255);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9);
+      doc.text(f.t, fx, featY + 52);
+      doc.setTextColor(180);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8);
+      const dd = doc.splitTextToSize(f.d, fW - 10);
+      doc.text(dd, fx, featY + 64);
+    });
+
+    // ============ COMO FUNCIONA ============
+    let y = featY + featH + 30;
+    doc.setTextColor(...GREEN);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(11);
+    doc.text("COMO FUNCIONA", 40, y);
+    y += 20;
+
+    const steps = ["SENSORES", "CENTRAL SMART", "VOCÊ É NOTIFICADO", "VISUALIZE E AJA"];
+    const stepsDesc = [
+      "Detectam qualquer movimento ou abertura",
+      "Processa as informações e aciona alertas",
+      "Receba alertas em tempo real no celular",
+      "Veja câmeras, verifique e tome ação",
+    ];
+    const stepW = (pageW - 80) / 4;
+    steps.forEach((s, i) => {
+      const sx = 40 + i * stepW;
+      doc.setDrawColor(...GRAY);
+      doc.setLineWidth(0.8);
+      doc.roundedRect(sx + 10, y, 40, 40, 4, 4, "S");
+      // seta
+      if (i < steps.length - 1) {
+        doc.setDrawColor(...GREEN);
+        doc.setLineWidth(1);
+        const ax = sx + stepW - 12;
+        doc.line(ax - 8, y + 20, ax, y + 20);
+        doc.line(ax - 4, y + 16, ax, y + 20);
+        doc.line(ax - 4, y + 24, ax, y + 20);
+      }
+      doc.setTextColor(...DARK);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8);
+      doc.text(s, sx + 10, y + 58);
+      doc.setTextColor(...GRAY);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(7.5);
+      const dd = doc.splitTextToSize(stepsDesc[i], stepW - 20);
+      doc.text(dd, sx + 10, y + 70);
+    });
+    y += 100;
+
+    // ============ ITENS INCLUSOS ============
+    doc.setTextColor(...DARK);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(11);
+    doc.text("ITENS INCLUSOS NESTA PROPOSTA", 40, y);
+    doc.setDrawColor(...GREEN);
+    doc.setLineWidth(1.5);
+    doc.line(40, y + 4, 100, y + 4);
+    y += 16;
+
     const itens = linhas.filter((l) => l.qtde > 0);
     autoTable(doc, {
       startY: y,
-      head: [["Qtde", "Código", "Produto / Descrição"]],
-      body: itens.map((l) => [String(l.qtde), l.codigo, l.nome]),
-      styles: { fontSize: 9, cellPadding: 5 },
-      headStyles: { fillColor: [21, 87, 36], textColor: 255 },
+      head: [["Produto", "Descrição", "Qtde"]],
+      body: itens.map((l) => {
+        const parts = l.nome.split(/[-–]/);
+        const nome = parts[0].trim();
+        const desc = parts.slice(1).join(" - ").trim() || l.codigo;
+        return [nome, desc, String(l.qtde).padStart(2, "0")];
+      }),
+      theme: "plain",
+      styles: { fontSize: 9, cellPadding: 8, lineColor: [230, 230, 230], lineWidth: 0.5 },
+      headStyles: { fillColor: [250, 250, 250], textColor: DARK, fontStyle: "bold", fontSize: 8 },
       columnStyles: {
-        0: { cellWidth: 40, halign: "center" },
-        1: { cellWidth: 60 },
-        2: { cellWidth: "auto" },
+        0: { cellWidth: 180, fontStyle: "bold" },
+        1: { cellWidth: "auto", textColor: GRAY },
+        2: { cellWidth: 50, halign: "center", fontStyle: "bold" },
       },
+      margin: { left: 40, right: 40 },
     });
 
-    let finalY = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 20;
+    let finalY = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 25;
 
-    // Investment box
     if (finalY > pageH - 200) { doc.addPage(); finalY = 60; }
 
-    doc.setFillColor(245, 249, 246);
-    doc.rect(40, finalY, pageW - 80, 100, "F");
-    doc.setTextColor(21, 87, 36);
-    doc.setFontSize(12);
-    doc.setFont("helvetica", "bold");
-    doc.text("INVESTIMENTO", 55, finalY + 22);
+    // ============ INVESTIMENTO (bloco escuro) ============
+    const invH = 130;
+    doc.setFillColor(...DARK);
+    doc.rect(40, finalY, pageW - 80, invH, "F");
 
-    doc.setFontSize(10);
+    doc.setTextColor(...GREEN);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(11);
+    doc.text("INVESTIMENTO", 60, finalY + 28);
+
+    doc.setTextColor(220);
     doc.setFont("helvetica", "normal");
-    doc.setTextColor(60);
-    const boxY = finalY + 40;
-
-    doc.text("Instalação (pagamento único):", 55, boxY);
-    doc.setFont("helvetica", "bold");
-    doc.text(BRL(Number(taxaInstalacao)), pageW - 55, boxY, { align: "right" });
-
-    doc.setFont("helvetica", "normal");
-    doc.text("Monitoramento 24h (mensal):", 55, boxY + 18);
-    doc.setFont("helvetica", "bold");
-    doc.setTextColor(21, 87, 36);
-    doc.setFontSize(12);
-    doc.text(BRL(Number(mensalidade)) + " /mês", pageW - 55, boxY + 18, { align: "right" });
-
-    doc.setTextColor(60);
     doc.setFontSize(9);
-    doc.setFont("helvetica", "italic");
-    doc.text(
-      "* Equipamentos inclusos conforme lista acima. Instalação profissional e configuração incluídos.",
-      55,
-      boxY + 44,
-      { maxWidth: pageW - 110 },
-    );
+    doc.text("Valor do Sistema Completo", 60, finalY + 48);
 
-    finalY = finalY + 120;
+    doc.setTextColor(255);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(28);
+    doc.text(BRL(totalVenda + Number(taxaInstalacao)), 60, finalY + 82);
 
-    // Observations
-    if (obs) {
-      if (finalY > pageH - 120) { doc.addPage(); finalY = 60; }
-      doc.setTextColor(30);
+    doc.setTextColor(180);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.text("Condições de pagamento", 60, finalY + 100);
+    doc.setTextColor(220);
+    doc.text("À vista ou em até 12x no cartão", 60, finalY + 112);
+
+    // Divisor
+    doc.setDrawColor(60, 70, 78);
+    doc.setLineWidth(0.5);
+    doc.line(pageW / 2 + 20, finalY + 20, pageW / 2 + 20, finalY + invH - 20);
+
+    // Mensalidade
+    if (mensalidade > 0) {
+      doc.setTextColor(...GREEN);
       doc.setFont("helvetica", "bold");
       doc.setFontSize(10);
-      doc.text("Observações:", 40, finalY);
+      doc.text("MONITORAMENTO 24H", pageW / 2 + 40, finalY + 40);
+      doc.setTextColor(255);
+      doc.setFontSize(18);
+      doc.text(BRL(Number(mensalidade)) + " /mês", pageW / 2 + 40, finalY + 66);
+      doc.setTextColor(180);
       doc.setFont("helvetica", "normal");
+      doc.setFontSize(8);
+      doc.text("Central 24h · Alertas em tempo real", pageW / 2 + 40, finalY + 82);
+    }
+    // Garantia badge
+    doc.setTextColor(...GREEN);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
+    doc.text("GARANTIA DE 2 ANOS", pageW / 2 + 40, finalY + 104);
+    doc.setTextColor(180);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7.5);
+    doc.text("Suporte técnico especializado", pageW / 2 + 40, finalY + 115);
+
+    finalY += invH + 20;
+
+    // ============ Observações ============
+    if (obs) {
+      if (finalY > pageH - 100) { doc.addPage(); finalY = 60; }
+      doc.setTextColor(...DARK);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9);
+      doc.text("OBSERVAÇÕES", 40, finalY);
+      doc.setDrawColor(...GREEN);
+      doc.setLineWidth(1.2);
+      doc.line(40, finalY + 3, 80, finalY + 3);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(...GRAY);
       doc.setFontSize(9);
       const lines = doc.splitTextToSize(obs, pageW - 80);
-      doc.text(lines, 40, finalY + 14);
-      finalY += 14 + lines.length * 12 + 10;
+      doc.text(lines, 40, finalY + 18);
+      finalY += 18 + lines.length * 12 + 10;
     }
 
-    // Company footer
+    // ============ Rodapé (faixa clara) ============
+    const footY = pageH - 50;
+    doc.setFillColor(...LIGHT);
+    doc.rect(0, footY, pageW, 50, "F");
+    doc.setDrawColor(...GREEN);
+    doc.setLineWidth(1);
+    doc.circle(50, footY + 25, 8, "S");
+    doc.setFillColor(...GREEN);
+    doc.circle(50, footY + 25, 2, "F");
+    doc.setTextColor(...DARK);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
+    doc.text("NOSSO COMPROMISSO", 68, footY + 22);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(...GRAY);
     doc.setFontSize(8);
-    doc.setTextColor(120);
-    const footer = [
-      profile?.company_name,
-      profile?.phone,
-      profile?.address,
-    ].filter(Boolean).join(" · ");
-    if (footer) doc.text(footer, pageW / 2, pageH - 30, { align: "center" });
-    doc.text("Proposta válida por 15 dias.", pageW / 2, pageH - 18, { align: "center" });
+    doc.text("É proteger o que mais importa para você.", 68, footY + 34);
+
+    if (profile?.company_name) {
+      doc.setTextColor(...DARK);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(10);
+      doc.text(profile.company_name, pageW - 40, footY + 22, { align: "right" });
+    }
+    const contact = [profile?.phone, profile?.address].filter(Boolean).join(" · ");
+    if (contact) {
+      doc.setTextColor(...GRAY);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(7.5);
+      doc.text(contact, pageW - 40, footY + 34, { align: "right" });
+    }
+    doc.setTextColor(...GRAY);
+    doc.setFontSize(7);
+    doc.text("Proposta válida por 15 dias.", pageW / 2, footY + 45, { align: "center" });
 
     const nome = (clientCompany || clientName || "cliente").replace(/\s+/g, "_");
     doc.save(`proposta_${nome}_${Date.now()}.pdf`);
