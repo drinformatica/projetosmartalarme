@@ -1,6 +1,7 @@
 import { createFileRoute, useRouter, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { formatCpfCnpj, isValidCpfCnpj, onlyDigits } from "@/lib/br-doc";
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
@@ -14,6 +15,7 @@ function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [cnpj, setCnpj] = useState("");
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
@@ -28,6 +30,10 @@ function AuthPage() {
     e.preventDefault();
     setErr(null);
     setMsg(null);
+    if (mode === "signup" && !isValidCpfCnpj(cnpj)) {
+      setErr("CPF ou CNPJ inválido. Informe um documento válido.");
+      return;
+    }
     setLoading(true);
     try {
       if (mode === "signup") {
@@ -36,18 +42,15 @@ function AuthPage() {
           password,
           options: {
             emailRedirectTo: window.location.origin,
-            data: { full_name: name },
+            data: { full_name: name, cnpj: onlyDigits(cnpj) },
           },
         });
         if (error) throw error;
-        // auto-confirm is on — sign in immediately
-        const { error: signErr } = await supabase.auth.signInWithPassword({ email, password });
-        if (signErr) {
-          setMsg("Cadastro criado! Faça login.");
-          setMode("login");
-        } else {
-          router.navigate({ to: "/dashboard", replace: true });
-        }
+        setMsg(
+          "Cadastro criado! Enviamos um e-mail de confirmação. Confirme o e-mail para acessar sua conta.",
+        );
+        setMode("login");
+        setPassword("");
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
