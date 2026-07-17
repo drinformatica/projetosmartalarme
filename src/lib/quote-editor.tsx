@@ -142,7 +142,15 @@ export function QuoteEditor({ id }: { id?: string }) {
     }
   };
 
-  const gerarPDF = () => {
+  const gerarPDF = async () => {
+    const [stepSensor, stepCentral, stepNotif, stepView] = await Promise.all([
+      loadImg(stepSensorImg),
+      loadImg(stepCentralImg),
+      loadImg(stepNotifImg),
+      loadImg(stepViewImg),
+    ]);
+    const stepImgs = [stepSensor, stepCentral, stepNotif, stepView];
+    const stepFmts = ["JPEG", "JPEG", "PNG", "JPEG"] as const;
     const doc = new jsPDF({ unit: "pt", format: "a4" });
     const pageW = doc.internal.pageSize.getWidth();
     const pageH = doc.internal.pageSize.getHeight();
