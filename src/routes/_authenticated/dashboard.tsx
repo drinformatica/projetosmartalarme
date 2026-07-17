@@ -87,13 +87,24 @@ function Dashboard() {
           <h1 className="text-2xl font-bold">Pipeline de Vendas</h1>
           <p className="text-sm text-slate-500">Arraste seus orçamentos entre as etapas</p>
         </div>
-        <Link
-          to="/orcamento"
-          className="rounded-md bg-green-700 px-4 py-2 text-sm font-semibold text-white hover:bg-green-800"
-        >
-          + Novo Orçamento
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          {isAdmin && (
+            <Link
+              to="/admin"
+              className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+            >
+              Admin
+            </Link>
+          )}
+          <Link
+            to="/orcamento"
+            className="rounded-md bg-green-700 px-4 py-2 text-sm font-semibold text-white hover:bg-green-800"
+          >
+            + Novo Orçamento
+          </Link>
+        </div>
       </div>
+
 
       {loading ? (
         <div className="rounded-lg border border-slate-200 bg-white p-6 text-center text-slate-500">
