@@ -113,11 +113,13 @@ export function QuoteEditor({ id }: { id?: string }) {
   const setQtd = (codigo: string, v: number) =>
     setQtds((prev) => ({ ...prev, [codigo]: Math.max(0, v || 0) }));
 
-  const handleSave = async () => {
-    setMsg(null);
+  const locked = status === "fechado";
+
+  const persist = async (overrides?: { status?: QuoteStatus; silent?: boolean }) => {
     const items = linhas.filter((l) => l.qtde > 0).map((l) => ({
       codigo: l.codigo, nome: l.nome, psd: l.psd, qtde: l.qtde,
     }));
+    const effStatus = overrides?.status ?? status;
     const res = await save({
       data: {
         id: savedId,
@@ -130,19 +132,36 @@ export function QuoteEditor({ id }: { id?: string }) {
         taxa_instalacao: Number(taxaInstalacao),
         mensalidade: Number(mensalidade),
         observacoes: obs,
-        status,
+        status: effStatus,
         total_venda: totalVenda,
         total_custo: totalCusto,
       },
     });
     if (res?.id) setSavedId(res.id);
-    setMsg("Orçamento salvo!");
+    if (overrides?.status) setStatus(overrides.status);
+    if (!overrides?.silent) setMsg("Orçamento salvo!");
     if (!id && res?.id) {
       router.navigate({ to: "/orcamento/$id", params: { id: res.id }, replace: true });
     }
+    return res;
+  };
+
+  const handleSave = async () => {
+    if (locked) return;
+    setMsg(null);
+    await persist();
   };
 
   const gerarPDF = async () => {
+    // Auto-save antes de gerar o PDF. Se ainda não existir, entra como "rascunho".
+    if (!locked) {
+      try {
+        await persist({ status: savedId ? status : "rascunho", silent: true });
+      } catch (e) {
+        console.error("Falha ao salvar antes do PDF", e);
+      }
+    }
+
     const [stepSensor, stepCentral, stepNotif, stepView] = await Promise.all([
       loadImg(stepSensorImg),
       loadImg(stepCentralImg),
@@ -498,18 +517,27 @@ export function QuoteEditor({ id }: { id?: string }) {
   return (
     <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-bold">{savedId ? "Editar Orçamento" : "Novo Orçamento"}</h1>
+        <h1 className="text-2xl font-bold">
+          {savedId ? "Editar Orçamento" : "Novo Orçamento"}
+          {locked && (
+            <span className="ml-2 rounded bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-800 align-middle">
+              FECHADO — somente leitura
+            </span>
+          )}
+        </h1>
         <div className="flex gap-2">
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value as QuoteStatus)}
-            className="rounded border border-slate-300 bg-white px-3 py-2 text-sm"
+            disabled={locked}
+            className="rounded border border-slate-300 bg-white px-3 py-2 text-sm disabled:opacity-60"
           >
             {STATUS_OPTS.map((s) => <option key={s.v} value={s.v}>{s.l}</option>)}
           </select>
           <button
             onClick={handleSave}
-            className="rounded-md bg-green-700 px-4 py-2 text-sm font-semibold text-white hover:bg-green-800"
+            disabled={locked}
+            className="rounded-md bg-green-700 px-4 py-2 text-sm font-semibold text-white hover:bg-green-800 disabled:opacity-50"
           >
             Salvar
           </button>
@@ -522,8 +550,14 @@ export function QuoteEditor({ id }: { id?: string }) {
           </button>
         </div>
       </div>
+      {locked && (
+        <div className="mb-3 rounded border border-green-300 bg-green-50 p-3 text-sm text-green-800">
+          Este orçamento foi marcado como <strong>fechado</strong> e não pode mais ser alterado. Para editar, mova-o para outra etapa no pipeline.
+        </div>
+      )}
       {msg && <div className="mb-3 rounded bg-green-50 p-2 text-sm text-green-700">{msg}</div>}
 
+      <fieldset disabled={locked} className={locked ? "opacity-70" : ""}>
       {/* Título e intro editáveis */}
       <section className="mb-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
         <h2 className="mb-3 text-sm font-semibold text-slate-700">Cabeçalho da Proposta</h2>
@@ -722,6 +756,7 @@ export function QuoteEditor({ id }: { id?: string }) {
           placeholder="Condições de pagamento, prazo de validade, etc."
         />
       </section>
+      </fieldset>
     </main>
   );
 }
