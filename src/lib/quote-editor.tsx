@@ -277,15 +277,16 @@ export function QuoteEditor({ id }: { id?: string }) {
 
     // Selo "Parceiro Credenciado Intelbras" — abaixo da logo, dentro do hero
     if (partnerBadge) {
-      const sealSize = 45;
-      const sx = pageW - 40 - sealSize;
+      const sealW = 55;
+      const sealH = 55;
+      const sx = pageW - 40 - sealW;
       const sy = logoBottomY + 16;
       // Garante que o selo não ultrapasse a faixa de features
-      if (sy + sealSize <= heroH - 20) {
+      if (sy + sealH <= heroH - 20) {
         try {
-          doc.addImage(partnerBadge, "JPEG", sx, sy, sealSize, sealSize);
+          doc.addImage(partnerBadge, "PNG", sx, sy, sealW, sealH);
         } catch {
-          try { doc.addImage(partnerBadge, "PNG", sx, sy, sealSize, sealSize); } catch {}
+          try { doc.addImage(partnerBadge, "JPEG", sx, sy, sealW, sealH); } catch {}
         }
       }
     }
