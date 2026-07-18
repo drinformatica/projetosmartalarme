@@ -78,3 +78,40 @@ export const deleteProduct = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+export type BulkPriceUpdate = { codigo: string; psd: number };
+
+export const bulkUpdatePrices = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { updates: BulkPriceUpdate[] }) => data)
+  .handler(async ({ data, context }) => {
+    const { data: existing, error: listErr } = await context.supabase
+      .from("products")
+      .select("id, codigo");
+    if (listErr) throw new Error(listErr.message);
+    const byCode = new Map<string, string>();
+    (existing ?? []).forEach((p: { id: string; codigo: string }) => {
+      byCode.set(String(p.codigo).trim().toLowerCase(), p.id);
+    });
+
+    let updated = 0;
+    const notFound: string[] = [];
+    for (const u of data.updates) {
+      const key = String(u.codigo).trim().toLowerCase();
+      const id = byCode.get(key);
+      if (!id) {
+        notFound.push(u.codigo);
+        continue;
+      }
+      const psd = Number(u.psd);
+      if (!Number.isFinite(psd) || psd < 0) continue;
+      const { error } = await context.supabase
+        .from("products")
+        .update({ psd })
+        .eq("id", id);
+      if (error) throw new Error(error.message);
+      updated += 1;
+    }
+    return { updated, notFound, total: data.updates.length };
+  });
+

@@ -6,9 +6,12 @@ import {
   listProducts,
   upsertProduct,
   deleteProduct,
+  bulkUpdatePrices,
   type Product,
   type ProductInput,
 } from "@/lib/products.functions";
+import * as XLSX from "xlsx";
+
 
 export const Route = createFileRoute("/_authenticated/admin/produtos")({
   component: AdminProdutos,
@@ -35,6 +38,79 @@ function AdminProdutos() {
   const listFn = useServerFn(listProducts);
   const saveFn = useServerFn(upsertProduct);
   const delFn = useServerFn(deleteProduct);
+  const bulkFn = useServerFn(bulkUpdatePrices);
+
+  const [priceImport, setPriceImport] = useState<{
+    open: boolean;
+    parsing: boolean;
+    updating: boolean;
+    rows: { codigo: string; psd: number }[];
+    result: { updated: number; notFound: string[]; total: number } | null;
+    error: string | null;
+  }>({ open: false, parsing: false, updating: false, rows: [], result: null, error: null });
+
+  const handleFile = async (file: File) => {
+    setPriceImport((s) => ({ ...s, parsing: true, error: null, rows: [], result: null }));
+    try {
+      const buf = await file.arrayBuffer();
+      const wb = XLSX.read(buf, { type: "array" });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const json: Record<string, unknown>[] = XLSX.utils.sheet_to_json(ws, { defval: "" });
+      const rows: { codigo: string; psd: number }[] = [];
+      for (const r of json) {
+        const keys = Object.keys(r);
+        const codKey = keys.find((k) => k.toLowerCase().trim().replace(/[óô]/g, "o") === "codigo");
+        const psdKey = keys.find((k) => k.toLowerCase().trim() === "psd");
+        if (!codKey || !psdKey) continue;
+        const codigo = String(r[codKey] ?? "").trim();
+        const raw = String(r[psdKey] ?? "").replace(/[R$\s.]/g, "").replace(",", ".");
+        const psd = Number(raw);
+        if (!codigo || !Number.isFinite(psd)) continue;
+        rows.push({ codigo, psd });
+      }
+      if (rows.length === 0) {
+        setPriceImport((s) => ({
+          ...s,
+          parsing: false,
+          error: "Nenhuma linha válida encontrada. A planilha precisa ter as colunas 'codigo' e 'PSD'.",
+        }));
+        return;
+      }
+      setPriceImport((s) => ({ ...s, parsing: false, rows }));
+    } catch (e) {
+      setPriceImport((s) => ({
+        ...s,
+        parsing: false,
+        error: e instanceof Error ? e.message : "Erro ao ler planilha",
+      }));
+    }
+  };
+
+  const confirmImport = async () => {
+    setPriceImport((s) => ({ ...s, updating: true, error: null }));
+    try {
+      const result = await bulkFn({ data: { updates: priceImport.rows } });
+      setPriceImport((s) => ({ ...s, updating: false, result }));
+      await refresh();
+    } catch (e) {
+      setPriceImport((s) => ({
+        ...s,
+        updating: false,
+        error: e instanceof Error ? e.message : "Erro ao atualizar",
+      }));
+    }
+  };
+
+  const closeImport = () =>
+    setPriceImport({
+      open: false,
+      parsing: false,
+      updating: false,
+      rows: [],
+      result: null,
+      error: null,
+    });
+
 
   const [items, setItems] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -133,6 +209,12 @@ function AdminProdutos() {
           <Link to="/admin" className="rounded border px-3 py-1.5 hover:bg-slate-50">
             ← Usuários & Anúncios
           </Link>
+          <button
+            onClick={() => setPriceImport((s) => ({ ...s, open: true }))}
+            className="rounded border border-green-700 bg-white px-3 py-1.5 font-semibold text-green-700 hover:bg-green-50"
+          >
+            ⤴ Atualizar Preços
+          </button>
           <button
             onClick={startNew}
             className="rounded bg-green-700 px-3 py-1.5 font-semibold text-white hover:bg-green-800"
@@ -332,6 +414,100 @@ function AdminProdutos() {
               >
                 {saving ? "Salvando..." : "Salvar"}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {priceImport.open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-lg rounded-lg bg-white p-5 shadow-xl">
+            <h2 className="mb-2 text-lg font-bold">Atualizar Preços via Planilha</h2>
+            <p className="mb-4 text-sm text-slate-600">
+              Envie um arquivo Excel (.xlsx) contendo as colunas <b>codigo</b> e <b>PSD</b>.
+              O sistema cruzará pelo código e atualizará o preço de cada produto correspondente.
+              A planilha não será armazenada.
+            </p>
+
+            {!priceImport.result && (
+              <input
+                type="file"
+                accept=".xlsx,.xls,.csv"
+                disabled={priceImport.parsing || priceImport.updating}
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) handleFile(f);
+                }}
+                className="mb-3 block w-full rounded border border-slate-300 p-2 text-sm"
+              />
+            )}
+
+            {priceImport.parsing && (
+              <div className="rounded bg-slate-50 p-3 text-sm text-slate-600">Lendo planilha...</div>
+            )}
+
+            {priceImport.error && (
+              <div className="mb-3 rounded bg-red-50 p-3 text-sm text-red-700">
+                {priceImport.error}
+              </div>
+            )}
+
+            {priceImport.rows.length > 0 && !priceImport.result && (
+              <div className="mb-3 max-h-64 overflow-auto rounded border border-slate-200">
+                <table className="min-w-full text-xs">
+                  <thead className="sticky top-0 bg-slate-50 text-slate-600">
+                    <tr>
+                      <th className="px-2 py-1 text-left">Código</th>
+                      <th className="px-2 py-1 text-right">Novo PSD</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {priceImport.rows.map((r, i) => (
+                      <tr key={i} className="border-t border-slate-100">
+                        <td className="px-2 py-1 font-mono">{r.codigo}</td>
+                        <td className="px-2 py-1 text-right tabular-nums">{BRL(r.psd)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <div className="border-t bg-slate-50 px-2 py-1 text-xs text-slate-600">
+                  {priceImport.rows.length} linha(s) prontas para atualizar.
+                </div>
+              </div>
+            )}
+
+            {priceImport.result && (
+              <div className="mb-3 rounded bg-green-50 p-3 text-sm text-green-800">
+                <div className="font-semibold">Atualização concluída</div>
+                <div>
+                  {priceImport.result.updated} produto(s) atualizado(s) de{" "}
+                  {priceImport.result.total} linha(s).
+                </div>
+                {priceImport.result.notFound.length > 0 && (
+                  <div className="mt-2 text-xs text-amber-800">
+                    Códigos não encontrados: {priceImport.result.notFound.join(", ")}
+                  </div>
+                )}
+              </div>
+            )}
+
+            <div className="mt-4 flex justify-end gap-2">
+              <button
+                onClick={closeImport}
+                disabled={priceImport.updating}
+                className="rounded border border-slate-300 px-4 py-2 text-sm hover:bg-slate-50"
+              >
+                {priceImport.result ? "Fechar" : "Cancelar"}
+              </button>
+              {!priceImport.result && (
+                <button
+                  onClick={confirmImport}
+                  disabled={priceImport.rows.length === 0 || priceImport.updating || priceImport.parsing}
+                  className="rounded bg-green-700 px-4 py-2 text-sm font-semibold text-white hover:bg-green-800 disabled:opacity-60"
+                >
+                  {priceImport.updating ? "Atualizando..." : "Confirmar atualização"}
+                </button>
+              )}
             </div>
           </div>
         </div>
