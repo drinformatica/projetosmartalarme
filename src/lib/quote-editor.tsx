@@ -680,8 +680,8 @@ export function QuoteEditor({ id }: { id?: string }) {
         </label>
       </section>
 
-      {/* Produtos */}
-      <section className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
+      {/* Produtos - desktop (tabela) */}
+      <section className="hidden overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm md:block">
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
             <thead className="bg-green-700 text-white">
@@ -732,6 +732,78 @@ export function QuoteEditor({ id }: { id?: string }) {
           </table>
         </div>
       </section>
+
+      {/* Produtos - mobile (cards) */}
+      <section className="space-y-2 md:hidden">
+        <div className="rounded-t-lg bg-green-700 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-white">
+          Produtos ({filtradas.length})
+        </div>
+        <ul className="space-y-2">
+          {filtradas.map((l) => {
+            const ativo = l.qtde > 0;
+            return (
+              <li
+                key={l.codigo}
+                className={`rounded-lg border p-3 shadow-sm ${ativo ? "border-green-400 bg-green-50/60" : "border-slate-200 bg-white"}`}
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0 flex-1">
+                    <div className="font-mono text-[10px] text-slate-500">{l.codigo}</div>
+                    <div className="text-sm font-medium leading-snug text-slate-800">{l.nome}</div>
+                  </div>
+                  <div className="shrink-0 text-right">
+                    <div className="text-[10px] uppercase text-slate-500">PSD</div>
+                    <div className="text-xs tabular-nums text-slate-700">{BRL(possuiCnae && !l.semDesconto ? l.psdDesc : l.psd)}</div>
+                  </div>
+                </div>
+                <div className="mt-3 flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setQtd(l.codigo, Math.max(0, (l.qtde || 0) - 1))}
+                      className="h-9 w-9 rounded-md border border-slate-300 bg-white text-lg font-bold text-slate-700 active:bg-slate-100"
+                      aria-label="Diminuir"
+                    >
+                      −
+                    </button>
+                    <input
+                      type="number"
+                      inputMode="numeric"
+                      min={0}
+                      value={l.qtde || ""}
+                      onChange={(e) => setQtd(l.codigo, Number(e.target.value))}
+                      className="h-9 w-14 rounded-md border border-slate-300 text-center text-sm"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setQtd(l.codigo, (l.qtde || 0) + 1)}
+                      className="h-9 w-9 rounded-md border border-slate-300 bg-white text-lg font-bold text-slate-700 active:bg-slate-100"
+                      aria-label="Aumentar"
+                    >
+                      +
+                    </button>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-[10px] uppercase text-slate-500">Venda</div>
+                    <div className="text-sm font-semibold tabular-nums text-green-700">{BRL(l.venda)}</div>
+                  </div>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+        <div className="mt-2 rounded-lg border border-slate-200 bg-slate-100 p-3 text-sm">
+          <div className="flex justify-between">
+            <span className="text-slate-600">Total custo</span>
+            <span className="font-semibold tabular-nums">{BRL(totalCusto)}</span>
+          </div>
+          <div className="mt-1 flex justify-between">
+            <span className="text-slate-600">Total venda</span>
+            <span className="font-semibold tabular-nums text-green-700">{BRL(totalVenda)}</span>
+          </div>
+        </div>
+      </section>
+
 
       {/* ROI */}
       <section className="mt-6 grid gap-4 lg:grid-cols-2">
