@@ -50,6 +50,48 @@ export type Database = {
         }
         Relationships: []
       }
+      products: {
+        Row: {
+          active: boolean
+          codigo: string
+          created_at: string
+          descricao_orcamento: string
+          descricao_proposta: string
+          id: string
+          no_cnae_discount: boolean
+          nome: string
+          psd: number
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          codigo: string
+          created_at?: string
+          descricao_orcamento?: string
+          descricao_proposta?: string
+          id?: string
+          no_cnae_discount?: boolean
+          nome: string
+          psd?: number
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          codigo?: string
+          created_at?: string
+          descricao_orcamento?: string
+          descricao_proposta?: string
+          id?: string
+          no_cnae_discount?: boolean
+          nome?: string
+          psd?: number
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           address: string | null
