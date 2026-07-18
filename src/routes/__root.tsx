@@ -11,6 +11,11 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { InstallPrompt } from "../components/InstallPrompt";
+import { registerPWA } from "../lib/pwa-register";
+import { flushOutbox } from "../lib/offline-outbox";
+import { saveQuote } from "../lib/quotes.functions";
+import { useServerFn } from "@tanstack/react-start";
 
 function NotFoundComponent() {
   return (
@@ -94,6 +99,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: appCss,
       },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "manifest", href: "/manifest.webmanifest" },
+      { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
     ],
   }),
   shellComponent: RootShell,
@@ -145,12 +152,28 @@ function Footer() {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const save = useServerFn(saveQuote);
+
+  useEffect(() => {
+    registerPWA();
+    const doFlush = () => {
+      flushOutbox((payload) =>
+        save({ data: payload }) as Promise<{ id?: string } | null>,
+      ).then((r) => {
+        if (r.flushed > 0) console.info(`[outbox] ${r.flushed} sincronizado(s).`);
+      });
+    };
+    window.addEventListener("online", doFlush);
+    doFlush();
+    return () => window.removeEventListener("online", doFlush);
+  }, [save]);
 
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
       <Footer />
+      <InstallPrompt />
     </QueryClientProvider>
   );
 }
