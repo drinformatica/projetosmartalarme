@@ -3,7 +3,7 @@ import { useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import { PRODUCTS } from "@/lib/products";
+import { listProducts, type Product } from "@/lib/products.functions";
 import { getQuote, saveQuote, type QuoteStatus } from "@/lib/quotes.functions";
 import { getProfile } from "@/lib/profile.functions";
 import stepSensorImg from "@/assets/step-sensor.jpg";
@@ -39,6 +39,7 @@ export function QuoteEditor({ id }: { id?: string }) {
   const save = useServerFn(saveQuote);
   const load = useServerFn(getQuote);
   const loadProfile = useServerFn(getProfile);
+  const loadProducts = useServerFn(listProducts);
 
   const [title, setTitle] = useState("Proposta Comercial - Sistema de Alarme Smart");
   const [intro, setIntro] = useState(
@@ -57,48 +58,74 @@ export function QuoteEditor({ id }: { id?: string }) {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [savedId, setSavedId] = useState<string | undefined>(id);
   const [msg, setMsg] = useState<string | null>(null);
-  const [loading, setLoading] = useState(!!id);
+  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
-    loadProfile().then((p) => setProfile(p ?? null));
-    if (id) {
-      load({ data: { id } }).then((q) => {
-        if (!q) { setLoading(false); return; }
-        setTitle(q.title);
-        setIntro(q.intro);
-        setClientName(q.client_name ?? "");
-        setClientCompany(q.client_company ?? "");
-        setMargem(Number(q.margem));
-        setPossuiCnae(q.possui_cnae);
-        setTaxaInstalacao(Number(q.taxa_instalacao));
-        setMensalidade(Number(q.mensalidade));
-        setObs(q.observacoes ?? "");
-        setStatus(q.status);
-        const map: Record<string, number> = {};
-        (q.items as { codigo: string; qtde: number }[]).forEach((it) => { map[it.codigo] = it.qtde; });
-        setQtds(map);
-        setLoading(false);
-      });
-    }
-  }, [id, load, loadProfile]);
+    (async () => {
+      const [p, prods] = await Promise.all([loadProfile(), loadProducts()]);
+      setProfile(p ?? null);
+      setProducts((prods ?? []).filter((x) => x.active));
+      if (id) {
+        const q = await load({ data: { id } });
+        if (q) {
+          setTitle(q.title);
+          setIntro(q.intro);
+          setClientName(q.client_name ?? "");
+          setClientCompany(q.client_company ?? "");
+          setMargem(Number(q.margem));
+          setPossuiCnae(q.possui_cnae);
+          setTaxaInstalacao(Number(q.taxa_instalacao));
+          setMensalidade(Number(q.mensalidade));
+          setObs(q.observacoes ?? "");
+          setStatus(q.status);
+          const map: Record<string, number> = {};
+          (q.items as { codigo: string; qtde: number }[]).forEach((it) => {
+            map[it.codigo] = it.qtde;
+          });
+          setQtds(map);
+        }
+      }
+      setLoading(false);
+    })();
+  }, [id, load, loadProfile, loadProducts]);
 
   const linhas = useMemo(
     () =>
-      PRODUCTS.map((p) => {
+      products.map((p) => {
         const qtde = qtds[p.codigo] ?? 0;
-        const semDesconto = /sem desconto de cnae 10%/i.test(p.nome);
-        const psdDesc = possuiCnae && !semDesconto ? p.psd * 0.9 : p.psd;
+        const semDesconto = !!p.no_cnae_discount;
+        const psdBase = Number(p.psd) || 0;
+        const psdDesc = possuiCnae && !semDesconto ? psdBase * 0.9 : psdBase;
         const custoTotal = psdDesc * qtde;
         const venda = psdDesc * (1 + margem / 100) * qtde;
-        return { ...p, qtde, semDesconto, psdDesc, custoTotal, venda };
+        const displayName = (p.descricao_orcamento && p.descricao_orcamento.trim()) || p.nome;
+        return {
+          codigo: p.codigo,
+          nome: p.nome,
+          psd: psdBase,
+          descricao_orcamento: p.descricao_orcamento,
+          descricao_proposta: p.descricao_proposta,
+          displayName,
+          qtde,
+          semDesconto,
+          psdDesc,
+          custoTotal,
+          venda,
+        };
       }),
-    [qtds, margem, possuiCnae],
+    [products, qtds, margem, possuiCnae],
   );
 
   const filtradas = useMemo(() => {
     const q = filtro.trim().toLowerCase();
     if (!q) return linhas;
-    return linhas.filter((l) => l.nome.toLowerCase().includes(q) || l.codigo.includes(q));
+    return linhas.filter(
+      (l) =>
+        l.displayName.toLowerCase().includes(q) ||
+        l.nome.toLowerCase().includes(q) ||
+        l.codigo.includes(q),
+    );
   }, [linhas, filtro]);
 
   const totalCusto = linhas.reduce((s, l) => s + l.custoTotal, 0);
