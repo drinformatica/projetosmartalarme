@@ -536,22 +536,22 @@ export function QuoteEditor({ id }: { id?: string }) {
   if (loading) return <main className="p-6 text-slate-500">Carregando...</main>;
 
   return (
-    <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-bold">
+    <main className="mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-6">
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+        <h1 className="text-xl font-bold sm:text-2xl">
           {savedId ? "Editar Orçamento" : "Novo Orçamento"}
           {locked && (
-            <span className="ml-2 rounded bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-800 align-middle">
+            <span className="ml-2 inline-block rounded bg-green-100 px-2 py-0.5 text-[10px] font-semibold text-green-800 align-middle sm:text-xs">
               FECHADO — somente leitura
             </span>
           )}
         </h1>
-        <div className="flex gap-2">
+        <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-nowrap">
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value as QuoteStatus)}
             disabled={locked}
-            className="rounded border border-slate-300 bg-white px-3 py-2 text-sm disabled:opacity-60"
+            className="col-span-2 rounded border border-slate-300 bg-white px-3 py-2 text-sm disabled:opacity-60 sm:col-span-1"
           >
             {STATUS_OPTS.map((s) => <option key={s.v} value={s.v}>{s.l}</option>)}
           </select>
@@ -571,6 +571,7 @@ export function QuoteEditor({ id }: { id?: string }) {
           </button>
         </div>
       </div>
+
       {locked && (
         <div className="mb-3 rounded border border-green-300 bg-green-50 p-3 text-sm text-green-800">
           Este orçamento foi marcado como <strong>fechado</strong> e não pode mais ser alterado. Para editar, mova-o para outra etapa no pipeline.
