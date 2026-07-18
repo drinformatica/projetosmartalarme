@@ -657,9 +657,14 @@ export function QuoteEditor({ id }: { id?: string }) {
           <input
             type="number"
             min={0}
+            inputMode="decimal"
             className="w-full rounded border border-slate-300 px-3 py-2 text-sm"
-            value={margem}
-            onChange={(e) => setMargem(Number(e.target.value))}
+            value={Number.isFinite(margem) ? margem : ""}
+            onChange={(e) => {
+              const v = e.target.value;
+              setMargem(v === "" ? 0 : Number(v));
+            }}
+            onFocus={(e) => e.target.select()}
           />
         </div>
         <div>
@@ -668,9 +673,14 @@ export function QuoteEditor({ id }: { id?: string }) {
             type="number"
             min={0}
             step="0.01"
+            inputMode="decimal"
             className="w-full rounded border border-slate-300 px-3 py-2 text-sm"
-            value={taxaInstalacao}
-            onChange={(e) => setTaxaInstalacao(Number(e.target.value))}
+            value={taxaInstalacao || ""}
+            onChange={(e) => {
+              const v = e.target.value;
+              setTaxaInstalacao(v === "" ? 0 : Number(v));
+            }}
+            onFocus={(e) => e.target.select()}
           />
         </div>
         <div>
@@ -679,11 +689,17 @@ export function QuoteEditor({ id }: { id?: string }) {
             type="number"
             min={0}
             step="0.01"
+            inputMode="decimal"
             className="w-full rounded border border-slate-300 px-3 py-2 text-sm"
-            value={mensalidade}
-            onChange={(e) => setMensalidade(Number(e.target.value))}
+            value={mensalidade || ""}
+            onChange={(e) => {
+              const v = e.target.value;
+              setMensalidade(v === "" ? 0 : Number(v));
+            }}
+            onFocus={(e) => e.target.select()}
           />
         </div>
+
         <div>
           <label className="mb-1 block text-xs font-semibold text-slate-600">Buscar produto</label>
           <input
