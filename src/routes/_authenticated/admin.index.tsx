@@ -71,9 +71,17 @@ function AdminList() {
           <h1 className="text-2xl font-bold">Administração</h1>
           <p className="text-sm text-slate-500">Usuários cadastrados na plataforma</p>
         </div>
-        <Link to="/dashboard" className="text-sm text-green-700 hover:underline">
-          ← Voltar ao pipeline
-        </Link>
+        <div className="flex flex-wrap gap-2 text-sm">
+          <Link
+            to="/admin/produtos"
+            className="rounded bg-green-700 px-3 py-1.5 font-semibold text-white hover:bg-green-800"
+          >
+            Gerenciar Produtos
+          </Link>
+          <Link to="/dashboard" className="rounded border px-3 py-1.5 text-green-700 hover:bg-slate-50">
+            ← Voltar ao pipeline
+          </Link>
+        </div>
       </div>
 
       <div className="mb-3">
