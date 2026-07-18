@@ -38,6 +38,79 @@ function AdminProdutos() {
   const listFn = useServerFn(listProducts);
   const saveFn = useServerFn(upsertProduct);
   const delFn = useServerFn(deleteProduct);
+  const bulkFn = useServerFn(bulkUpdatePrices);
+
+  const [priceImport, setPriceImport] = useState<{
+    open: boolean;
+    parsing: boolean;
+    updating: boolean;
+    rows: { codigo: string; psd: number }[];
+    result: { updated: number; notFound: string[]; total: number } | null;
+    error: string | null;
+  }>({ open: false, parsing: false, updating: false, rows: [], result: null, error: null });
+
+  const handleFile = async (file: File) => {
+    setPriceImport((s) => ({ ...s, parsing: true, error: null, rows: [], result: null }));
+    try {
+      const buf = await file.arrayBuffer();
+      const wb = XLSX.read(buf, { type: "array" });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const json: Record<string, unknown>[] = XLSX.utils.sheet_to_json(ws, { defval: "" });
+      const rows: { codigo: string; psd: number }[] = [];
+      for (const r of json) {
+        const keys = Object.keys(r);
+        const codKey = keys.find((k) => k.toLowerCase().trim().replace(/[óô]/g, "o") === "codigo");
+        const psdKey = keys.find((k) => k.toLowerCase().trim() === "psd");
+        if (!codKey || !psdKey) continue;
+        const codigo = String(r[codKey] ?? "").trim();
+        const raw = String(r[psdKey] ?? "").replace(/[R$\s.]/g, "").replace(",", ".");
+        const psd = Number(raw);
+        if (!codigo || !Number.isFinite(psd)) continue;
+        rows.push({ codigo, psd });
+      }
+      if (rows.length === 0) {
+        setPriceImport((s) => ({
+          ...s,
+          parsing: false,
+          error: "Nenhuma linha válida encontrada. A planilha precisa ter as colunas 'codigo' e 'PSD'.",
+        }));
+        return;
+      }
+      setPriceImport((s) => ({ ...s, parsing: false, rows }));
+    } catch (e) {
+      setPriceImport((s) => ({
+        ...s,
+        parsing: false,
+        error: e instanceof Error ? e.message : "Erro ao ler planilha",
+      }));
+    }
+  };
+
+  const confirmImport = async () => {
+    setPriceImport((s) => ({ ...s, updating: true, error: null }));
+    try {
+      const result = await bulkFn({ data: { updates: priceImport.rows } });
+      setPriceImport((s) => ({ ...s, updating: false, result }));
+      await refresh();
+    } catch (e) {
+      setPriceImport((s) => ({
+        ...s,
+        updating: false,
+        error: e instanceof Error ? e.message : "Erro ao atualizar",
+      }));
+    }
+  };
+
+  const closeImport = () =>
+    setPriceImport({
+      open: false,
+      parsing: false,
+      updating: false,
+      rows: [],
+      result: null,
+      error: null,
+    });
+
 
   const [items, setItems] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
