@@ -146,6 +146,7 @@ export function QuoteEditor({ id }: { id?: string }) {
   const persist = async (overrides?: { status?: QuoteStatus; silent?: boolean }) => {
     const items = linhas.filter((l) => l.qtde > 0).map((l) => ({
       codigo: l.codigo, nome: l.nome, psd: l.psd, qtde: l.qtde,
+      descricao_orcamento: l.descricao_orcamento, descricao_proposta: l.descricao_proposta,
     }));
     const effStatus = overrides?.status ?? status;
     const res = await save({
@@ -417,9 +418,9 @@ export function QuoteEditor({ id }: { id?: string }) {
       startY: y,
       head: [["Produto", "Descrição", "Qtde"]],
       body: itens.map((l) => {
-        const parts = l.nome.split(/[-–]/);
-        const nome = parts[0].trim();
-        const desc = parts.slice(1).join(" - ").trim() || l.codigo;
+        const item = l as typeof l & { descricao_proposta?: string };
+        const nome = l.nome.split(/[-–]/)[0].trim();
+        const desc = (item.descricao_proposta && item.descricao_proposta.trim()) || l.codigo;
         return [nome, desc, String(l.qtde).padStart(2, "0")];
       }),
       theme: "plain",
@@ -726,7 +727,7 @@ export function QuoteEditor({ id }: { id?: string }) {
               {filtradas.map((l, i) => (
                 <tr key={l.codigo} className={i % 2 === 0 ? "bg-green-50/40" : "bg-white"}>
                   <td className="px-3 py-1.5 font-mono text-xs">{l.codigo}</td>
-                  <td className="px-3 py-1.5">{l.nome}</td>
+                  <td className="px-3 py-1.5">{l.displayName}</td>
                   <td className="px-3 py-1.5 text-right tabular-nums">{BRL(l.psd)}</td>
                   {possuiCnae && (
                     <td className="px-3 py-1.5 text-right tabular-nums">
@@ -776,7 +777,7 @@ export function QuoteEditor({ id }: { id?: string }) {
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0 flex-1">
                     <div className="font-mono text-[10px] text-slate-500">{l.codigo}</div>
-                    <div className="text-sm font-medium leading-snug text-slate-800">{l.nome}</div>
+                    <div className="text-sm font-medium leading-snug text-slate-800">{l.displayName}</div>
                   </div>
                   <div className="shrink-0 text-right">
                     <div className="text-[10px] uppercase text-slate-500">PSD</div>
