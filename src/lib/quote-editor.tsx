@@ -149,23 +149,32 @@ export function QuoteEditor({ id }: { id?: string }) {
       descricao_orcamento: l.descricao_orcamento, descricao_proposta: l.descricao_proposta,
     }));
     const effStatus = overrides?.status ?? status;
-    const res = await save({
-      data: {
-        id: savedId,
-        title, intro,
-        client_name: clientName,
-        client_company: clientCompany,
-        items,
-        margem: Number(margem),
-        possui_cnae: possuiCnae,
-        taxa_instalacao: Number(taxaInstalacao),
-        mensalidade: Number(mensalidade),
-        observacoes: obs,
-        status: effStatus,
-        total_venda: totalVenda,
-        total_custo: totalCusto,
-      },
-    });
+    const payload = {
+      id: savedId,
+      title, intro,
+      client_name: clientName,
+      client_company: clientCompany,
+      items,
+      margem: Number(margem),
+      possui_cnae: possuiCnae,
+      taxa_instalacao: Number(taxaInstalacao),
+      mensalidade: Number(mensalidade),
+      observacoes: obs,
+      status: effStatus,
+      total_venda: totalVenda,
+      total_custo: totalCusto,
+    };
+
+    // Offline: enqueue to outbox and continue without blocking.
+    if (typeof navigator !== "undefined" && navigator.onLine === false) {
+      const { enqueueQuote } = await import("@/lib/offline-outbox");
+      enqueueQuote({ clientOpId: savedId ?? `local-${Date.now()}`, payload });
+      if (overrides?.status) setStatus(overrides.status);
+      if (!overrides?.silent) setMsg("Sem conexão — orçamento salvo localmente e será sincronizado.");
+      return null;
+    }
+
+    const res = await save({ data: payload });
     if (res?.id) setSavedId(res.id);
     if (overrides?.status) setStatus(overrides.status);
     if (!overrides?.silent) setMsg("Orçamento salvo!");
