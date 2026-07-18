@@ -210,6 +210,12 @@ function AdminProdutos() {
             ← Usuários & Anúncios
           </Link>
           <button
+            onClick={() => setPriceImport((s) => ({ ...s, open: true }))}
+            className="rounded border border-green-700 bg-white px-3 py-1.5 font-semibold text-green-700 hover:bg-green-50"
+          >
+            ⤴ Atualizar Preços
+          </button>
+          <button
             onClick={startNew}
             className="rounded bg-green-700 px-3 py-1.5 font-semibold text-white hover:bg-green-800"
           >
