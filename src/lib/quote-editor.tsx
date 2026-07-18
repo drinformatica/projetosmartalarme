@@ -21,8 +21,7 @@ const loadImg = (src: string): Promise<HTMLImageElement> =>
     img.src = src;
   });
 
-const BRL = (n: number) =>
-  (n || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+const BRL = (n: number) => (n || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
 const STATUS_OPTS: { v: QuoteStatus; l: string }[] = [
   { v: "rascunho", l: "Rascunho" },
@@ -32,7 +31,13 @@ const STATUS_OPTS: { v: QuoteStatus; l: string }[] = [
   { v: "perdido", l: "Perdido" },
 ];
 
-type Profile = { company_name?: string | null; full_name?: string | null; phone?: string | null; address?: string | null; logo_url?: string | null };
+type Profile = {
+  company_name?: string | null;
+  full_name?: string | null;
+  phone?: string | null;
+  address?: string | null;
+  logo_url?: string | null;
+};
 
 export function QuoteEditor({ id }: { id?: string }) {
   const router = useRouter();
@@ -63,7 +68,10 @@ export function QuoteEditor({ id }: { id?: string }) {
     loadProfile().then((p) => setProfile(p ?? null));
     if (id) {
       load({ data: { id } }).then((q) => {
-        if (!q) { setLoading(false); return; }
+        if (!q) {
+          setLoading(false);
+          return;
+        }
         setTitle(q.title);
         setIntro(q.intro);
         setClientName(q.client_name ?? "");
@@ -75,7 +83,9 @@ export function QuoteEditor({ id }: { id?: string }) {
         setObs(q.observacoes ?? "");
         setStatus(q.status);
         const map: Record<string, number> = {};
-        (q.items as { codigo: string; qtde: number }[]).forEach((it) => { map[it.codigo] = it.qtde; });
+        (q.items as { codigo: string; qtde: number }[]).forEach((it) => {
+          map[it.codigo] = it.qtde;
+        });
         setQtds(map);
         setLoading(false);
       });
@@ -117,14 +127,20 @@ export function QuoteEditor({ id }: { id?: string }) {
   const locked = status === "fechado";
 
   const persist = async (overrides?: { status?: QuoteStatus; silent?: boolean }) => {
-    const items = linhas.filter((l) => l.qtde > 0).map((l) => ({
-      codigo: l.codigo, nome: l.nome, psd: l.psd, qtde: l.qtde,
-    }));
+    const items = linhas
+      .filter((l) => l.qtde > 0)
+      .map((l) => ({
+        codigo: l.codigo,
+        nome: l.nome,
+        psd: l.psd,
+        qtde: l.qtde,
+      }));
     const effStatus = overrides?.status ?? status;
     const res = await save({
       data: {
         id: savedId,
-        title, intro,
+        title,
+        intro,
         client_name: clientName,
         client_company: clientCompany,
         items,
@@ -194,7 +210,11 @@ export function QuoteEditor({ id }: { id?: string }) {
     // Carrega logo do perfil (arquivo local em data URL ou URL externa)
     let logoImg: HTMLImageElement | null = null;
     if (profile?.logo_url) {
-      try { logoImg = await loadImg(profile.logo_url); } catch { logoImg = null; }
+      try {
+        logoImg = await loadImg(profile.logo_url);
+      } catch {
+        logoImg = null;
+      }
     }
     const logoBandH = 0;
     const heroH = 220;
@@ -220,7 +240,10 @@ export function QuoteEditor({ id }: { id?: string }) {
     const titleW = pageW * 0.55;
     const mainLines = doc.splitTextToSize(titleMain, titleW);
     let ty = 58 + logoBandH;
-    (mainLines as string[]).forEach((l) => { doc.text(l, 40, ty); ty += 17; });
+    (mainLines as string[]).forEach((l) => {
+      doc.text(l, 40, ty);
+      ty += 17;
+    });
     if (titleAcc) {
       doc.setTextColor(...GREEN);
       doc.text(titleAcc, 40, ty);
@@ -261,17 +284,24 @@ export function QuoteEditor({ id }: { id?: string }) {
       const ratio = logoImg.width / logoImg.height || 1;
       let h = maxH;
       let w = h * ratio;
-      if (w > maxW) { w = maxW; h = w / ratio; }
+      if (w > maxW) {
+        w = maxW;
+        h = w / ratio;
+      }
       const lx = pageW - 40 - w;
       const ly = rightY + 12;
       logoBottomY = ly + h;
-      const fmt = /png/i.test(profile?.logo_url || "") || (profile?.logo_url || "").startsWith("data:image/png")
-        ? "PNG"
-        : "JPEG";
+      const fmt =
+        /png/i.test(profile?.logo_url || "") ||
+        (profile?.logo_url || "").startsWith("data:image/png")
+          ? "PNG"
+          : "JPEG";
       try {
         doc.addImage(logoImg, fmt, lx, ly, w, h);
       } catch {
-        try { doc.addImage(logoImg, "PNG", lx, ly, w, h); } catch {}
+        try {
+          doc.addImage(logoImg, "PNG", lx, ly, w, h);
+        } catch {}
       }
     }
 
@@ -286,7 +316,9 @@ export function QuoteEditor({ id }: { id?: string }) {
         try {
           doc.addImage(partnerBadge, "PNG", sx, sy, sealW, sealH);
         } catch {
-          try { doc.addImage(partnerBadge, "JPEG", sx, sy, sealW, sealH); } catch {}
+          try {
+            doc.addImage(partnerBadge, "JPEG", sx, sy, sealW, sealH);
+          } catch {}
         }
       }
     }
@@ -406,9 +438,13 @@ export function QuoteEditor({ id }: { id?: string }) {
       margin: { left: 40, right: 40 },
     });
 
-    let finalY = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 25;
+    let finalY =
+      (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 25;
 
-    if (finalY > pageH - 200) { doc.addPage(); finalY = 60; }
+    if (finalY > pageH - 200) {
+      doc.addPage();
+      finalY = 60;
+    }
 
     // ============ INVESTIMENTO (bloco escuro) ============
     const invH = 130;
@@ -478,7 +514,10 @@ export function QuoteEditor({ id }: { id?: string }) {
 
     // ============ Observações ============
     if (obs) {
-      if (finalY > pageH - 100) { doc.addPage(); finalY = 60; }
+      if (finalY > pageH - 100) {
+        doc.addPage();
+        finalY = 60;
+      }
       doc.setTextColor(...DARK);
       doc.setFont("helvetica", "bold");
       doc.setFontSize(9);
@@ -553,7 +592,11 @@ export function QuoteEditor({ id }: { id?: string }) {
             disabled={locked}
             className="rounded border border-slate-300 bg-white px-3 py-2 text-sm disabled:opacity-60"
           >
-            {STATUS_OPTS.map((s) => <option key={s.v} value={s.v}>{s.l}</option>)}
+            {STATUS_OPTS.map((s) => (
+              <option key={s.v} value={s.v}>
+                {s.l}
+              </option>
+            ))}
           </select>
           <button
             onClick={handleSave}
@@ -573,216 +616,249 @@ export function QuoteEditor({ id }: { id?: string }) {
       </div>
       {locked && (
         <div className="mb-3 rounded border border-green-300 bg-green-50 p-3 text-sm text-green-800">
-          Este orçamento foi marcado como <strong>fechado</strong> e não pode mais ser alterado. Para editar, mova-o para outra etapa no pipeline.
+          Este orçamento foi marcado como <strong>fechado</strong> e não pode mais ser alterado.
+          Para editar, mova-o para outra etapa no pipeline.
         </div>
       )}
       {msg && <div className="mb-3 rounded bg-green-50 p-2 text-sm text-green-700">{msg}</div>}
 
       <fieldset disabled={locked} className={locked ? "opacity-70" : ""}>
-      {/* Título e intro editáveis */}
-      <section className="mb-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-        <h2 className="mb-3 text-sm font-semibold text-slate-700">Cabeçalho da Proposta</h2>
-        <div className="grid gap-3 sm:grid-cols-2">
-          <div className="sm:col-span-2">
-            <label className="mb-1 block text-xs font-semibold text-slate-600">Título</label>
+        {/* Título e intro editáveis */}
+        <section className="mb-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+          <h2 className="mb-3 text-sm font-semibold text-slate-700">Cabeçalho da Proposta</h2>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="sm:col-span-2">
+              <label className="mb-1 block text-xs font-semibold text-slate-600">Título</label>
+              <input
+                className="w-full rounded border border-slate-300 px-3 py-2 text-sm"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <label className="mb-1 block text-xs font-semibold text-slate-600">
+                Texto de apresentação
+              </label>
+              <textarea
+                rows={3}
+                className="w-full rounded border border-slate-300 px-3 py-2 text-sm"
+                value={intro}
+                onChange={(e) => setIntro(e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-semibold text-slate-600">Cliente</label>
+              <input
+                className="w-full rounded border border-slate-300 px-3 py-2 text-sm"
+                value={clientName}
+                onChange={(e) => setClientName(e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-semibold text-slate-600">
+                Empresa cliente
+              </label>
+              <input
+                className="w-full rounded border border-slate-300 px-3 py-2 text-sm"
+                value={clientCompany}
+                onChange={(e) => setClientCompany(e.target.value)}
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* Config comercial */}
+        <section className="mb-4 grid gap-3 rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-4">
+          <div>
+            <label className="mb-1 block text-xs font-semibold text-slate-600">Margem (%)</label>
             <input
+              type="number"
+              min={0}
               className="w-full rounded border border-slate-300 px-3 py-2 text-sm"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              value={margem}
+              onChange={(e) => setMargem(Number(e.target.value))}
             />
           </div>
-          <div className="sm:col-span-2">
+          <div>
             <label className="mb-1 block text-xs font-semibold text-slate-600">
-              Texto de apresentação
+              Taxa de Instalação (R$)
             </label>
-            <textarea
-              rows={3}
+            <input
+              type="number"
+              min={0}
+              step="0.01"
               className="w-full rounded border border-slate-300 px-3 py-2 text-sm"
-              value={intro}
-              onChange={(e) => setIntro(e.target.value)}
+              value={taxaInstalacao}
+              onChange={(e) => setTaxaInstalacao(Number(e.target.value))}
             />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-semibold text-slate-600">Cliente</label>
+            <label className="mb-1 block text-xs font-semibold text-slate-600">
+              Mensalidade Monitoramento (R$)
+            </label>
             <input
+              type="number"
+              min={0}
+              step="0.01"
               className="w-full rounded border border-slate-300 px-3 py-2 text-sm"
-              value={clientName}
-              onChange={(e) => setClientName(e.target.value)}
+              value={mensalidade}
+              onChange={(e) => setMensalidade(Number(e.target.value))}
             />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-semibold text-slate-600">Empresa cliente</label>
+            <label className="mb-1 block text-xs font-semibold text-slate-600">
+              Buscar produto
+            </label>
             <input
               className="w-full rounded border border-slate-300 px-3 py-2 text-sm"
-              value={clientCompany}
-              onChange={(e) => setClientCompany(e.target.value)}
+              value={filtro}
+              onChange={(e) => setFiltro(e.target.value)}
+              placeholder="Código ou nome"
             />
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Config comercial */}
-      <section className="mb-4 grid gap-3 rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-4">
-        <div>
-          <label className="mb-1 block text-xs font-semibold text-slate-600">Margem (%)</label>
+        <section className="mb-4 flex items-center gap-3 rounded-lg border border-green-200 bg-green-50 p-4">
           <input
-            type="number"
-            min={0}
-            className="w-full rounded border border-slate-300 px-3 py-2 text-sm"
-            value={margem}
-            onChange={(e) => setMargem(Number(e.target.value))}
+            id="cnae"
+            type="checkbox"
+            checked={possuiCnae}
+            onChange={(e) => setPossuiCnae(e.target.checked)}
+            className="h-5 w-5 accent-green-700"
           />
-        </div>
-        <div>
-          <label className="mb-1 block text-xs font-semibold text-slate-600">Taxa de Instalação (R$)</label>
-          <input
-            type="number"
-            min={0}
-            step="0.01"
-            className="w-full rounded border border-slate-300 px-3 py-2 text-sm"
-            value={taxaInstalacao}
-            onChange={(e) => setTaxaInstalacao(Number(e.target.value))}
-          />
-        </div>
-        <div>
-          <label className="mb-1 block text-xs font-semibold text-slate-600">Mensalidade Monitoramento (R$)</label>
-          <input
-            type="number"
-            min={0}
-            step="0.01"
-            className="w-full rounded border border-slate-300 px-3 py-2 text-sm"
-            value={mensalidade}
-            onChange={(e) => setMensalidade(Number(e.target.value))}
-          />
-        </div>
-        <div>
-          <label className="mb-1 block text-xs font-semibold text-slate-600">Buscar produto</label>
-          <input
-            className="w-full rounded border border-slate-300 px-3 py-2 text-sm"
-            value={filtro}
-            onChange={(e) => setFiltro(e.target.value)}
-            placeholder="Código ou nome"
-          />
-        </div>
-      </section>
+          <label htmlFor="cnae" className="text-sm font-semibold text-green-900">
+            Possui CNAE de monitoramento? (ativa desconto de 10%)
+          </label>
+        </section>
 
-      <section className="mb-4 flex items-center gap-3 rounded-lg border border-green-200 bg-green-50 p-4">
-        <input
-          id="cnae"
-          type="checkbox"
-          checked={possuiCnae}
-          onChange={(e) => setPossuiCnae(e.target.checked)}
-          className="h-5 w-5 accent-green-700"
-        />
-        <label htmlFor="cnae" className="text-sm font-semibold text-green-900">
-          Possui CNAE de monitoramento? (ativa desconto de 10%)
-        </label>
-      </section>
-
-      {/* Produtos */}
-      <section className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="min-w-full text-sm">
-            <thead className="bg-green-700 text-white">
-              <tr>
-                <th className="px-3 py-2 text-left font-semibold">Código</th>
-                <th className="px-3 py-2 text-left font-semibold">Produto</th>
-                <th className="px-3 py-2 text-right font-semibold">PSD</th>
-                {possuiCnae && <th className="px-3 py-2 text-right font-semibold">c/ Desc.</th>}
-                <th className="px-3 py-2 text-center font-semibold">Qtde</th>
-                <th className="px-3 py-2 text-right font-semibold">Custo</th>
-                <th className="px-3 py-2 text-right font-semibold">Venda</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtradas.map((l, i) => (
-                <tr key={l.codigo} className={i % 2 === 0 ? "bg-green-50/40" : "bg-white"}>
-                  <td className="px-3 py-1.5 font-mono text-xs">{l.codigo}</td>
-                  <td className="px-3 py-1.5">{l.nome}</td>
-                  <td className="px-3 py-1.5 text-right tabular-nums">{BRL(l.psd)}</td>
-                  {possuiCnae && (
-                    <td className="px-3 py-1.5 text-right tabular-nums">
-                      {l.semDesconto ? <span className="text-slate-400">—</span> : BRL(l.psdDesc)}
+        {/* Produtos */}
+        <section className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-sm">
+              <thead className="bg-green-700 text-white">
+                <tr>
+                  <th className="px-3 py-2 text-left font-semibold">Código</th>
+                  <th className="px-3 py-2 text-left font-semibold">Produto</th>
+                  <th className="px-3 py-2 text-right font-semibold">PSD</th>
+                  {possuiCnae && <th className="px-3 py-2 text-right font-semibold">c/ Desc.</th>}
+                  <th className="px-3 py-2 text-center font-semibold">Qtde</th>
+                  <th className="px-3 py-2 text-right font-semibold">Custo</th>
+                  <th className="px-3 py-2 text-right font-semibold">Venda</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtradas.map((l, i) => (
+                  <tr key={l.codigo} className={i % 2 === 0 ? "bg-green-50/40" : "bg-white"}>
+                    <td className="px-3 py-1.5 font-mono text-xs">{l.codigo}</td>
+                    <td className="px-3 py-1.5">{l.nome}</td>
+                    <td className="px-3 py-1.5 text-right tabular-nums">{BRL(l.psd)}</td>
+                    {possuiCnae && (
+                      <td className="px-3 py-1.5 text-right tabular-nums">
+                        {l.semDesconto ? <span className="text-slate-400">—</span> : BRL(l.psdDesc)}
+                      </td>
+                    )}
+                    <td className="px-3 py-1.5 text-center">
+                      <input
+                        type="number"
+                        min={0}
+                        value={l.qtde || ""}
+                        onChange={(e) => setQtd(l.codigo, Number(e.target.value))}
+                        className="w-16 rounded border border-slate-300 px-2 py-1 text-center"
+                      />
                     </td>
-                  )}
-                  <td className="px-3 py-1.5 text-center">
-                    <input
-                      type="number"
-                      min={0}
-                      value={l.qtde || ""}
-                      onChange={(e) => setQtd(l.codigo, Number(e.target.value))}
-                      className="w-16 rounded border border-slate-300 px-2 py-1 text-center"
-                    />
+                    <td className="px-3 py-1.5 text-right tabular-nums">{BRL(l.custoTotal)}</td>
+                    <td className="px-3 py-1.5 text-right font-semibold tabular-nums text-green-700">
+                      {BRL(l.venda)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+              <tfoot className="bg-slate-100 font-semibold">
+                <tr>
+                  <td colSpan={possuiCnae ? 5 : 4} className="px-3 py-2 text-right">
+                    TOTAL
                   </td>
-                  <td className="px-3 py-1.5 text-right tabular-nums">{BRL(l.custoTotal)}</td>
-                  <td className="px-3 py-1.5 text-right font-semibold tabular-nums text-green-700">
-                    {BRL(l.venda)}
+                  <td className="px-3 py-2 text-right tabular-nums">{BRL(totalCusto)}</td>
+                  <td className="px-3 py-2 text-right tabular-nums text-green-700">
+                    {BRL(totalVenda)}
                   </td>
                 </tr>
-              ))}
-            </tbody>
-            <tfoot className="bg-slate-100 font-semibold">
-              <tr>
-                <td colSpan={possuiCnae ? 5 : 4} className="px-3 py-2 text-right">TOTAL</td>
-                <td className="px-3 py-2 text-right tabular-nums">{BRL(totalCusto)}</td>
-                <td className="px-3 py-2 text-right tabular-nums text-green-700">{BRL(totalVenda)}</td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
-      </section>
-
-      {/* ROI */}
-      <section className="mt-6 grid gap-4 lg:grid-cols-2">
-        <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-          <h3 className="mb-3 text-sm font-semibold text-slate-700">Análise de ROI</h3>
-          <div className="space-y-2 text-sm">
-            <Row label="Custo produtos" value={BRL(totalCusto)} />
-            <Row label="Taxa de instalação (cobrada)" value={BRL(Number(taxaInstalacao))} />
-            <Row label="Venda equipamentos" value={BRL(totalVenda)} />
-            <Row label="Lucro venda equipamentos" value={BRL(lucro)} bold color="text-green-700" />
-            <div className="my-2 border-t border-slate-200" />
-            <Row label="Investimento a recuperar (venda − inst.)" value={BRL(investimentoInicial)} />
-            <Row label="Mensalidade monitoramento" value={BRL(Number(mensalidade))} />
-            <Row
-              label="Payback"
-              value={mensalidade > 0 ? `${paybackMeses.toFixed(1)} meses` : "—"}
-              bold
-              color="text-amber-700"
-            />
+              </tfoot>
+            </table>
           </div>
-        </div>
-        <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-          <h3 className="mb-3 text-sm font-semibold text-slate-700">Receita projetada monitoramento</h3>
-          <div className="space-y-2 text-sm">
-            <Row label="12 meses" value={BRL(receita12)} />
-            <Row label="24 meses" value={BRL(receita24)} />
-            <Row label="36 meses" value={BRL(receita36)} bold color="text-green-700" />
-          </div>
-          <p className="mt-4 text-xs text-slate-500">
-            Baseado apenas no contrato de monitoramento recorrente.
-          </p>
-        </div>
-      </section>
+        </section>
 
-      <section className="mt-6">
-        <label className="mb-1 block text-xs font-semibold text-slate-600">
-          Observações (aparecem no PDF)
-        </label>
-        <textarea
-          rows={3}
-          className="w-full rounded border border-slate-300 px-3 py-2 text-sm"
-          value={obs}
-          onChange={(e) => setObs(e.target.value)}
-          placeholder="Condições de pagamento, prazo de validade, etc."
-        />
-      </section>
+        {/* ROI */}
+        <section className="mt-6 grid gap-4 lg:grid-cols-2">
+          <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+            <h3 className="mb-3 text-sm font-semibold text-slate-700">Análise de ROI</h3>
+            <div className="space-y-2 text-sm">
+              <Row label="Custo produtos" value={BRL(totalCusto)} />
+              <Row label="Taxa de instalação (cobrada)" value={BRL(Number(taxaInstalacao))} />
+              <Row label="Venda equipamentos" value={BRL(totalVenda)} />
+              <Row
+                label="Lucro venda equipamentos"
+                value={BRL(lucro)}
+                bold
+                color="text-green-700"
+              />
+              <div className="my-2 border-t border-slate-200" />
+              <Row
+                label="Investimento a recuperar (venda − inst.)"
+                value={BRL(investimentoInicial)}
+              />
+              <Row label="Mensalidade monitoramento" value={BRL(Number(mensalidade))} />
+              <Row
+                label="Payback"
+                value={mensalidade > 0 ? `${paybackMeses.toFixed(1)} meses` : "—"}
+                bold
+                color="text-amber-700"
+              />
+            </div>
+          </div>
+          <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+            <h3 className="mb-3 text-sm font-semibold text-slate-700">
+              Receita projetada monitoramento
+            </h3>
+            <div className="space-y-2 text-sm">
+              <Row label="12 meses" value={BRL(receita12)} />
+              <Row label="24 meses" value={BRL(receita24)} />
+              <Row label="36 meses" value={BRL(receita36)} bold color="text-green-700" />
+            </div>
+            <p className="mt-4 text-xs text-slate-500">
+              Baseado apenas no contrato de monitoramento recorrente.
+            </p>
+          </div>
+        </section>
+
+        <section className="mt-6">
+          <label className="mb-1 block text-xs font-semibold text-slate-600">
+            Observações (aparecem no PDF)
+          </label>
+          <textarea
+            rows={3}
+            className="w-full rounded border border-slate-300 px-3 py-2 text-sm"
+            value={obs}
+            onChange={(e) => setObs(e.target.value)}
+            placeholder="Condições de pagamento, prazo de validade, etc."
+          />
+        </section>
       </fieldset>
     </main>
   );
 }
 
-function Row({ label, value, bold, color }: { label: string; value: string; bold?: boolean; color?: string }) {
+function Row({
+  label,
+  value,
+  bold,
+  color,
+}: {
+  label: string;
+  value: string;
+  bold?: boolean;
+  color?: string;
+}) {
   return (
     <div className="flex items-center justify-between">
       <span className="text-slate-600">{label}</span>

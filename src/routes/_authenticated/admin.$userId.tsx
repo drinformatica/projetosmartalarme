@@ -8,8 +8,7 @@ export const Route = createFileRoute("/_authenticated/admin/$userId")({
   head: () => ({ meta: [{ title: "Admin - Usuário" }] }),
 });
 
-const BRL = (n: number) =>
-  (n || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+const BRL = (n: number) => (n || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
 type Detail = {
   profile: {
@@ -99,15 +98,21 @@ function AdminUserDetail() {
   if (loading) {
     return (
       <main className="mx-auto max-w-6xl px-4 py-6">
-        <div className="rounded-lg border bg-white p-6 text-center text-slate-500">Carregando...</div>
+        <div className="rounded-lg border bg-white p-6 text-center text-slate-500">
+          Carregando...
+        </div>
       </main>
     );
   }
   if (err || !data || !data.profile) {
     return (
       <main className="mx-auto max-w-6xl px-4 py-6">
-        <div className="rounded bg-red-50 p-4 text-sm text-red-700">{err || "Usuário não encontrado"}</div>
-        <Link to="/admin" className="mt-3 inline-block text-sm text-green-700 hover:underline">← Voltar</Link>
+        <div className="rounded bg-red-50 p-4 text-sm text-red-700">
+          {err || "Usuário não encontrado"}
+        </div>
+        <Link to="/admin" className="mt-3 inline-block text-sm text-green-700 hover:underline">
+          ← Voltar
+        </Link>
       </main>
     );
   }
@@ -119,7 +124,9 @@ function AdminUserDetail() {
   return (
     <main className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
       <div className="mb-4">
-        <Link to="/admin" className="text-sm text-green-700 hover:underline">← Voltar</Link>
+        <Link to="/admin" className="text-sm text-green-700 hover:underline">
+          ← Voltar
+        </Link>
       </div>
 
       <div className="mb-6 rounded-lg border border-slate-200 bg-white p-5">
@@ -192,7 +199,11 @@ function AdminUserDetail() {
           value={BRL(data.stats.totalFechado)}
           hint={`${data.stats.qFechados} fechado(s)`}
         />
-        <StatCard label="MRR fechado" value={BRL(data.stats.mrrFechado)} hint="mensalidades ativas" />
+        <StatCard
+          label="MRR fechado"
+          value={BRL(data.stats.mrrFechado)}
+          hint="mensalidades ativas"
+        />
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">

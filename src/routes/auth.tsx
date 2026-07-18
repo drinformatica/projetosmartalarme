@@ -70,18 +70,16 @@ function AuthPage() {
           <div className="mx-auto mb-3 inline-block rounded-full bg-green-100 px-4 py-1 text-xs font-semibold text-green-800">
             Intrusão 2.0
           </div>
-          <h1 className="text-2xl font-bold">
-            {mode === "login" ? "Entrar" : "Criar conta"}
-          </h1>
-          <p className="text-sm text-slate-500">
-            Gerador de orçamentos & pipeline de vendas
-          </p>
+          <h1 className="text-2xl font-bold">{mode === "login" ? "Entrar" : "Criar conta"}</h1>
+          <p className="text-sm text-slate-500">Gerador de orçamentos & pipeline de vendas</p>
         </div>
 
         <form onSubmit={submit} className="space-y-3">
           {mode === "signup" && (
             <div>
-              <label className="mb-1 block text-xs font-semibold text-slate-600">Nome completo</label>
+              <label className="mb-1 block text-xs font-semibold text-slate-600">
+                Nome completo
+              </label>
               <input
                 required
                 className="w-full rounded border border-slate-300 px-3 py-2 text-sm"
@@ -154,7 +152,9 @@ function AuthPage() {
           )}
         </div>
         <div className="mt-4 text-center">
-          <Link to="/" className="text-xs text-slate-500 hover:underline">← Voltar</Link>
+          <Link to="/" className="text-xs text-slate-500 hover:underline">
+            ← Voltar
+          </Link>
         </div>
       </div>
     </div>

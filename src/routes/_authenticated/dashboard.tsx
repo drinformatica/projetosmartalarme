@@ -1,10 +1,14 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { listQuotes, updateQuoteStatus, deleteQuote, type QuoteStatus } from "@/lib/quotes.functions";
+import {
+  listQuotes,
+  updateQuoteStatus,
+  deleteQuote,
+  type QuoteStatus,
+} from "@/lib/quotes.functions";
 import { getMyRoles } from "@/lib/admin.functions";
 import { AdsCarousel } from "@/components/AdsCarousel";
-
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   component: Dashboard,
@@ -45,7 +49,6 @@ function Dashboard() {
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [dragOverCol, setDragOverCol] = useState<QuoteStatus | null>(null);
 
-
   const load = async () => {
     setLoading(true);
     const data = (await list()) as Quote[];
@@ -55,10 +58,11 @@ function Dashboard() {
 
   useEffect(() => {
     load();
-    fetchRoles().then((rs) => setIsAdmin(rs.includes("super_admin") || rs.includes("admin"))).catch(() => {});
+    fetchRoles()
+      .then((rs) => setIsAdmin(rs.includes("super_admin") || rs.includes("admin")))
+      .catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
 
   const move = async (id: string, status: QuoteStatus) => {
     setQuotes((prev) => prev.map((q) => (q.id === id ? { ...q, status } : q)));
@@ -105,7 +109,10 @@ function Dashboard() {
       const items = quotes.filter((q) => q.status === c.id);
       acc[c.id] = {
         count: items.length,
-        venda: items.reduce((s, q) => s + Number(q.total_venda || 0) + Number(q.taxa_instalacao || 0), 0),
+        venda: items.reduce(
+          (s, q) => s + Number(q.total_venda || 0) + Number(q.taxa_instalacao || 0),
+          0,
+        ),
         mrr: items.reduce((s, q) => s + Number(q.mensalidade || 0), 0),
       };
       return acc;
@@ -138,7 +145,6 @@ function Dashboard() {
         </div>
       </div>
 
-
       {loading ? (
         <div className="rounded-lg border border-slate-200 bg-white p-6 text-center text-slate-500">
           Carregando...
@@ -165,10 +171,14 @@ function Dashboard() {
                 onDragLeave={() => setDragOverCol((c) => (c === col.id ? null : c))}
                 onDrop={(e) => onDropCol(e, col.id)}
                 className={`rounded-lg border bg-white transition ${
-                  dragOverCol === col.id ? "border-green-500 ring-2 ring-green-300" : "border-slate-200"
+                  dragOverCol === col.id
+                    ? "border-green-500 ring-2 ring-green-300"
+                    : "border-slate-200"
                 }`}
               >
-                <div className={`flex items-center justify-between rounded-t-lg px-3 py-2 text-xs font-semibold ${col.color}`}>
+                <div
+                  className={`flex items-center justify-between rounded-t-lg px-3 py-2 text-xs font-semibold ${col.color}`}
+                >
                   <span>{col.label}</span>
                   <span>{t.count}</span>
                 </div>
@@ -189,7 +199,9 @@ function Dashboard() {
                     >
                       <div
                         className="cursor-pointer font-semibold text-slate-800 hover:text-green-700"
-                        onClick={() => router.navigate({ to: "/orcamento/$id", params: { id: q.id } })}
+                        onClick={() =>
+                          router.navigate({ to: "/orcamento/$id", params: { id: q.id } })
+                        }
                       >
                         {q.title}
                       </div>
@@ -197,7 +209,10 @@ function Dashboard() {
                         {q.client_company || q.client_name || "Sem cliente"}
                       </div>
                       <div className="mt-1 text-xs text-slate-700">
-                        Venda: <span className="font-semibold">{BRL(Number(q.total_venda) + Number(q.taxa_instalacao))}</span>
+                        Venda:{" "}
+                        <span className="font-semibold">
+                          {BRL(Number(q.total_venda) + Number(q.taxa_instalacao))}
+                        </span>
                       </div>
                       {Number(q.mensalidade) > 0 && (
                         <div className="text-xs text-slate-700">
@@ -211,7 +226,9 @@ function Dashboard() {
                           className="flex-1 rounded border border-slate-300 bg-white px-1 py-1 text-[11px]"
                         >
                           {COLUMNS.map((c) => (
-                            <option key={c.id} value={c.id}>{c.label}</option>
+                            <option key={c.id} value={c.id}>
+                              {c.label}
+                            </option>
                           ))}
                         </select>
                         <button
@@ -231,8 +248,6 @@ function Dashboard() {
       )}
 
       <AdsCarousel />
-
     </main>
-
   );
 }

@@ -25,13 +25,14 @@ function PerfilPage() {
 
   useEffect(() => {
     load().then((p) => {
-      if (p) setForm({
-        full_name: p.full_name ?? "",
-        company_name: p.company_name ?? "",
-        phone: p.phone ?? "",
-        address: p.address ?? "",
-        logo_url: p.logo_url ?? "",
-      });
+      if (p)
+        setForm({
+          full_name: p.full_name ?? "",
+          company_name: p.company_name ?? "",
+          phone: p.phone ?? "",
+          address: p.address ?? "",
+          logo_url: p.logo_url ?? "",
+        });
       setLoading(false);
     });
   }, [load]);
@@ -93,11 +94,14 @@ function PerfilPage() {
         <div className="space-y-2 rounded border border-dashed border-slate-300 p-4">
           <label className="block text-xs font-semibold text-slate-600">Logo da empresa</label>
           <p className="text-xs text-slate-500">
-            Aparecerá no topo da proposta em PDF, acima do título. Cole um link ou envie um arquivo do seu dispositivo (até 2MB).
+            Aparecerá no topo da proposta em PDF, acima do título. Cole um link ou envie um arquivo
+            do seu dispositivo (até 2MB).
           </p>
 
           <div>
-            <label className="mb-1 block text-[11px] font-semibold text-slate-500">URL do logo</label>
+            <label className="mb-1 block text-[11px] font-semibold text-slate-500">
+              URL do logo
+            </label>
             <input
               className="w-full rounded border border-slate-300 px-3 py-2 text-sm"
               placeholder="https://..."

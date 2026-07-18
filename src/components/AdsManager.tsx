@@ -120,11 +120,15 @@ export function AdsManager() {
       <div className="mb-4">
         <h2 className="text-lg font-bold text-slate-800">Anúncios do Pipeline</h2>
         <p className="text-sm text-slate-500">
-          Imagens exibidas abaixo do pipeline. Se houver mais de um ativo, vira carrossel automático.
+          Imagens exibidas abaixo do pipeline. Se houver mais de um ativo, vira carrossel
+          automático.
         </p>
       </div>
 
-      <form onSubmit={submit} className="mb-6 grid gap-3 rounded-md border border-slate-200 bg-slate-50 p-4 sm:grid-cols-2">
+      <form
+        onSubmit={submit}
+        className="mb-6 grid gap-3 rounded-md border border-slate-200 bg-slate-50 p-4 sm:grid-cols-2"
+      >
         <label className="flex flex-col text-xs font-semibold text-slate-700 sm:col-span-2">
           Título
           <input
