@@ -59,8 +59,14 @@ function AdminProdutos() {
       const rows: { codigo: string; psd: number }[] = [];
       for (const r of json) {
         const keys = Object.keys(r);
-        const codKey = keys.find((k) => k.toLowerCase().trim().replace(/[óô]/g, "o") === "codigo");
-        const psdKey = keys.find((k) => k.toLowerCase().trim() === "psd");
+        const norm = (s: string) =>
+          s.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        const codKey = keys.find((k) => {
+          const n = norm(k);
+          return n === "codigo" || n === "codigo produto" || n === "cod" || n === "codigo do produto";
+        });
+        const psdKey = keys.find((k) => norm(k) === "psd");
+
         if (!codKey || !psdKey) continue;
         const codigo = String(r[codKey] ?? "").trim();
         const raw = String(r[psdKey] ?? "").replace(/[R$\s.]/g, "").replace(",", ".");
