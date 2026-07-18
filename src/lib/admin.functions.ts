@@ -4,10 +4,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 type AppRole = "super_admin" | "admin" | "user";
 
 async function assertAdmin(supabase: any, userId: string) {
-  const { data, error } = await supabase
-    .from("user_roles")
-    .select("role")
-    .eq("user_id", userId);
+  const { data, error } = await supabase.from("user_roles").select("role").eq("user_id", userId);
   if (error) throw new Error(error.message);
   const roles = (data ?? []).map((r: { role: AppRole }) => r.role);
   const isAdmin = roles.includes("super_admin") || roles.includes("admin");
@@ -110,7 +107,9 @@ export const getAdminUserDetail = createServerFn({ method: "GET" })
     // aggregate top items (ignore client-side info entirely)
     const itemCount = new Map<string, { nome: string; qtde: number; ocorrencias: number }>();
     for (const q of quotes) {
-      const items = Array.isArray(q.items) ? (q.items as Array<{ codigo?: string; nome?: string; qtde?: number }>) : [];
+      const items = Array.isArray(q.items)
+        ? (q.items as Array<{ codigo?: string; nome?: string; qtde?: number }>)
+        : [];
       for (const it of items) {
         const key = it.codigo || it.nome || "—";
         const cur = itemCount.get(key) ?? { nome: it.nome ?? key, qtde: 0, ocorrencias: 0 };

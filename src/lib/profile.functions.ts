@@ -25,10 +25,7 @@ export const saveProfile = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: ProfileInput) => data)
   .handler(async ({ data, context }) => {
-    const { error } = await context.supabase
-      .from("profiles")
-      .update(data)
-      .eq("id", context.userId);
+    const { error } = await context.supabase.from("profiles").update(data).eq("id", context.userId);
     if (error) throw new Error(error.message);
     return { ok: true };
   });

@@ -4,10 +4,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 type AppRole = "super_admin" | "admin" | "user";
 
 async function assertAdmin(supabase: any, userId: string) {
-  const { data, error } = await supabase
-    .from("user_roles")
-    .select("role")
-    .eq("user_id", userId);
+  const { data, error } = await supabase.from("user_roles").select("role").eq("user_id", userId);
   if (error) throw new Error(error.message);
   const roles = (data ?? []).map((r: { role: AppRole }) => r.role);
   if (!roles.includes("super_admin") && !roles.includes("admin")) {
@@ -49,7 +46,10 @@ export const listActiveAds = createServerFn({ method: "GET" })
     if (error) throw new Error(error.message);
     const rows = (data ?? []) as AdRow[];
     const resolved = await Promise.all(
-      rows.map(async (r) => ({ ...r, image_url: await resolveImage(context.supabase, r.image_url) })),
+      rows.map(async (r) => ({
+        ...r,
+        image_url: await resolveImage(context.supabase, r.image_url),
+      })),
     );
     return resolved.filter((r) => r.image_url);
   });
@@ -69,7 +69,9 @@ export const listAllAds = createServerFn({ method: "GET" })
       rows.map(async (r) => ({
         ...r,
         preview_url: await resolveImage(context.supabase, r.image_url),
-        storage_path: r.image_url.startsWith("storage:") ? r.image_url.slice("storage:".length) : null,
+        storage_path: r.image_url.startsWith("storage:")
+          ? r.image_url.slice("storage:".length)
+          : null,
       })),
     );
     return resolved;
@@ -105,7 +107,8 @@ export const createAd = createServerFn({ method: "POST" })
       }
       const bytes = Buffer.from(base64, "base64");
       if (bytes.length > 8 * 1024 * 1024) throw new Error("Imagem maior que 8MB");
-      const ext = (filename.split(".").pop() || "png").toLowerCase().replace(/[^a-z0-9]/g, "") || "png";
+      const ext =
+        (filename.split(".").pop() || "png").toLowerCase().replace(/[^a-z0-9]/g, "") || "png";
       const path = `${context.userId}/${crypto.randomUUID()}.${ext}`;
       const { error: upErr } = await context.supabase.storage
         .from("ads")
@@ -113,7 +116,8 @@ export const createAd = createServerFn({ method: "POST" })
       if (upErr) throw new Error(upErr.message);
       image_url = `storage:${path}`;
     } else {
-      if (!/^https?:\/\//i.test(image_url)) throw new Error("Informe uma imagem (upload ou URL http(s))");
+      if (!/^https?:\/\//i.test(image_url))
+        throw new Error("Informe uma imagem (upload ou URL http(s))");
     }
 
     const { error } = await context.supabase.from("ads").insert({

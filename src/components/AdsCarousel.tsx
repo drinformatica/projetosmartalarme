@@ -60,7 +60,9 @@ export function AdsCarousel() {
           </div>
           <div className="flex items-center justify-between gap-3 border-t border-slate-100 bg-slate-50 px-4 py-3 text-sm">
             <span className="line-clamp-1 font-semibold text-slate-700">{current.title}</span>
-            <span className="whitespace-nowrap text-green-700 group-hover:underline">Saiba mais →</span>
+            <span className="whitespace-nowrap text-green-700 group-hover:underline">
+              Saiba mais →
+            </span>
           </div>
         </a>
 

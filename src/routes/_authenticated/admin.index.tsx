@@ -4,14 +4,12 @@ import { useServerFn } from "@tanstack/react-start";
 import { listAdminUsers, getMyRoles } from "@/lib/admin.functions";
 import { AdsManager } from "@/components/AdsManager";
 
-
 export const Route = createFileRoute("/_authenticated/admin/")({
   component: AdminList,
   head: () => ({ meta: [{ title: "Admin - Usuários" }] }),
 });
 
-const BRL = (n: number) =>
-  (n || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+const BRL = (n: number) => (n || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
 type Row = {
   id: string;
@@ -86,7 +84,9 @@ function AdminList() {
       </div>
 
       {loading ? (
-        <div className="rounded-lg border bg-white p-6 text-center text-slate-500">Carregando...</div>
+        <div className="rounded-lg border bg-white p-6 text-center text-slate-500">
+          Carregando...
+        </div>
       ) : err ? (
         <div className="rounded bg-red-50 p-4 text-sm text-red-700">{err}</div>
       ) : (
@@ -169,4 +169,3 @@ function AdminList() {
     </main>
   );
 }
-

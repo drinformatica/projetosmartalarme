@@ -18,13 +18,10 @@ function Landing() {
         <div className="mb-4 inline-block rounded-full bg-white/10 px-4 py-1 text-xs font-semibold uppercase tracking-widest">
           Intrusão 2.0
         </div>
-        <h1 className="mb-4 text-4xl font-bold sm:text-6xl">
-          Orçamentos & Pipeline de Vendas
-        </h1>
+        <h1 className="mb-4 text-4xl font-bold sm:text-6xl">Orçamentos & Pipeline de Vendas</h1>
         <p className="mb-8 max-w-2xl text-lg text-slate-200">
-          Simulador de venda AMT 1000 Smart & AMT 2018 E Smart. Gere propostas
-          formais em PDF, calcule ROI do monitoramento e acompanhe seu funil de
-          vendas.
+          Simulador de venda AMT 1000 Smart & AMT 2018 E Smart. Gere propostas formais em PDF,
+          calcule ROI do monitoramento e acompanhe seu funil de vendas.
         </p>
         <div className="flex gap-3">
           {signedIn ? (
