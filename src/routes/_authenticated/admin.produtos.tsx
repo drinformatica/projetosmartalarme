@@ -6,9 +6,12 @@ import {
   listProducts,
   upsertProduct,
   deleteProduct,
+  bulkUpdatePrices,
   type Product,
   type ProductInput,
 } from "@/lib/products.functions";
+import * as XLSX from "xlsx";
+
 
 export const Route = createFileRoute("/_authenticated/admin/produtos")({
   component: AdminProdutos,
