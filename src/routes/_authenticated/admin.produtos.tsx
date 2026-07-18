@@ -418,6 +418,100 @@ function AdminProdutos() {
           </div>
         </div>
       )}
+
+      {priceImport.open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-lg rounded-lg bg-white p-5 shadow-xl">
+            <h2 className="mb-2 text-lg font-bold">Atualizar Preços via Planilha</h2>
+            <p className="mb-4 text-sm text-slate-600">
+              Envie um arquivo Excel (.xlsx) contendo as colunas <b>codigo</b> e <b>PSD</b>.
+              O sistema cruzará pelo código e atualizará o preço de cada produto correspondente.
+              A planilha não será armazenada.
+            </p>
+
+            {!priceImport.result && (
+              <input
+                type="file"
+                accept=".xlsx,.xls,.csv"
+                disabled={priceImport.parsing || priceImport.updating}
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) handleFile(f);
+                }}
+                className="mb-3 block w-full rounded border border-slate-300 p-2 text-sm"
+              />
+            )}
+
+            {priceImport.parsing && (
+              <div className="rounded bg-slate-50 p-3 text-sm text-slate-600">Lendo planilha...</div>
+            )}
+
+            {priceImport.error && (
+              <div className="mb-3 rounded bg-red-50 p-3 text-sm text-red-700">
+                {priceImport.error}
+              </div>
+            )}
+
+            {priceImport.rows.length > 0 && !priceImport.result && (
+              <div className="mb-3 max-h-64 overflow-auto rounded border border-slate-200">
+                <table className="min-w-full text-xs">
+                  <thead className="sticky top-0 bg-slate-50 text-slate-600">
+                    <tr>
+                      <th className="px-2 py-1 text-left">Código</th>
+                      <th className="px-2 py-1 text-right">Novo PSD</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {priceImport.rows.map((r, i) => (
+                      <tr key={i} className="border-t border-slate-100">
+                        <td className="px-2 py-1 font-mono">{r.codigo}</td>
+                        <td className="px-2 py-1 text-right tabular-nums">{BRL(r.psd)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <div className="border-t bg-slate-50 px-2 py-1 text-xs text-slate-600">
+                  {priceImport.rows.length} linha(s) prontas para atualizar.
+                </div>
+              </div>
+            )}
+
+            {priceImport.result && (
+              <div className="mb-3 rounded bg-green-50 p-3 text-sm text-green-800">
+                <div className="font-semibold">Atualização concluída</div>
+                <div>
+                  {priceImport.result.updated} produto(s) atualizado(s) de{" "}
+                  {priceImport.result.total} linha(s).
+                </div>
+                {priceImport.result.notFound.length > 0 && (
+                  <div className="mt-2 text-xs text-amber-800">
+                    Códigos não encontrados: {priceImport.result.notFound.join(", ")}
+                  </div>
+                )}
+              </div>
+            )}
+
+            <div className="mt-4 flex justify-end gap-2">
+              <button
+                onClick={closeImport}
+                disabled={priceImport.updating}
+                className="rounded border border-slate-300 px-4 py-2 text-sm hover:bg-slate-50"
+              >
+                {priceImport.result ? "Fechar" : "Cancelar"}
+              </button>
+              {!priceImport.result && (
+                <button
+                  onClick={confirmImport}
+                  disabled={priceImport.rows.length === 0 || priceImport.updating || priceImport.parsing}
+                  className="rounded bg-green-700 px-4 py-2 text-sm font-semibold text-white hover:bg-green-800 disabled:opacity-60"
+                >
+                  {priceImport.updating ? "Atualizando..." : "Confirmar atualização"}
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
