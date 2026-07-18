@@ -623,7 +623,7 @@ export function QuoteEditor({ id }: { id?: string }) {
       </section>
 
       {/* Config comercial */}
-      <section className="mb-4 grid gap-3 rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-4">
+      <section className="mb-4 grid gap-3 rounded-lg border border-slate-200 bg-white p-4 shadow-sm grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <div>
           <label className="mb-1 block text-xs font-semibold text-slate-600">Margem (%)</label>
           <input
