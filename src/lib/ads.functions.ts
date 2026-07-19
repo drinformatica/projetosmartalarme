@@ -3,8 +3,9 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 type AppRole = "super_admin" | "admin" | "user";
 
-async function assertAdmin(supabase: any, userId: string) {
-  const { data, error } = await supabase
+async function assertAdmin(_supabase: any, userId: string) {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data, error } = await supabaseAdmin
     .from("user_roles")
     .select("role")
     .eq("user_id", userId);
