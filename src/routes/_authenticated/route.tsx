@@ -38,7 +38,7 @@ function AuthedLayout() {
           <Link to="/dashboard" className="min-w-0 truncate text-base font-bold tracking-tight sm:text-lg">
             Intrusão 2.0
           </Link>
-          <nav className="col-span-2 -mx-3 flex items-center gap-1 overflow-x-auto px-3 pb-1 text-xs [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:col-span-1 sm:mx-0 sm:overflow-visible sm:px-0 sm:pb-0 sm:text-sm">
+          <nav className="col-span-2 flex flex-wrap items-center gap-1 text-xs sm:col-span-1 sm:flex-nowrap sm:text-sm">
             <Link to="/dashboard" className={linkBase} activeProps={linkActive}>
               Pipeline
             </Link>
@@ -46,17 +46,17 @@ function AuthedLayout() {
               <span className="sm:hidden">+ Novo</span>
               <span className="hidden sm:inline">Novo Orçamento</span>
             </Link>
-            <Link to="/perfil" className={linkBase} activeProps={linkActive}>
-              Perfil
-            </Link>
             {isAdmin && (
               <Link to="/admin" className={linkBase} activeProps={linkActive}>
                 Admin
               </Link>
             )}
+            <Link to="/perfil" className={linkBase} activeProps={linkActive}>
+              Perfil
+            </Link>
             <button
               onClick={handleSignOut}
-              className="ml-1 shrink-0 rounded border border-white/40 px-2.5 py-1.5 text-xs hover:bg-white/10 sm:px-3 sm:text-sm"
+              className="ml-auto shrink-0 rounded border border-white/40 px-2.5 py-1.5 text-xs hover:bg-white/10 sm:ml-1 sm:px-3 sm:text-sm"
             >
               Sair
             </button>
