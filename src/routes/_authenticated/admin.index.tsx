@@ -98,77 +98,141 @@ function AdminList() {
       ) : err ? (
         <div className="rounded bg-red-50 p-4 text-sm text-red-700">{err}</div>
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
-          <table className="min-w-full text-sm">
-            <thead className="bg-slate-50 text-xs uppercase text-slate-600">
-              <tr>
-                <th className="px-3 py-2 text-left">Usuário</th>
-                <th className="px-3 py-2 text-left">Empresa</th>
-                <th className="px-3 py-2 text-left">CPF/CNPJ</th>
-                <th className="px-3 py-2 text-left">Papéis</th>
-                <th className="px-3 py-2 text-right">Orçamentos</th>
-                <th className="px-3 py-2 text-right">Total Gerado</th>
-                <th className="px-3 py-2 text-right">Fechado</th>
-                <th className="px-3 py-2 text-left">Cadastro</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((r) => (
-                <tr
-                  key={r.id}
-                  onClick={() =>
-                    router.navigate({ to: "/admin/$userId", params: { userId: r.id } })
-                  }
-                  className="cursor-pointer border-t border-slate-100 hover:bg-slate-50"
-                >
-                  <td className="px-3 py-2">
-                    <div className="font-medium text-slate-800">{r.full_name || "—"}</div>
-                    <div className="text-xs text-slate-500">{r.email}</div>
-                  </td>
-                  <td className="px-3 py-2">{r.company_name || "—"}</td>
-                  <td className="px-3 py-2">{r.cnpj || "—"}</td>
-                  <td className="px-3 py-2">
-                    <div className="flex flex-wrap gap-1">
-                      {r.roles.length === 0 && (
-                        <span className="rounded bg-slate-100 px-2 py-0.5 text-xs">user</span>
-                      )}
-                      {r.roles.map((role) => (
-                        <span
-                          key={role}
-                          className={`rounded px-2 py-0.5 text-xs font-semibold ${
-                            role === "super_admin"
-                              ? "bg-purple-100 text-purple-800"
-                              : role === "admin"
-                                ? "bg-blue-100 text-blue-800"
-                                : "bg-slate-100 text-slate-700"
-                          }`}
-                        >
-                          {role}
-                        </span>
-                      ))}
-                    </div>
-                  </td>
-                  <td className="px-3 py-2 text-right">{r.stats.total}</td>
-                  <td className="px-3 py-2 text-right">{BRL(r.stats.totalVenda)}</td>
-                  <td className="px-3 py-2 text-right">
-                    <div>{BRL(r.stats.valorFechado)}</div>
-                    <div className="text-xs text-slate-500">{r.stats.fechados} fech.</div>
-                  </td>
-                  <td className="px-3 py-2 text-xs text-slate-500">
-                    {new Date(r.created_at).toLocaleDateString("pt-BR")}
-                  </td>
-                </tr>
-              ))}
-              {filtered.length === 0 && (
+        <>
+          {/* Desktop / tablet: tabela */}
+          <div className="hidden overflow-x-auto rounded-lg border border-slate-200 bg-white md:block">
+            <table className="min-w-full text-sm">
+              <thead className="bg-slate-50 text-xs uppercase text-slate-600">
                 <tr>
-                  <td colSpan={8} className="px-3 py-8 text-center text-slate-500">
-                    Nenhum usuário encontrado.
-                  </td>
+                  <th className="px-3 py-2 text-left">Usuário</th>
+                  <th className="px-3 py-2 text-left">Empresa</th>
+                  <th className="px-3 py-2 text-left">CPF/CNPJ</th>
+                  <th className="px-3 py-2 text-left">Papéis</th>
+                  <th className="px-3 py-2 text-right">Orçamentos</th>
+                  <th className="px-3 py-2 text-right">Total Gerado</th>
+                  <th className="px-3 py-2 text-right">Fechado</th>
+                  <th className="px-3 py-2 text-left">Cadastro</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {filtered.map((r) => (
+                  <tr
+                    key={r.id}
+                    onClick={() =>
+                      router.navigate({ to: "/admin/$userId", params: { userId: r.id } })
+                    }
+                    className="cursor-pointer border-t border-slate-100 hover:bg-slate-50"
+                  >
+                    <td className="px-3 py-2">
+                      <div className="font-medium text-slate-800">{r.full_name || "—"}</div>
+                      <div className="text-xs text-slate-500">{r.email}</div>
+                    </td>
+                    <td className="px-3 py-2">{r.company_name || "—"}</td>
+                    <td className="px-3 py-2">{r.cnpj || "—"}</td>
+                    <td className="px-3 py-2">
+                      <div className="flex flex-wrap gap-1">
+                        {r.roles.length === 0 && (
+                          <span className="rounded bg-slate-100 px-2 py-0.5 text-xs">user</span>
+                        )}
+                        {r.roles.map((role) => (
+                          <span
+                            key={role}
+                            className={`rounded px-2 py-0.5 text-xs font-semibold ${
+                              role === "super_admin"
+                                ? "bg-purple-100 text-purple-800"
+                                : role === "admin"
+                                  ? "bg-blue-100 text-blue-800"
+                                  : "bg-slate-100 text-slate-700"
+                            }`}
+                          >
+                            {role}
+                          </span>
+                        ))}
+                      </div>
+                    </td>
+                    <td className="px-3 py-2 text-right">{r.stats.total}</td>
+                    <td className="px-3 py-2 text-right">{BRL(r.stats.totalVenda)}</td>
+                    <td className="px-3 py-2 text-right">
+                      <div>{BRL(r.stats.valorFechado)}</div>
+                      <div className="text-xs text-slate-500">{r.stats.fechados} fech.</div>
+                    </td>
+                    <td className="px-3 py-2 text-xs text-slate-500">
+                      {new Date(r.created_at).toLocaleDateString("pt-BR")}
+                    </td>
+                  </tr>
+                ))}
+                {filtered.length === 0 && (
+                  <tr>
+                    <td colSpan={8} className="px-3 py-8 text-center text-slate-500">
+                      Nenhum usuário encontrado.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile: cards */}
+          <ul className="space-y-2 md:hidden">
+            {filtered.map((r) => (
+              <li
+                key={r.id}
+                onClick={() =>
+                  router.navigate({ to: "/admin/$userId", params: { userId: r.id } })
+                }
+                className="cursor-pointer rounded-lg border border-slate-200 bg-white p-3 shadow-sm active:bg-slate-50"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate font-semibold text-slate-800">{r.full_name || "—"}</div>
+                    <div className="truncate text-xs text-slate-500">{r.email}</div>
+                    {r.company_name && (
+                      <div className="mt-0.5 truncate text-xs text-slate-600">{r.company_name}</div>
+                    )}
+                  </div>
+                  <div className="flex shrink-0 flex-wrap justify-end gap-1">
+                    {r.roles.length === 0 && (
+                      <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px]">user</span>
+                    )}
+                    {r.roles.map((role) => (
+                      <span
+                        key={role}
+                        className={`rounded px-1.5 py-0.5 text-[10px] font-semibold ${
+                          role === "super_admin"
+                            ? "bg-purple-100 text-purple-800"
+                            : role === "admin"
+                              ? "bg-blue-100 text-blue-800"
+                              : "bg-slate-100 text-slate-700"
+                        }`}
+                      >
+                        {role}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <div className="mt-2 grid grid-cols-3 gap-2 border-t border-slate-100 pt-2 text-[11px]">
+                  <div>
+                    <div className="text-slate-500">Orçamentos</div>
+                    <div className="font-semibold text-slate-800">{r.stats.total}</div>
+                  </div>
+                  <div>
+                    <div className="text-slate-500">Gerado</div>
+                    <div className="font-semibold tabular-nums text-slate-800">{BRL(r.stats.totalVenda)}</div>
+                  </div>
+                  <div>
+                    <div className="text-slate-500">Fechado</div>
+                    <div className="font-semibold tabular-nums text-green-700">{BRL(r.stats.valorFechado)}</div>
+                  </div>
+                </div>
+              </li>
+            ))}
+            {filtered.length === 0 && (
+              <li className="rounded-lg border border-dashed border-slate-300 bg-white p-6 text-center text-sm text-slate-500">
+                Nenhum usuário encontrado.
+              </li>
+            )}
+          </ul>
+        </>
       )}
 
       <div className="mt-8">
