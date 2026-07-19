@@ -11,7 +11,7 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const router = useRouter();
-  const [mode, setMode] = useState<"login" | "signup">("login");
+  const [mode, setMode] = useState<"login" | "signup" | "forgot">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
@@ -51,6 +51,14 @@ function AuthPage() {
         );
         setMode("login");
         setPassword("");
+      } else if (mode === "forgot") {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/reset-password`,
+        });
+        if (error) throw error;
+        setMsg(
+          "Se este e-mail estiver cadastrado, você receberá um link para redefinir sua senha em instantes. Verifique também a caixa de spam.",
+        );
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
@@ -71,12 +79,13 @@ function AuthPage() {
             Intrusão 2.0
           </div>
           <h1 className="text-2xl font-bold">
-            {mode === "login" ? "Entrar" : "Criar conta"}
+            {mode === "login" ? "Entrar" : mode === "signup" ? "Criar conta" : "Recuperar senha"}
           </h1>
           <p className="text-sm text-slate-500">
             Gerador de orçamentos & pipeline de vendas
           </p>
         </div>
+
 
         <form onSubmit={submit} className="space-y-3">
           {mode === "signup" && (
@@ -115,42 +124,89 @@ function AuthPage() {
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
-          <div>
-            <label className="mb-1 block text-xs font-semibold text-slate-600">Senha</label>
-            <input
-              required
-              type="password"
-              minLength={6}
-              className="w-full rounded border border-slate-300 px-3 py-2 text-sm"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
+          {mode !== "forgot" && (
+            <div>
+              <label className="mb-1 block text-xs font-semibold text-slate-600">Senha</label>
+              <input
+                required
+                type="password"
+                minLength={6}
+                className="w-full rounded border border-slate-300 px-3 py-2 text-sm"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+          )}
           {err && <div className="rounded bg-red-50 p-2 text-sm text-red-700">{err}</div>}
           {msg && <div className="rounded bg-green-50 p-2 text-sm text-green-700">{msg}</div>}
           <button
             disabled={loading}
             className="w-full rounded-md bg-green-700 py-2 text-sm font-semibold text-white hover:bg-green-800 disabled:opacity-50"
           >
-            {loading ? "Aguarde..." : mode === "login" ? "Entrar" : "Cadastrar"}
+            {loading
+              ? "Aguarde..."
+              : mode === "login"
+                ? "Entrar"
+                : mode === "signup"
+                  ? "Cadastrar"
+                  : "Enviar link de recuperação"}
           </button>
         </form>
 
-        <div className="mt-4 text-center text-sm text-slate-600">
-          {mode === "login" ? (
+        <div className="mt-4 space-y-2 text-center text-sm text-slate-600">
+          {mode === "login" && (
             <>
-              Não tem conta?{" "}
-              <button className="font-semibold text-green-700" onClick={() => setMode("signup")}>
-                Cadastre-se
-              </button>
+              <div>
+                <button
+                  type="button"
+                  className="font-semibold text-green-700 hover:underline"
+                  onClick={() => {
+                    setMode("forgot");
+                    setErr(null);
+                    setMsg(null);
+                  }}
+                >
+                  Esqueci minha senha
+                </button>
+              </div>
+              <div>
+                Não tem conta?{" "}
+                <button
+                  type="button"
+                  className="font-semibold text-green-700"
+                  onClick={() => setMode("signup")}
+                >
+                  Cadastre-se
+                </button>
+              </div>
             </>
-          ) : (
-            <>
+          )}
+          {mode === "signup" && (
+            <div>
               Já tem conta?{" "}
-              <button className="font-semibold text-green-700" onClick={() => setMode("login")}>
+              <button
+                type="button"
+                className="font-semibold text-green-700"
+                onClick={() => setMode("login")}
+              >
                 Entrar
               </button>
-            </>
+            </div>
+          )}
+          {mode === "forgot" && (
+            <div>
+              <button
+                type="button"
+                className="font-semibold text-green-700 hover:underline"
+                onClick={() => {
+                  setMode("login");
+                  setErr(null);
+                  setMsg(null);
+                }}
+              >
+                ← Voltar para login
+              </button>
+            </div>
           )}
         </div>
         <div className="mt-4 text-center">
