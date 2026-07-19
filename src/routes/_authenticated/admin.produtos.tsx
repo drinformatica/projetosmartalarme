@@ -244,74 +244,127 @@ function AdminProdutos() {
       {loading ? (
         <div className="rounded-lg border bg-white p-6 text-center text-slate-500">Carregando...</div>
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
-          <table className="min-w-full text-sm">
-            <thead className="bg-slate-50 text-xs uppercase text-slate-600">
-              <tr>
-                <th className="px-3 py-2 text-left">Código</th>
-                <th className="px-3 py-2 text-left">Nome</th>
-                <th className="px-3 py-2 text-left">Descrição Proposta</th>
-                <th className="px-3 py-2 text-right">PSD</th>
-                <th className="px-3 py-2 text-center">CNAE</th>
-                <th className="px-3 py-2 text-center">Ativo</th>
-                <th className="px-3 py-2"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((p) => (
-                <tr key={p.id} className="border-t border-slate-100 hover:bg-slate-50">
-                  <td className="px-3 py-2 font-mono text-xs">{p.codigo}</td>
-                  <td className="px-3 py-2">
-                    <div className="font-medium text-slate-800">{p.nome}</div>
-                    <div className="text-xs text-slate-500 line-clamp-1">{p.descricao_orcamento}</div>
-                  </td>
-                  <td className="px-3 py-2 max-w-xs text-xs text-slate-600">
-                    <span className="line-clamp-2">{p.descricao_proposta}</span>
-                  </td>
-                  <td className="px-3 py-2 text-right tabular-nums">{BRL(Number(p.psd))}</td>
-                  <td className="px-3 py-2 text-center text-xs">
-                    {p.no_cnae_discount ? (
-                      <span className="rounded bg-slate-100 px-2 py-0.5 text-slate-600">sem desc.</span>
-                    ) : (
-                      <span className="rounded bg-green-100 px-2 py-0.5 text-green-800">com desc.</span>
-                    )}
-                  </td>
-                  <td className="px-3 py-2 text-center">
-                    {p.active ? (
-                      <span className="rounded bg-green-100 px-2 py-0.5 text-xs text-green-800">Sim</span>
-                    ) : (
-                      <span className="rounded bg-slate-200 px-2 py-0.5 text-xs text-slate-600">Não</span>
-                    )}
-                  </td>
-                  <td className="px-3 py-2 text-right">
-                    <div className="flex justify-end gap-2">
-                      <button
-                        onClick={() => startEdit(p)}
-                        className="rounded border border-slate-300 px-2 py-1 text-xs hover:bg-slate-100"
-                      >
-                        Editar
-                      </button>
-                      <button
-                        onClick={() => handleDelete(p)}
-                        className="rounded border border-red-300 px-2 py-1 text-xs text-red-700 hover:bg-red-50"
-                      >
-                        Excluir
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {filtered.length === 0 && (
+        <>
+          {/* Desktop: tabela */}
+          <div className="hidden overflow-x-auto rounded-lg border border-slate-200 bg-white md:block">
+            <table className="min-w-full text-sm">
+              <thead className="bg-slate-50 text-xs uppercase text-slate-600">
                 <tr>
-                  <td colSpan={7} className="px-3 py-8 text-center text-slate-500">
-                    Nenhum produto cadastrado.
-                  </td>
+                  <th className="px-3 py-2 text-left">Código</th>
+                  <th className="px-3 py-2 text-left">Nome</th>
+                  <th className="px-3 py-2 text-left">Descrição Proposta</th>
+                  <th className="px-3 py-2 text-right">PSD</th>
+                  <th className="px-3 py-2 text-center">CNAE</th>
+                  <th className="px-3 py-2 text-center">Ativo</th>
+                  <th className="px-3 py-2"></th>
                 </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {filtered.map((p) => (
+                  <tr key={p.id} className="border-t border-slate-100 hover:bg-slate-50">
+                    <td className="px-3 py-2 font-mono text-xs">{p.codigo}</td>
+                    <td className="px-3 py-2">
+                      <div className="font-medium text-slate-800">{p.nome}</div>
+                      <div className="text-xs text-slate-500 line-clamp-1">{p.descricao_orcamento}</div>
+                    </td>
+                    <td className="px-3 py-2 max-w-xs text-xs text-slate-600">
+                      <span className="line-clamp-2">{p.descricao_proposta}</span>
+                    </td>
+                    <td className="px-3 py-2 text-right tabular-nums">{BRL(Number(p.psd))}</td>
+                    <td className="px-3 py-2 text-center text-xs">
+                      {p.no_cnae_discount ? (
+                        <span className="rounded bg-slate-100 px-2 py-0.5 text-slate-600">sem desc.</span>
+                      ) : (
+                        <span className="rounded bg-green-100 px-2 py-0.5 text-green-800">com desc.</span>
+                      )}
+                    </td>
+                    <td className="px-3 py-2 text-center">
+                      {p.active ? (
+                        <span className="rounded bg-green-100 px-2 py-0.5 text-xs text-green-800">Sim</span>
+                      ) : (
+                        <span className="rounded bg-slate-200 px-2 py-0.5 text-xs text-slate-600">Não</span>
+                      )}
+                    </td>
+                    <td className="px-3 py-2 text-right">
+                      <div className="flex justify-end gap-2">
+                        <button
+                          onClick={() => startEdit(p)}
+                          className="rounded border border-slate-300 px-2 py-1 text-xs hover:bg-slate-100"
+                        >
+                          Editar
+                        </button>
+                        <button
+                          onClick={() => handleDelete(p)}
+                          className="rounded border border-red-300 px-2 py-1 text-xs text-red-700 hover:bg-red-50"
+                        >
+                          Excluir
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+                {filtered.length === 0 && (
+                  <tr>
+                    <td colSpan={7} className="px-3 py-8 text-center text-slate-500">
+                      Nenhum produto cadastrado.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile: cards */}
+          <ul className="space-y-2 md:hidden">
+            {filtered.map((p) => (
+              <li key={p.id} className="rounded-lg border border-slate-200 bg-white p-3 shadow-sm">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0 flex-1">
+                    <div className="font-mono text-[10px] text-slate-500">{p.codigo}</div>
+                    <div className="truncate text-sm font-semibold text-slate-800">{p.nome}</div>
+                    {p.descricao_orcamento && (
+                      <div className="line-clamp-2 text-xs text-slate-500">{p.descricao_orcamento}</div>
+                    )}
+                  </div>
+                  <div className="shrink-0 text-right">
+                    <div className="text-sm font-semibold tabular-nums text-slate-800">{BRL(Number(p.psd))}</div>
+                    <div className="mt-1 flex flex-col items-end gap-1">
+                      {p.no_cnae_discount ? (
+                        <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-600">sem desc.</span>
+                      ) : (
+                        <span className="rounded bg-green-100 px-1.5 py-0.5 text-[10px] text-green-800">com desc.</span>
+                      )}
+                      {!p.active && (
+                        <span className="rounded bg-slate-200 px-1.5 py-0.5 text-[10px] text-slate-600">Inativo</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-3 flex gap-2 border-t border-slate-100 pt-2">
+                  <button
+                    onClick={() => startEdit(p)}
+                    className="flex-1 rounded border border-slate-300 px-2 py-1.5 text-xs font-medium hover:bg-slate-100"
+                  >
+                    Editar
+                  </button>
+                  <button
+                    onClick={() => handleDelete(p)}
+                    className="flex-1 rounded border border-red-300 px-2 py-1.5 text-xs font-medium text-red-700 hover:bg-red-50"
+                  >
+                    Excluir
+                  </button>
+                </div>
+              </li>
+            ))}
+            {filtered.length === 0 && (
+              <li className="rounded-lg border border-dashed border-slate-300 bg-white p-6 text-center text-sm text-slate-500">
+                Nenhum produto cadastrado.
+              </li>
+            )}
+          </ul>
+        </>
       )}
+
 
       {editing && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">

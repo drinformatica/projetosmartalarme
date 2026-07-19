@@ -29,47 +29,34 @@ function AuthedLayout() {
     await supabase.auth.signOut();
     router.navigate({ to: "/auth", replace: true });
   };
+  const linkBase = "shrink-0 rounded px-2.5 py-1.5 text-xs sm:px-3 sm:text-sm hover:bg-white/10";
+  const linkActive = { className: `${linkBase} bg-white/20 font-semibold` };
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
-      <header className="bg-gradient-to-r from-green-700 to-green-600 text-white shadow">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-4 sm:px-6">
-          <Link to="/dashboard" className="text-lg font-bold tracking-tight">
+      <header className="sticky top-0 z-30 bg-gradient-to-r from-green-700 to-green-600 text-white shadow">
+        <div className="mx-auto grid max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-2 px-3 py-2.5 sm:flex sm:flex-wrap sm:justify-between sm:px-6 sm:py-4">
+          <Link to="/dashboard" className="min-w-0 truncate text-base font-bold tracking-tight sm:text-lg">
             Intrusão 2.0
           </Link>
-          <nav className="flex flex-wrap items-center gap-1 text-sm">
-            <Link
-              to="/dashboard"
-              className="rounded px-3 py-1.5 hover:bg-white/10"
-              activeProps={{ className: "rounded px-3 py-1.5 bg-white/20 font-semibold" }}
-            >
+          <nav className="col-span-2 -mx-3 flex items-center gap-1 overflow-x-auto px-3 pb-1 text-xs [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:col-span-1 sm:mx-0 sm:overflow-visible sm:px-0 sm:pb-0 sm:text-sm">
+            <Link to="/dashboard" className={linkBase} activeProps={linkActive}>
               Pipeline
             </Link>
-            <Link
-              to="/orcamento"
-              className="rounded px-3 py-1.5 hover:bg-white/10"
-              activeProps={{ className: "rounded px-3 py-1.5 bg-white/20 font-semibold" }}
-            >
-              Novo Orçamento
+            <Link to="/orcamento" className={linkBase} activeProps={linkActive}>
+              <span className="sm:hidden">+ Novo</span>
+              <span className="hidden sm:inline">Novo Orçamento</span>
             </Link>
-            <Link
-              to="/perfil"
-              className="rounded px-3 py-1.5 hover:bg-white/10"
-              activeProps={{ className: "rounded px-3 py-1.5 bg-white/20 font-semibold" }}
-            >
+            <Link to="/perfil" className={linkBase} activeProps={linkActive}>
               Perfil
             </Link>
             {isAdmin && (
-              <Link
-                to="/admin"
-                className="rounded px-3 py-1.5 hover:bg-white/10"
-                activeProps={{ className: "rounded px-3 py-1.5 bg-white/20 font-semibold" }}
-              >
+              <Link to="/admin" className={linkBase} activeProps={linkActive}>
                 Admin
               </Link>
             )}
             <button
               onClick={handleSignOut}
-              className="ml-2 rounded border border-white/40 px-3 py-1.5 hover:bg-white/10"
+              className="ml-1 shrink-0 rounded border border-white/40 px-2.5 py-1.5 text-xs hover:bg-white/10 sm:px-3 sm:text-sm"
             >
               Sair
             </button>
