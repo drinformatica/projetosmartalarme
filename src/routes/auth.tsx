@@ -79,20 +79,13 @@ function AuthPage() {
             Intrusão 2.0
           </div>
           <h1 className="text-2xl font-bold">
-            {mode === "login" ? "Entrar" : "Criar conta"}
-          </h1>
-          <p className="text-sm text-slate-500">
-            Gerador de orçamentos & pipeline de vendas
-          </p>
-        </div>
-
-          <h1 className="text-2xl font-bold">
             {mode === "login" ? "Entrar" : mode === "signup" ? "Criar conta" : "Recuperar senha"}
           </h1>
           <p className="text-sm text-slate-500">
             Gerador de orçamentos & pipeline de vendas
           </p>
         </div>
+
 
         <form onSubmit={submit} className="space-y-3">
           {mode === "signup" && (
