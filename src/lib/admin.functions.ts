@@ -3,13 +3,18 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 type AppRole = "super_admin" | "admin" | "user";
 
-async function assertAdmin(supabase: any, userId: string) {
-  const { data, error } = await supabase
+async function loadRoles(userId: string): Promise<AppRole[]> {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data, error } = await supabaseAdmin
     .from("user_roles")
     .select("role")
     .eq("user_id", userId);
   if (error) throw new Error(error.message);
-  const roles = (data ?? []).map((r: { role: AppRole }) => r.role);
+  return (data ?? []).map((r) => r.role as AppRole);
+}
+
+async function assertAdmin(userId: string) {
+  const roles = await loadRoles(userId);
   const isAdmin = roles.includes("super_admin") || roles.includes("admin");
   if (!isAdmin) throw new Error("Acesso negado");
   return { isSuperAdmin: roles.includes("super_admin"), roles };
@@ -18,26 +23,22 @@ async function assertAdmin(supabase: any, userId: string) {
 export const getMyRoles = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { data, error } = await context.supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", context.userId);
-    if (error) throw new Error(error.message);
-    return (data ?? []).map((r) => r.role as AppRole);
+    return await loadRoles(context.userId);
   });
 
 export const listAdminUsers = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await assertAdmin(context.supabase, context.userId);
+    await assertAdmin(context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     const [profilesRes, rolesRes, quotesRes] = await Promise.all([
-      context.supabase
+      supabaseAdmin
         .from("profiles")
         .select("id, email, full_name, company_name, phone, cnpj, created_at")
         .order("created_at", { ascending: false }),
-      context.supabase.from("user_roles").select("user_id, role"),
-      context.supabase.from("quotes").select("user_id, status, total_venda"),
+      supabaseAdmin.from("user_roles").select("user_id, role"),
+      supabaseAdmin.from("quotes").select("user_id, status, total_venda"),
     ]);
     if (profilesRes.error) throw new Error(profilesRes.error.message);
     if (rolesRes.error) throw new Error(rolesRes.error.message);
@@ -86,16 +87,17 @@ export const getAdminUserDetail = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: { userId: string }) => data)
   .handler(async ({ data, context }) => {
-    await assertAdmin(context.supabase, context.userId);
+    await assertAdmin(context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     const [profileRes, rolesRes, quotesRes] = await Promise.all([
-      context.supabase
+      supabaseAdmin
         .from("profiles")
         .select("id, email, full_name, company_name, phone, address, cnpj, created_at")
         .eq("id", data.userId)
         .maybeSingle(),
-      context.supabase.from("user_roles").select("role").eq("user_id", data.userId),
-      context.supabase
+      supabaseAdmin.from("user_roles").select("role").eq("user_id", data.userId),
+      supabaseAdmin
         .from("quotes")
         .select("id, status, total_venda, mensalidade, taxa_instalacao, items, created_at")
         .eq("user_id", data.userId)
@@ -107,10 +109,11 @@ export const getAdminUserDetail = createServerFn({ method: "GET" })
 
     const quotes = quotesRes.data ?? [];
 
-    // aggregate top items (ignore client-side info entirely)
     const itemCount = new Map<string, { nome: string; qtde: number; ocorrencias: number }>();
     for (const q of quotes) {
-      const items = Array.isArray(q.items) ? (q.items as Array<{ codigo?: string; nome?: string; qtde?: number }>) : [];
+      const items = Array.isArray(q.items)
+        ? (q.items as Array<{ codigo?: string; nome?: string; qtde?: number }>)
+        : [];
       for (const it of items) {
         const key = it.codigo || it.nome || "—";
         const cur = itemCount.get(key) ?? { nome: it.nome ?? key, qtde: 0, ocorrencias: 0 };
@@ -147,7 +150,6 @@ export const getAdminUserDetail = createServerFn({ method: "GET" })
         mrrFechado,
       },
       topItems,
-      // sanitized quote summaries — NO client info
       quotes: quotes.map((q) => ({
         id: q.id,
         status: q.status,
@@ -163,16 +165,17 @@ export const setUserAdmin = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: { userId: string; makeAdmin: boolean }) => data)
   .handler(async ({ data, context }) => {
-    const { isSuperAdmin } = await assertAdmin(context.supabase, context.userId);
+    const { isSuperAdmin } = await assertAdmin(context.userId);
     if (!isSuperAdmin) throw new Error("Apenas super admin pode alterar papéis");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     if (data.makeAdmin) {
-      const { error } = await context.supabase
+      const { error } = await supabaseAdmin
         .from("user_roles")
         .insert({ user_id: data.userId, role: "admin" });
       if (error && !error.message.includes("duplicate")) throw new Error(error.message);
     } else {
-      const { error } = await context.supabase
+      const { error } = await supabaseAdmin
         .from("user_roles")
         .delete()
         .eq("user_id", data.userId)
