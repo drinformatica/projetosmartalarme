@@ -20,9 +20,25 @@ function AuthedLayout() {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    fetchRoles()
-      .then((rs) => setIsAdmin(rs.includes("super_admin") || rs.includes("admin")))
-      .catch(() => {});
+    let cancelled = false;
+    const load = () => {
+      fetchRoles()
+        .then((rs) => {
+          if (!cancelled) setIsAdmin(rs.includes("super_admin") || rs.includes("admin"));
+        })
+        .catch((e) => {
+          console.error("[nav] getMyRoles falhou:", e);
+        });
+    };
+    load();
+    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") load();
+      if (event === "SIGNED_OUT") setIsAdmin(false);
+    });
+    return () => {
+      cancelled = true;
+      sub.subscription.unsubscribe();
+    };
   }, [fetchRoles]);
 
   const handleSignOut = async () => {
