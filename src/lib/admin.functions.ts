@@ -3,82 +3,48 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 type AppRole = "super_admin" | "admin" | "user";
 
-async function loadRoles(userId: string): Promise<AppRole[]> {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { data, error } = await supabaseAdmin
-    .from("user_roles")
-    .select("role")
-    .eq("user_id", userId);
-  if (error) throw new Error(error.message);
-  return (data ?? []).map((r) => r.role as AppRole);
-}
-
-async function assertAdmin(userId: string) {
-  const roles = await loadRoles(userId);
-  const isAdmin = roles.includes("super_admin") || roles.includes("admin");
-  if (!isAdmin) throw new Error("Acesso negado");
-  return { isSuperAdmin: roles.includes("super_admin"), roles };
-}
-
 export const getMyRoles = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    return await loadRoles(context.userId);
+    const { data, error } = await context.supabase.rpc("get_user_roles", {
+      _user_id: context.userId,
+    });
+    if (error) throw new Error(error.message);
+    return (data ?? []) as AppRole[];
   });
 
 export const listAdminUsers = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await assertAdmin(context.userId);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-
-    const [profilesRes, rolesRes, quotesRes] = await Promise.all([
-      supabaseAdmin
-        .from("profiles")
-        .select("id, email, full_name, company_name, phone, cnpj, created_at")
-        .order("created_at", { ascending: false }),
-      supabaseAdmin.from("user_roles").select("user_id, role"),
-      supabaseAdmin.from("quotes").select("user_id, status, total_venda"),
-    ]);
-    if (profilesRes.error) throw new Error(profilesRes.error.message);
-    if (rolesRes.error) throw new Error(rolesRes.error.message);
-    if (quotesRes.error) throw new Error(quotesRes.error.message);
-
-    const rolesByUser = new Map<string, AppRole[]>();
-    for (const r of rolesRes.data ?? []) {
-      const arr = rolesByUser.get(r.user_id) ?? [];
-      arr.push(r.role as AppRole);
-      rolesByUser.set(r.user_id, arr);
-    }
-
-    const statsByUser = new Map<
-      string,
-      { total: number; totalVenda: number; fechados: number; valorFechado: number }
-    >();
-    for (const q of quotesRes.data ?? []) {
-      const s = statsByUser.get(q.user_id) ?? {
-        total: 0,
-        totalVenda: 0,
-        fechados: 0,
-        valorFechado: 0,
-      };
-      s.total += 1;
-      s.totalVenda += Number(q.total_venda ?? 0);
-      if (q.status === "fechado") {
-        s.fechados += 1;
-        s.valorFechado += Number(q.total_venda ?? 0);
-      }
-      statsByUser.set(q.user_id, s);
-    }
-
-    return (profilesRes.data ?? []).map((p) => ({
-      ...p,
-      roles: rolesByUser.get(p.id) ?? [],
-      stats: statsByUser.get(p.id) ?? {
-        total: 0,
-        totalVenda: 0,
-        fechados: 0,
-        valorFechado: 0,
+    const { data, error } = await context.supabase.rpc("admin_list_users");
+    if (error) throw new Error(error.message);
+    return (data ?? []).map((r: {
+      id: string;
+      email: string | null;
+      full_name: string | null;
+      company_name: string | null;
+      phone: string | null;
+      cnpj: string | null;
+      created_at: string;
+      roles: AppRole[] | null;
+      total_quotes: number | string;
+      total_venda: number | string;
+      fechados: number | string;
+      valor_fechado: number | string;
+    }) => ({
+      id: r.id,
+      email: r.email,
+      full_name: r.full_name,
+      company_name: r.company_name,
+      phone: r.phone,
+      cnpj: r.cnpj,
+      created_at: r.created_at,
+      roles: (r.roles ?? []) as AppRole[],
+      stats: {
+        total: Number(r.total_quotes ?? 0),
+        totalVenda: Number(r.total_venda ?? 0),
+        fechados: Number(r.fechados ?? 0),
+        valorFechado: Number(r.valor_fechado ?? 0),
       },
     }));
   });
@@ -87,28 +53,34 @@ export const getAdminUserDetail = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: { userId: string }) => data)
   .handler(async ({ data, context }) => {
-    await assertAdmin(context.userId);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: result, error } = await context.supabase.rpc("admin_get_user_detail", {
+      _user_id: data.userId,
+    });
+    if (error) throw new Error(error.message);
+    const payload = (result ?? {}) as {
+      profile: {
+        id: string;
+        email: string | null;
+        full_name: string | null;
+        company_name: string | null;
+        phone: string | null;
+        address: string | null;
+        cnpj: string | null;
+        created_at: string;
+      } | null;
+      roles: AppRole[] | null;
+      quotes: Array<{
+        id: string;
+        status: string;
+        total_venda: number | string | null;
+        mensalidade: number | string | null;
+        taxa_instalacao: number | string | null;
+        items: unknown;
+        created_at: string;
+      }> | null;
+    };
 
-    const [profileRes, rolesRes, quotesRes] = await Promise.all([
-      supabaseAdmin
-        .from("profiles")
-        .select("id, email, full_name, company_name, phone, address, cnpj, created_at")
-        .eq("id", data.userId)
-        .maybeSingle(),
-      supabaseAdmin.from("user_roles").select("role").eq("user_id", data.userId),
-      supabaseAdmin
-        .from("quotes")
-        .select("id, status, total_venda, mensalidade, taxa_instalacao, items, created_at")
-        .eq("user_id", data.userId)
-        .order("created_at", { ascending: false }),
-    ]);
-    if (profileRes.error) throw new Error(profileRes.error.message);
-    if (rolesRes.error) throw new Error(rolesRes.error.message);
-    if (quotesRes.error) throw new Error(quotesRes.error.message);
-
-    const quotes = quotesRes.data ?? [];
-
+    const quotes = payload.quotes ?? [];
     const itemCount = new Map<string, { nome: string; qtde: number; ocorrencias: number }>();
     for (const q of quotes) {
       const items = Array.isArray(q.items)
@@ -140,8 +112,8 @@ export const getAdminUserDetail = createServerFn({ method: "GET" })
     }
 
     return {
-      profile: profileRes.data,
-      roles: (rolesRes.data ?? []).map((r) => r.role as AppRole),
+      profile: payload.profile,
+      roles: (payload.roles ?? []) as AppRole[],
       stats: {
         totalOrcamentos: quotes.length,
         totalGerado,
@@ -165,22 +137,10 @@ export const setUserAdmin = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: { userId: string; makeAdmin: boolean }) => data)
   .handler(async ({ data, context }) => {
-    const { isSuperAdmin } = await assertAdmin(context.userId);
-    if (!isSuperAdmin) throw new Error("Apenas super admin pode alterar papéis");
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-
-    if (data.makeAdmin) {
-      const { error } = await supabaseAdmin
-        .from("user_roles")
-        .insert({ user_id: data.userId, role: "admin" });
-      if (error && !error.message.includes("duplicate")) throw new Error(error.message);
-    } else {
-      const { error } = await supabaseAdmin
-        .from("user_roles")
-        .delete()
-        .eq("user_id", data.userId)
-        .eq("role", "admin");
-      if (error) throw new Error(error.message);
-    }
+    const { error } = await context.supabase.rpc("admin_set_user_role", {
+      _user_id: data.userId,
+      _make_admin: data.makeAdmin,
+    });
+    if (error) throw new Error(error.message);
     return { ok: true };
   });
