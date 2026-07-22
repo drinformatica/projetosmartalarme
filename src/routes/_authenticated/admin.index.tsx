@@ -171,6 +171,25 @@ function AdminList() {
                         ))}
                       </div>
                     </td>
+                    {isSuper && (
+                      <td
+                        className="px-3 py-2 text-center"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {r.roles.includes("super_admin") ? (
+                          <span className="text-xs text-slate-400">—</span>
+                        ) : (
+                          <input
+                            type="checkbox"
+                            className="h-4 w-4 cursor-pointer accent-blue-600"
+                            checked={r.roles.includes("admin")}
+                            disabled={savingId === r.id}
+                            onChange={(e) => toggleAdmin(r, e.target.checked)}
+                            title={r.roles.includes("admin") ? "Remover admin" : "Tornar admin"}
+                          />
+                        )}
+                      </td>
+                    )}
                     <td className="px-3 py-2 text-right">{r.stats.total}</td>
                     <td className="px-3 py-2 text-right">{BRL(r.stats.totalVenda)}</td>
                     <td className="px-3 py-2 text-right">
