@@ -264,6 +264,22 @@ function AdminList() {
                     <div className="font-semibold tabular-nums text-green-700">{BRL(r.stats.valorFechado)}</div>
                   </div>
                 </div>
+                {isSuper && !r.roles.includes("super_admin") && (
+                  <label
+                    className="mt-2 flex items-center gap-2 border-t border-slate-100 pt-2 text-xs text-slate-700"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <input
+                      type="checkbox"
+                      className="h-4 w-4 accent-blue-600"
+                      checked={r.roles.includes("admin")}
+                      disabled={savingId === r.id}
+                      onChange={(e) => toggleAdmin(r, e.target.checked)}
+                    />
+                    <span>Administrador</span>
+                    {savingId === r.id && <span className="text-slate-400">salvando…</span>}
+                  </label>
+                )}
               </li>
             ))}
             {filtered.length === 0 && (
