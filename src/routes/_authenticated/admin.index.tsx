@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { listAdminUsers, getMyRoles } from "@/lib/admin.functions";
+import { listAdminUsers, getMyRoles, setUserAdmin } from "@/lib/admin.functions";
 import { AdsManager } from "@/components/AdsManager";
 
 
@@ -29,10 +29,18 @@ function AdminList() {
   const router = useRouter();
   const list = useServerFn(listAdminUsers);
   const rolesFn = useServerFn(getMyRoles);
+  const setAdminFn = useServerFn(setUserAdmin);
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
   const [q, setQ] = useState("");
+  const [isSuper, setIsSuper] = useState(false);
+  const [savingId, setSavingId] = useState<string | null>(null);
+
+  const reload = async () => {
+    const data = (await list()) as Row[];
+    setRows(data);
+  };
 
   useEffect(() => {
     (async () => {
@@ -42,8 +50,8 @@ function AdminList() {
           router.navigate({ to: "/dashboard", replace: true });
           return;
         }
-        const data = (await list()) as Row[];
-        setRows(data);
+        setIsSuper(rs.includes("super_admin"));
+        await reload();
       } catch (e) {
         setErr(e instanceof Error ? e.message : "Erro");
       } finally {
@@ -52,6 +60,18 @@ function AdminList() {
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const toggleAdmin = async (row: Row, makeAdmin: boolean) => {
+    setSavingId(row.id);
+    try {
+      await setAdminFn({ data: { userId: row.id, makeAdmin } });
+      await reload();
+    } catch (e) {
+      alert(e instanceof Error ? e.message : "Erro");
+    } finally {
+      setSavingId(null);
+    }
+  };
 
   const filtered = rows.filter((r) => {
     const t = q.toLowerCase();
@@ -108,6 +128,7 @@ function AdminList() {
                   <th className="px-3 py-2 text-left">Empresa</th>
                   <th className="px-3 py-2 text-left">CPF/CNPJ</th>
                   <th className="px-3 py-2 text-left">Papéis</th>
+                  {isSuper && <th className="px-3 py-2 text-center">Admin</th>}
                   <th className="px-3 py-2 text-right">Orçamentos</th>
                   <th className="px-3 py-2 text-right">Total Gerado</th>
                   <th className="px-3 py-2 text-right">Fechado</th>
@@ -150,6 +171,25 @@ function AdminList() {
                         ))}
                       </div>
                     </td>
+                    {isSuper && (
+                      <td
+                        className="px-3 py-2 text-center"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {r.roles.includes("super_admin") ? (
+                          <span className="text-xs text-slate-400">—</span>
+                        ) : (
+                          <input
+                            type="checkbox"
+                            className="h-4 w-4 cursor-pointer accent-blue-600"
+                            checked={r.roles.includes("admin")}
+                            disabled={savingId === r.id}
+                            onChange={(e) => toggleAdmin(r, e.target.checked)}
+                            title={r.roles.includes("admin") ? "Remover admin" : "Tornar admin"}
+                          />
+                        )}
+                      </td>
+                    )}
                     <td className="px-3 py-2 text-right">{r.stats.total}</td>
                     <td className="px-3 py-2 text-right">{BRL(r.stats.totalVenda)}</td>
                     <td className="px-3 py-2 text-right">
@@ -163,7 +203,7 @@ function AdminList() {
                 ))}
                 {filtered.length === 0 && (
                   <tr>
-                    <td colSpan={8} className="px-3 py-8 text-center text-slate-500">
+                    <td colSpan={isSuper ? 9 : 8} className="px-3 py-8 text-center text-slate-500">
                       Nenhum usuário encontrado.
                     </td>
                   </tr>
@@ -224,6 +264,22 @@ function AdminList() {
                     <div className="font-semibold tabular-nums text-green-700">{BRL(r.stats.valorFechado)}</div>
                   </div>
                 </div>
+                {isSuper && !r.roles.includes("super_admin") && (
+                  <label
+                    className="mt-2 flex items-center gap-2 border-t border-slate-100 pt-2 text-xs text-slate-700"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <input
+                      type="checkbox"
+                      className="h-4 w-4 accent-blue-600"
+                      checked={r.roles.includes("admin")}
+                      disabled={savingId === r.id}
+                      onChange={(e) => toggleAdmin(r, e.target.checked)}
+                    />
+                    <span>Administrador</span>
+                    {savingId === r.id && <span className="text-slate-400">salvando…</span>}
+                  </label>
+                )}
               </li>
             ))}
             {filtered.length === 0 && (

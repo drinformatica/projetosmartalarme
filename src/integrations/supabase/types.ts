@@ -217,6 +217,32 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_get_user_detail: { Args: { _user_id: string }; Returns: Json }
+      admin_list_users: {
+        Args: never
+        Returns: {
+          cnpj: string
+          company_name: string
+          created_at: string
+          email: string
+          fechados: number
+          full_name: string
+          id: string
+          phone: string
+          roles: Database["public"]["Enums"]["app_role"][]
+          total_quotes: number
+          total_venda: number
+          valor_fechado: number
+        }[]
+      }
+      admin_set_user_role: {
+        Args: { _make_admin: boolean; _user_id: string }
+        Returns: undefined
+      }
+      get_user_roles: {
+        Args: { _user_id: string }
+        Returns: Database["public"]["Enums"]["app_role"][]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -224,6 +250,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_admin: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       app_role: "super_admin" | "admin" | "user"
