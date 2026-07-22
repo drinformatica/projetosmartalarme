@@ -128,6 +128,7 @@ function AdminList() {
                   <th className="px-3 py-2 text-left">Empresa</th>
                   <th className="px-3 py-2 text-left">CPF/CNPJ</th>
                   <th className="px-3 py-2 text-left">Papéis</th>
+                  {isSuper && <th className="px-3 py-2 text-center">Admin</th>}
                   <th className="px-3 py-2 text-right">Orçamentos</th>
                   <th className="px-3 py-2 text-right">Total Gerado</th>
                   <th className="px-3 py-2 text-right">Fechado</th>
