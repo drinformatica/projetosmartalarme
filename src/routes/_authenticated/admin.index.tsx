@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { listAdminUsers, getMyRoles } from "@/lib/admin.functions";
+import { listAdminUsers, getMyRoles, setUserAdmin } from "@/lib/admin.functions";
 import { AdsManager } from "@/components/AdsManager";
 
 
@@ -29,10 +29,18 @@ function AdminList() {
   const router = useRouter();
   const list = useServerFn(listAdminUsers);
   const rolesFn = useServerFn(getMyRoles);
+  const setAdminFn = useServerFn(setUserAdmin);
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
   const [q, setQ] = useState("");
+  const [isSuper, setIsSuper] = useState(false);
+  const [savingId, setSavingId] = useState<string | null>(null);
+
+  const reload = async () => {
+    const data = (await list()) as Row[];
+    setRows(data);
+  };
 
   useEffect(() => {
     (async () => {
@@ -42,8 +50,8 @@ function AdminList() {
           router.navigate({ to: "/dashboard", replace: true });
           return;
         }
-        const data = (await list()) as Row[];
-        setRows(data);
+        setIsSuper(rs.includes("super_admin"));
+        await reload();
       } catch (e) {
         setErr(e instanceof Error ? e.message : "Erro");
       } finally {
@@ -52,6 +60,18 @@ function AdminList() {
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const toggleAdmin = async (row: Row, makeAdmin: boolean) => {
+    setSavingId(row.id);
+    try {
+      await setAdminFn({ data: { userId: row.id, makeAdmin } });
+      await reload();
+    } catch (e) {
+      alert(e instanceof Error ? e.message : "Erro");
+    } finally {
+      setSavingId(null);
+    }
+  };
 
   const filtered = rows.filter((r) => {
     const t = q.toLowerCase();
