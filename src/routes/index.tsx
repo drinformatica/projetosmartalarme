@@ -13,8 +13,8 @@ function Landing() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-green-900 to-slate-900 text-white">
-      <div className="mx-auto flex min-h-screen max-w-4xl flex-col items-center justify-center px-6 py-16 text-center">
+    <div className="min-h-[calc(100svh-64px)] bg-gradient-to-br from-slate-900 via-green-900 to-slate-900 text-white">
+      <div className="mx-auto flex min-h-[calc(100svh-64px)] max-w-4xl flex-col items-center justify-center px-6 py-10 text-center">
         <div className="mb-4 inline-block rounded-full bg-white/10 px-4 py-1 text-xs font-semibold uppercase tracking-widest">
           Intrusão 2.0
         </div>
