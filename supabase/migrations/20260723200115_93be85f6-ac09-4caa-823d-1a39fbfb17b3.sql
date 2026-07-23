@@ -1,0 +1,2 @@
+ALTER TABLE public.quotes ADD COLUMN IF NOT EXISTS modalidade text NOT NULL DEFAULT 'comodato';
+ALTER TABLE public.quotes ADD CONSTRAINT quotes_modalidade_check CHECK (modalidade IN ('comodato','venda'));

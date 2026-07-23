@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 export type QuoteStatus = "rascunho" | "enviado" | "negociacao" | "fechado" | "perdido";
+export type QuoteModalidade = "comodato" | "venda";
 
 export type QuoteItem = {
   codigo: string;
@@ -23,6 +24,7 @@ export type QuoteInput = {
   mensalidade: number;
   observacoes: string;
   status: QuoteStatus;
+  modalidade: QuoteModalidade;
   total_venda: number;
   total_custo: number;
 };

@@ -141,6 +141,7 @@ export type Database = {
           items: Json
           margem: number
           mensalidade: number
+          modalidade: string
           observacoes: string | null
           possui_cnae: boolean
           status: Database["public"]["Enums"]["quote_status"]
@@ -160,6 +161,7 @@ export type Database = {
           items?: Json
           margem?: number
           mensalidade?: number
+          modalidade?: string
           observacoes?: string | null
           possui_cnae?: boolean
           status?: Database["public"]["Enums"]["quote_status"]
@@ -179,6 +181,7 @@ export type Database = {
           items?: Json
           margem?: number
           mensalidade?: number
+          modalidade?: string
           observacoes?: string | null
           possui_cnae?: boolean
           status?: Database["public"]["Enums"]["quote_status"]
