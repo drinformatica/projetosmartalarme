@@ -425,18 +425,17 @@ export function QuoteEditor({ id }: { id?: string }) {
     const itens = linhas.filter((l) => l.qtde > 0);
     autoTable(doc, {
       startY: y,
-      head: [["Produto", "Descrição", "Qtde"]],
+      head: [["Código", "Descrição", "Qtde"]],
       body: itens.map((l) => {
         const item = l as typeof l & { descricao_proposta?: string };
-        const nome = l.nome.split(/[-–]/)[0].trim();
-        const desc = (item.descricao_proposta && item.descricao_proposta.trim()) || l.codigo;
-        return [nome, desc, String(l.qtde).padStart(2, "0")];
+        const desc = (item.descricao_proposta && item.descricao_proposta.trim()) || l.nome;
+        return [l.codigo, desc, String(l.qtde).padStart(2, "0")];
       }),
       theme: "plain",
       styles: { fontSize: 9, cellPadding: 8, lineColor: [230, 230, 230], lineWidth: 0.5 },
       headStyles: { fillColor: [250, 250, 250], textColor: DARK, fontStyle: "bold", fontSize: 8 },
       columnStyles: {
-        0: { cellWidth: 180, fontStyle: "bold" },
+        0: { cellWidth: 80, fontStyle: "bold" },
         1: { cellWidth: "auto", textColor: GRAY },
         2: { cellWidth: 50, halign: "center", fontStyle: "bold" },
       },
