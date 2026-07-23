@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { listProducts, type Product } from "@/lib/products.functions";
-import { getQuote, saveQuote, type QuoteStatus } from "@/lib/quotes.functions";
+import { getQuote, saveQuote, type QuoteStatus, type QuoteModalidade } from "@/lib/quotes.functions";
 import { getProfile } from "@/lib/profile.functions";
 import stepSensorImg from "@/assets/step-sensor.jpg";
 import stepCentralImg from "@/assets/step-central.jpg";
