@@ -74,17 +74,40 @@ function AuthPage() {
       }
     } catch (e: unknown) {
       if (mode === "login") {
-        const next = failedAttempts + 1;
-        setFailedAttempts(next);
-        if (next >= MAX_ATTEMPTS) {
+        const errObj = e as { code?: string; message?: string } | null;
+        const code = errObj?.code ?? "";
+        const message = errObj?.message ?? "";
+        const isNotConfirmed =
+          code === "email_not_confirmed" ||
+          /email.*not.*confirm/i.test(message) ||
+          /not.*confirm/i.test(message);
+
+        if (isNotConfirmed) {
+          try {
+            await supabase.auth.resend({
+              type: "signup",
+              email,
+              options: { emailRedirectTo: `${window.location.origin}/auth` },
+            });
+          } catch {
+            // ignora, apenas informa o usuário
+          }
           setErr(
-            `Você atingiu ${MAX_ATTEMPTS} tentativas incorretas. Por segurança, recupere sua senha para continuar.`,
+            "Seu e-mail ainda não foi verificado. Reenviamos o link de confirmação — verifique sua caixa de entrada (e o spam) antes de entrar.",
           );
         } else {
-          const restantes = MAX_ATTEMPTS - next;
-          setErr(
-            `E-mail ou senha inválidos. Você tem mais ${restantes} tentativa${restantes === 1 ? "" : "s"} antes de precisar recuperar a senha.`,
-          );
+          const next = failedAttempts + 1;
+          setFailedAttempts(next);
+          if (next >= MAX_ATTEMPTS) {
+            setErr(
+              `Você atingiu ${MAX_ATTEMPTS} tentativas incorretas. Por segurança, recupere sua senha para continuar.`,
+            );
+          } else {
+            const restantes = MAX_ATTEMPTS - next;
+            setErr(
+              `E-mail ou senha inválidos. Você tem mais ${restantes} tentativa${restantes === 1 ? "" : "s"} antes de precisar recuperar a senha.`,
+            );
+          }
         }
       } else {
         setErr(e instanceof Error ? e.message : "Erro ao autenticar");
