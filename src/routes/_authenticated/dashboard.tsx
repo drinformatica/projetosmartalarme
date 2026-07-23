@@ -185,7 +185,7 @@ function Dashboard() {
                   <div>Venda + Inst.: {BRL(t.venda)}</div>
                   <div>MRR: {BRL(t.mrr)}</div>
                 </div>
-                <div className="min-h-[80px] space-y-2 p-2">
+                <div className={`min-h-[80px] space-y-2 p-2 ${items.length > 4 ? "max-h-[420px] overflow-y-auto" : ""}`}>
                   {items.map((q) => (
                     <div
                       key={q.id}
