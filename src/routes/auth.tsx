@@ -19,6 +19,9 @@ function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
+  const [failedAttempts, setFailedAttempts] = useState(0);
+  const MAX_ATTEMPTS = 5;
+  const locked = mode === "login" && failedAttempts >= MAX_ATTEMPTS;
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -30,6 +33,10 @@ function AuthPage() {
     e.preventDefault();
     setErr(null);
     setMsg(null);
+    if (mode === "login" && failedAttempts >= MAX_ATTEMPTS) {
+      setErr("Muitas tentativas incorretas. Recupere sua senha para continuar.");
+      return;
+    }
     if (mode === "signup" && !isValidCpfCnpj(cnpj)) {
       setErr("CPF ou CNPJ inválido. Informe um documento válido.");
       return;
@@ -62,10 +69,26 @@ function AuthPage() {
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
+        setFailedAttempts(0);
         router.navigate({ to: "/dashboard", replace: true });
       }
     } catch (e: unknown) {
-      setErr(e instanceof Error ? e.message : "Erro ao autenticar");
+      if (mode === "login") {
+        const next = failedAttempts + 1;
+        setFailedAttempts(next);
+        if (next >= MAX_ATTEMPTS) {
+          setErr(
+            `Você atingiu ${MAX_ATTEMPTS} tentativas incorretas. Por segurança, recupere sua senha para continuar.`,
+          );
+        } else {
+          const restantes = MAX_ATTEMPTS - next;
+          setErr(
+            `E-mail ou senha inválidos. Você tem mais ${restantes} tentativa${restantes === 1 ? "" : "s"} antes de precisar recuperar a senha.`,
+          );
+        }
+      } else {
+        setErr(e instanceof Error ? e.message : "Erro ao autenticar");
+      }
     } finally {
       setLoading(false);
     }
@@ -140,7 +163,7 @@ function AuthPage() {
           {err && <div className="rounded bg-red-50 p-2 text-sm text-red-700">{err}</div>}
           {msg && <div className="rounded bg-green-50 p-2 text-sm text-green-700">{msg}</div>}
           <button
-            disabled={loading}
+            disabled={loading || locked}
             className="w-full rounded-md bg-green-700 py-2 text-sm font-semibold text-white hover:bg-green-800 disabled:opacity-50"
           >
             {loading
@@ -151,6 +174,20 @@ function AuthPage() {
                   ? "Cadastrar"
                   : "Enviar link de recuperação"}
           </button>
+          {locked && (
+            <button
+              type="button"
+              onClick={() => {
+                setMode("forgot");
+                setErr(null);
+                setMsg(null);
+                setFailedAttempts(0);
+              }}
+              className="w-full rounded-md border border-green-700 bg-white py-2 text-sm font-semibold text-green-700 hover:bg-green-50"
+            >
+              Recuperar minha senha
+            </button>
+          )}
         </form>
 
         <div className="mt-4 space-y-2 text-center text-sm text-slate-600">
