@@ -19,6 +19,9 @@ function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
+  const [failedAttempts, setFailedAttempts] = useState(0);
+  const MAX_ATTEMPTS = 5;
+  const locked = mode === "login" && failedAttempts >= MAX_ATTEMPTS;
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
