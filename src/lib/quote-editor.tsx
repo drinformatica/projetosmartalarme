@@ -566,7 +566,33 @@ export function QuoteEditor({ id }: { id?: string }) {
     doc.text("Proposta válida por 15 dias.", pageW / 2, footY + 45, { align: "center" });
 
     const nome = (clientCompany || clientName || "cliente").replace(/\s+/g, "_");
-    doc.save(`proposta_${nome}_${Date.now()}.pdf`);
+    const filename = `proposta_${nome}_${Date.now()}.pdf`;
+    const isStandalone =
+      typeof window !== "undefined" &&
+      (window.matchMedia?.("(display-mode: standalone)").matches ||
+        // @ts-expect-error iOS Safari
+        window.navigator.standalone === true);
+    if (isStandalone) {
+      // Em PWA instalado, doc.save() com <a download> costuma ser bloqueado.
+      // Abrimos o blob em nova aba para permitir salvar/compartilhar.
+      const blob = doc.output("blob");
+      const url = URL.createObjectURL(blob);
+      const win = window.open(url, "_blank");
+      if (!win) {
+        // Popup bloqueado — fallback: âncora com target=_blank
+        const a = document.createElement("a");
+        a.href = url;
+        a.target = "_blank";
+        a.rel = "noopener";
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      }
+      setTimeout(() => URL.revokeObjectURL(url), 60_000);
+    } else {
+      doc.save(filename);
+    }
   };
 
   if (loading) return <main className="p-6 text-slate-500">Carregando...</main>;
