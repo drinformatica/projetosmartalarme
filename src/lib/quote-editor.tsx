@@ -91,6 +91,8 @@ export function QuoteEditor({ id }: { id?: string }) {
           setMensalidade(Number(q.mensalidade));
           setObs(q.observacoes ?? "");
           setStatus(q.status);
+          const qMod = (q as unknown as { modalidade?: string }).modalidade;
+          if (qMod === "venda" || qMod === "comodato") setModalidade(qMod);
           const map: Record<string, number> = {};
           (q.items as { codigo: string; qtde: number }[]).forEach((it) => {
             map[it.codigo] = Number(it.qtde) || 0;
