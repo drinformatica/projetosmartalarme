@@ -44,6 +44,17 @@ function AuthPage() {
     setLoading(true);
     try {
       if (mode === "signup") {
+        const { data: exists, error: existsErr } = await supabase.rpc("cpf_cnpj_exists", {
+          _cnpj: onlyDigits(cnpj),
+        });
+        if (existsErr) throw existsErr;
+        if (exists) {
+          setErr("Este CPF/CNPJ já está cadastrado em nossa base. Faça login ou recupere sua senha.");
+          setLoading(false);
+          return;
+        }
+      }
+      if (mode === "signup") {
         const { error } = await supabase.auth.signUp({
           email,
           password,
