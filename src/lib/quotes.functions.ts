@@ -33,6 +33,7 @@ export const listQuotes = createServerFn({ method: "GET" })
     const { data, error } = await context.supabase
       .from("quotes")
       .select("*")
+      .eq("user_id", context.userId)
       .order("created_at", { ascending: false });
     if (error) throw new Error(error.message);
     return data ?? [];
