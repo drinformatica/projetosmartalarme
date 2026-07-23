@@ -96,10 +96,17 @@ function Dashboard() {
     move(id, col);
   };
 
-  const del = async (id: string) => {
-    if (!confirm("Excluir este orçamento?")) return;
-    await remove({ data: { id } });
-    await load();
+  const askDelete = (q: Quote) => setConfirmDelete(q);
+  const confirmDeleteAction = async () => {
+    if (!confirmDelete) return;
+    setDeleting(true);
+    try {
+      await remove({ data: { id: confirmDelete.id } });
+      setConfirmDelete(null);
+      await load();
+    } finally {
+      setDeleting(false);
+    }
   };
 
   const totals = COLUMNS.reduce<Record<QuoteStatus, { count: number; venda: number; mrr: number }>>(
