@@ -62,13 +62,17 @@ export function QuoteEditor({ id }: { id?: string }) {
   const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
+    let cancelled = false;
     (async () => {
       const [p, prods] = await Promise.all([loadProfile(), loadProducts()]);
+      if (cancelled) return;
       setProfile(p ?? null);
       setProducts((prods ?? []).filter((x) => x.active));
       if (id) {
         const q = await load({ data: { id } });
+        if (cancelled) return;
         if (q) {
+          setSavedId(q.id);
           setTitle(q.title);
           setIntro(q.intro);
           setClientName(q.client_name ?? "");
@@ -81,14 +85,22 @@ export function QuoteEditor({ id }: { id?: string }) {
           setStatus(q.status);
           const map: Record<string, number> = {};
           (q.items as { codigo: string; qtde: number }[]).forEach((it) => {
-            map[it.codigo] = it.qtde;
+            map[it.codigo] = Number(it.qtde) || 0;
           });
           setQtds(map);
         }
       }
       setLoading(false);
     })();
-  }, [id, load, loadProfile, loadProducts]);
+    return () => {
+      cancelled = true;
+    };
+    // Only re-run when the quote id changes. useServerFn returns a fresh
+    // function reference each render; including it here caused the effect to
+    // re-fetch and overwrite user edits on every keystroke.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
+
 
   const linhas = useMemo(
     () =>
@@ -666,19 +678,25 @@ export function QuoteEditor({ id }: { id?: string }) {
             />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-semibold text-slate-600">Cliente</label>
+            <label className="mb-1 block text-xs font-semibold text-slate-600">
+              Cliente {savedId && <span className="text-slate-400">(bloqueado)</span>}
+            </label>
             <input
-              className="w-full rounded border border-slate-300 px-3 py-2 text-sm"
+              className="w-full rounded border border-slate-300 px-3 py-2 text-sm read-only:bg-slate-100 read-only:text-slate-600 read-only:cursor-not-allowed"
               value={clientName}
               onChange={(e) => setClientName(e.target.value)}
+              readOnly={!!savedId}
             />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-semibold text-slate-600">Empresa cliente</label>
+            <label className="mb-1 block text-xs font-semibold text-slate-600">
+              Empresa cliente {savedId && <span className="text-slate-400">(bloqueado)</span>}
+            </label>
             <input
-              className="w-full rounded border border-slate-300 px-3 py-2 text-sm"
+              className="w-full rounded border border-slate-300 px-3 py-2 text-sm read-only:bg-slate-100 read-only:text-slate-600 read-only:cursor-not-allowed"
               value={clientCompany}
               onChange={(e) => setClientCompany(e.target.value)}
+              readOnly={!!savedId}
             />
           </div>
         </div>
