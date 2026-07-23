@@ -21,6 +21,13 @@ const loadImg = (src: string): Promise<HTMLImageElement> =>
     img.src = src;
   });
 
+const loadImgSafe = (src: string): Promise<HTMLImageElement | null> =>
+  loadImg(src).catch((err) => {
+    console.warn("[pdf] falha ao carregar imagem:", src, err);
+    return null;
+  });
+
+
 const BRL = (n: number) =>
   (n || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
@@ -213,14 +220,15 @@ export function QuoteEditor({ id }: { id?: string }) {
     }
 
     const [stepSensor, stepCentral, stepNotif, stepView, partnerBadge] = await Promise.all([
-      loadImg(stepSensorImg),
-      loadImg(stepCentralImg),
-      loadImg(stepNotifImg),
-      loadImg(stepViewImg),
-      loadImg(partnerBadgeAsset.url),
+      loadImgSafe(stepSensorImg),
+      loadImgSafe(stepCentralImg),
+      loadImgSafe(stepNotifImg),
+      loadImgSafe(stepViewImg),
+      loadImgSafe(partnerBadgeAsset.url),
     ]);
     const stepImgs = [stepSensor, stepCentral, stepNotif, stepView];
     const stepFmts = ["JPEG", "JPEG", "PNG", "JPEG"] as const;
+
     const doc = new jsPDF({ unit: "pt", format: "a4" });
     const pageW = doc.internal.pageSize.getWidth();
     const pageH = doc.internal.pageSize.getHeight();
@@ -402,7 +410,8 @@ export function QuoteEditor({ id }: { id?: string }) {
       doc.roundedRect(bx, by, bw, bh, 4, 4, "S");
       // imagem dentro do box
       const pad = 4;
-      doc.addImage(stepImgs[i], stepFmts[i], bx + pad, by + pad, bw - pad * 2, bh - pad * 2);
+      if (stepImgs[i]) doc.addImage(stepImgs[i]!, stepFmts[i], bx + pad, by + pad, bw - pad * 2, bh - pad * 2);
+
       // seta
       if (i < steps.length - 1) {
         doc.setDrawColor(...GREEN);
