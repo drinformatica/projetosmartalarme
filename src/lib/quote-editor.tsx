@@ -410,7 +410,8 @@ export function QuoteEditor({ id }: { id?: string }) {
       doc.roundedRect(bx, by, bw, bh, 4, 4, "S");
       // imagem dentro do box
       const pad = 4;
-      doc.addImage(stepImgs[i], stepFmts[i], bx + pad, by + pad, bw - pad * 2, bh - pad * 2);
+      if (stepImgs[i]) doc.addImage(stepImgs[i]!, stepFmts[i], bx + pad, by + pad, bw - pad * 2, bh - pad * 2);
+
       // seta
       if (i < steps.length - 1) {
         doc.setDrawColor(...GREEN);
