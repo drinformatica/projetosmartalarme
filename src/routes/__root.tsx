@@ -175,6 +175,7 @@ function RootComponent() {
       <Outlet />
       <Footer />
       <InstallPrompt />
+      <SpeedInsights />
     </QueryClientProvider>
   );
 }
