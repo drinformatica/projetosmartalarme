@@ -61,6 +61,7 @@ export function QuoteEditor({ id }: { id?: string }) {
   const [mensalidade, setMensalidade] = useState<number>(0);
   const [obs, setObs] = useState("");
   const [status, setStatus] = useState<QuoteStatus>("rascunho");
+  const [modalidade, setModalidade] = useState<QuoteModalidade>("comodato");
   const [filtro, setFiltro] = useState("");
   const [profile, setProfile] = useState<Profile | null>(null);
   const [savedId, setSavedId] = useState<string | undefined>(id);
