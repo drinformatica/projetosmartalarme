@@ -7,6 +7,7 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
@@ -174,6 +175,7 @@ function RootComponent() {
       <Outlet />
       <Footer />
       <InstallPrompt />
+      <SpeedInsights />
     </QueryClientProvider>
   );
 }
