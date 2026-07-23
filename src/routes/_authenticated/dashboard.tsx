@@ -44,6 +44,8 @@ function Dashboard() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [dragOverCol, setDragOverCol] = useState<QuoteStatus | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<Quote | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
 
   const load = async () => {
