@@ -21,6 +21,13 @@ const loadImg = (src: string): Promise<HTMLImageElement> =>
     img.src = src;
   });
 
+const loadImgSafe = (src: string): Promise<HTMLImageElement | null> =>
+  loadImg(src).catch((err) => {
+    console.warn("[pdf] falha ao carregar imagem:", src, err);
+    return null;
+  });
+
+
 const BRL = (n: number) =>
   (n || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
