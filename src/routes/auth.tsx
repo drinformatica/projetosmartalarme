@@ -163,7 +163,7 @@ function AuthPage() {
           {err && <div className="rounded bg-red-50 p-2 text-sm text-red-700">{err}</div>}
           {msg && <div className="rounded bg-green-50 p-2 text-sm text-green-700">{msg}</div>}
           <button
-            disabled={loading}
+            disabled={loading || locked}
             className="w-full rounded-md bg-green-700 py-2 text-sm font-semibold text-white hover:bg-green-800 disabled:opacity-50"
           >
             {loading
@@ -174,6 +174,20 @@ function AuthPage() {
                   ? "Cadastrar"
                   : "Enviar link de recuperação"}
           </button>
+          {locked && (
+            <button
+              type="button"
+              onClick={() => {
+                setMode("forgot");
+                setErr(null);
+                setMsg(null);
+                setFailedAttempts(0);
+              }}
+              className="w-full rounded-md border border-green-700 bg-white py-2 text-sm font-semibold text-green-700 hover:bg-green-50"
+            >
+              Recuperar minha senha
+            </button>
+          )}
         </form>
 
         <div className="mt-4 space-y-2 text-center text-sm text-slate-600">
