@@ -241,6 +241,46 @@ function Dashboard() {
 
       <AdsCarousel />
 
+      {confirmDelete && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          onClick={() => !deleting && setConfirmDelete(null)}
+        >
+          <div
+            className="w-full max-w-sm rounded-lg bg-white p-5 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className="text-lg font-bold text-slate-800">Excluir orçamento?</h2>
+            <p className="mt-2 text-sm text-slate-600">
+              Tem certeza que deseja excluir{" "}
+              <span className="font-semibold text-slate-800">
+                {confirmDelete.title}
+              </span>
+              {confirmDelete.client_company || confirmDelete.client_name ? (
+                <> de <span className="font-semibold text-slate-800">{confirmDelete.client_company || confirmDelete.client_name}</span></>
+              ) : null}
+              ? Esta ação não pode ser desfeita.
+            </p>
+            <div className="mt-5 flex justify-end gap-2">
+              <button
+                onClick={() => setConfirmDelete(null)}
+                disabled={deleting}
+                className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={confirmDeleteAction}
+                disabled={deleting}
+                className="rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-50"
+              >
+                {deleting ? "Excluindo..." : "Excluir"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </main>
 
   );
