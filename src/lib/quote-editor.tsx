@@ -183,6 +183,7 @@ export function QuoteEditor({ id }: { id?: string }) {
       mensalidade: Number(mensalidade),
       observacoes: obs,
       status: effStatus,
+      modalidade,
       total_venda: totalVenda,
       total_custo: totalCusto,
     };
