@@ -8,6 +8,7 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { SpeedInsights } from "@vercel/speed-insights/react";
+import { Analytics } from "@vercel/analytics/react";
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
@@ -176,6 +177,7 @@ function RootComponent() {
       <Footer />
       <InstallPrompt />
       <SpeedInsights />
+      <Analytics />
     </QueryClientProvider>
   );
 }
