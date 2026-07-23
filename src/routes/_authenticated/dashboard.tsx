@@ -224,7 +224,7 @@ function Dashboard() {
                           ))}
                         </select>
                         <button
-                          onClick={() => del(q.id)}
+                          onClick={() => askDelete(q)}
                           className="rounded border border-red-200 px-2 py-1 text-[11px] text-red-700 hover:bg-red-50"
                         >
                           ×
