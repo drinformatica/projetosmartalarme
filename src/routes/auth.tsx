@@ -33,6 +33,10 @@ function AuthPage() {
     e.preventDefault();
     setErr(null);
     setMsg(null);
+    if (mode === "login" && failedAttempts >= MAX_ATTEMPTS) {
+      setErr("Muitas tentativas incorretas. Recupere sua senha para continuar.");
+      return;
+    }
     if (mode === "signup" && !isValidCpfCnpj(cnpj)) {
       setErr("CPF ou CNPJ inválido. Informe um documento válido.");
       return;
@@ -65,10 +69,26 @@ function AuthPage() {
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
+        setFailedAttempts(0);
         router.navigate({ to: "/dashboard", replace: true });
       }
     } catch (e: unknown) {
-      setErr(e instanceof Error ? e.message : "Erro ao autenticar");
+      if (mode === "login") {
+        const next = failedAttempts + 1;
+        setFailedAttempts(next);
+        if (next >= MAX_ATTEMPTS) {
+          setErr(
+            `Você atingiu ${MAX_ATTEMPTS} tentativas incorretas. Por segurança, recupere sua senha para continuar.`,
+          );
+        } else {
+          const restantes = MAX_ATTEMPTS - next;
+          setErr(
+            `E-mail ou senha inválidos. Você tem mais ${restantes} tentativa${restantes === 1 ? "" : "s"} antes de precisar recuperar a senha.`,
+          );
+        }
+      } else {
+        setErr(e instanceof Error ? e.message : "Erro ao autenticar");
+      }
     } finally {
       setLoading(false);
     }
