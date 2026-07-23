@@ -1,19 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
-type AppRole = "super_admin" | "admin" | "user";
-
-async function assertAdmin(_supabase: any, userId: string) {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { data, error } = await supabaseAdmin
-    .from("user_roles")
-    .select("role")
-    .eq("user_id", userId);
+async function assertAdmin(supabase: any, userId: string) {
+  const { data, error } = await supabase.rpc("is_admin", { _user_id: userId });
   if (error) throw new Error(error.message);
-  const roles = (data ?? []).map((r: { role: AppRole }) => r.role);
-  if (!roles.includes("super_admin") && !roles.includes("admin")) {
-    throw new Error("Acesso negado");
-  }
+  if (!data) throw new Error("Acesso negado");
 }
 
 type AdRow = {
