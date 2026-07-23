@@ -18,7 +18,7 @@ export default defineConfig({
         injectRegister: null,
         devOptions: { enabled: false },
         filename: "sw.js",
-        includeAssets: ["favicon.ico", "apple-touch-icon.png"],
+        includeAssets: ["apple-touch-icon.png"],
         manifest: {
           name: "Intrusão 2.0 - Orçamentos & Pipeline",
           short_name: "Intrusão 2.0",
