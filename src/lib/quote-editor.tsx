@@ -678,19 +678,25 @@ export function QuoteEditor({ id }: { id?: string }) {
             />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-semibold text-slate-600">Cliente</label>
+            <label className="mb-1 block text-xs font-semibold text-slate-600">
+              Cliente {savedId && <span className="text-slate-400">(bloqueado)</span>}
+            </label>
             <input
-              className="w-full rounded border border-slate-300 px-3 py-2 text-sm"
+              className="w-full rounded border border-slate-300 px-3 py-2 text-sm read-only:bg-slate-100 read-only:text-slate-600 read-only:cursor-not-allowed"
               value={clientName}
               onChange={(e) => setClientName(e.target.value)}
+              readOnly={!!savedId}
             />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-semibold text-slate-600">Empresa cliente</label>
+            <label className="mb-1 block text-xs font-semibold text-slate-600">
+              Empresa cliente {savedId && <span className="text-slate-400">(bloqueado)</span>}
+            </label>
             <input
-              className="w-full rounded border border-slate-300 px-3 py-2 text-sm"
+              className="w-full rounded border border-slate-300 px-3 py-2 text-sm read-only:bg-slate-100 read-only:text-slate-600 read-only:cursor-not-allowed"
               value={clientCompany}
               onChange={(e) => setClientCompany(e.target.value)}
+              readOnly={!!savedId}
             />
           </div>
         </div>
