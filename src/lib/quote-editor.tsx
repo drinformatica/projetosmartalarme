@@ -481,59 +481,104 @@ export function QuoteEditor({ id }: { id?: string }) {
     doc.setFontSize(11);
     doc.text("INVESTIMENTO", 60, finalY + 28);
 
-    // Taxa de instalação (se houver)
-    if (Number(taxaInstalacao) > 0) {
+    if (modalidade === "venda") {
+      // ===== VENDA: Produtos + Mão de Obra = Total =====
+      const maoObra = Number(taxaInstalacao) || 0;
+      const totalFinal = totalVenda + maoObra;
+
       doc.setTextColor(220);
       doc.setFont("helvetica", "normal");
       doc.setFontSize(9);
-      doc.text("Taxa de Instalação", 60, finalY + 48);
-
+      doc.text("Equipamentos", 60, finalY + 48);
       doc.setTextColor(255);
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(28);
-      doc.text(BRL(Number(taxaInstalacao)), 60, finalY + 82);
+      doc.setFontSize(14);
+      doc.text(BRL(totalVenda), 60, finalY + 68);
 
-      doc.setTextColor(180);
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(8);
-      doc.text("Condições de pagamento", 60, finalY + 100);
       doc.setTextColor(220);
-      doc.text("À vista ou em até 12x no cartão", 60, finalY + 112);
-    } else {
-      doc.setTextColor(180);
       doc.setFont("helvetica", "normal");
       doc.setFontSize(9);
-      doc.text("Taxa de instalação não aplicada.", 60, finalY + 52);
-    }
+      doc.text("Mão de Obra", 60, finalY + 90);
+      doc.setTextColor(255);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(14);
+      doc.text(BRL(maoObra), 60, finalY + 110);
 
-    // Divisor
-    doc.setDrawColor(60, 70, 78);
-    doc.setLineWidth(0.5);
-    doc.line(pageW / 2 + 20, finalY + 20, pageW / 2 + 20, finalY + invH - 20);
+      // Divisor
+      doc.setDrawColor(60, 70, 78);
+      doc.setLineWidth(0.5);
+      doc.line(pageW / 2 + 20, finalY + 20, pageW / 2 + 20, finalY + invH - 20);
 
-    // Mensalidade
-    if (mensalidade > 0) {
       doc.setTextColor(...GREEN);
       doc.setFont("helvetica", "bold");
       doc.setFontSize(10);
-      doc.text("MONITORAMENTO 24H", pageW / 2 + 40, finalY + 40);
+      doc.text("VALOR TOTAL", pageW / 2 + 40, finalY + 48);
       doc.setTextColor(255);
-      doc.setFontSize(18);
-      doc.text(BRL(Number(mensalidade)) + " /mês", pageW / 2 + 40, finalY + 66);
+      doc.setFontSize(24);
+      doc.text(BRL(totalFinal), pageW / 2 + 40, finalY + 82);
       doc.setTextColor(180);
       doc.setFont("helvetica", "normal");
       doc.setFontSize(8);
-      doc.text("Central 24h · Alertas em tempo real", pageW / 2 + 40, finalY + 82);
+      doc.text("À vista ou em até 12x no cartão", pageW / 2 + 40, finalY + 100);
+      doc.setTextColor(...GREEN);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9);
+      doc.text("GARANTIA DE 2 ANOS", pageW / 2 + 40, finalY + 118);
+    } else {
+      // ===== COMODATO: Taxa Instalação + Mensalidade =====
+      if (Number(taxaInstalacao) > 0) {
+        doc.setTextColor(220);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(9);
+        doc.text("Taxa de Instalação", 60, finalY + 48);
+
+        doc.setTextColor(255);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(28);
+        doc.text(BRL(Number(taxaInstalacao)), 60, finalY + 82);
+
+        doc.setTextColor(180);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8);
+        doc.text("Condições de pagamento", 60, finalY + 100);
+        doc.setTextColor(220);
+        doc.text("À vista ou em até 12x no cartão", 60, finalY + 112);
+      } else {
+        doc.setTextColor(180);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(9);
+        doc.text("Taxa de instalação não aplicada.", 60, finalY + 52);
+      }
+
+      // Divisor
+      doc.setDrawColor(60, 70, 78);
+      doc.setLineWidth(0.5);
+      doc.line(pageW / 2 + 20, finalY + 20, pageW / 2 + 20, finalY + invH - 20);
+
+      // Mensalidade
+      if (mensalidade > 0) {
+        doc.setTextColor(...GREEN);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(10);
+        doc.text("MONITORAMENTO 24H", pageW / 2 + 40, finalY + 40);
+        doc.setTextColor(255);
+        doc.setFontSize(18);
+        doc.text(BRL(Number(mensalidade)) + " /mês", pageW / 2 + 40, finalY + 66);
+        doc.setTextColor(180);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8);
+        doc.text("Central 24h · Alertas em tempo real", pageW / 2 + 40, finalY + 82);
+      }
+      // Garantia badge
+      doc.setTextColor(...GREEN);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9);
+      doc.text("GARANTIA DE 2 ANOS", pageW / 2 + 40, finalY + 104);
+      doc.setTextColor(180);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(7.5);
+      doc.text("Suporte técnico especializado", pageW / 2 + 40, finalY + 115);
     }
-    // Garantia badge
-    doc.setTextColor(...GREEN);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(9);
-    doc.text("GARANTIA DE 2 ANOS", pageW / 2 + 40, finalY + 104);
-    doc.setTextColor(180);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(7.5);
-    doc.text("Suporte técnico especializado", pageW / 2 + 40, finalY + 115);
 
     finalY += invH + 20;
 
