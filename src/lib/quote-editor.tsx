@@ -715,6 +715,40 @@ export function QuoteEditor({ id }: { id?: string }) {
         </div>
       </section>
 
+      {/* Modalidade */}
+      <section className="mb-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+        <h2 className="mb-3 text-sm font-semibold text-slate-700">Modalidade do Orçamento</h2>
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            onClick={() => setModalidade("comodato")}
+            className={`rounded-md border px-3 py-2 text-sm font-semibold transition ${
+              modalidade === "comodato"
+                ? "border-green-700 bg-green-700 text-white"
+                : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
+            }`}
+          >
+            Comodato
+          </button>
+          <button
+            type="button"
+            onClick={() => setModalidade("venda")}
+            className={`rounded-md border px-3 py-2 text-sm font-semibold transition ${
+              modalidade === "venda"
+                ? "border-green-700 bg-green-700 text-white"
+                : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
+            }`}
+          >
+            Venda
+          </button>
+        </div>
+        <p className="mt-2 text-xs text-slate-500">
+          {modalidade === "comodato"
+            ? "Comodato: cliente paga taxa de instalação e mensalidade de monitoramento."
+            : "Venda: cliente paga o valor total dos produtos + mão de obra."}
+        </p>
+      </section>
+
       {/* Config comercial */}
       <section className="mb-4 grid gap-3 rounded-lg border border-slate-200 bg-white p-4 shadow-sm grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <div>
@@ -733,7 +767,9 @@ export function QuoteEditor({ id }: { id?: string }) {
           />
         </div>
         <div>
-          <label className="mb-1 block text-xs font-semibold text-slate-600">Taxa de Instalação (R$)</label>
+          <label className="mb-1 block text-xs font-semibold text-slate-600">
+            {modalidade === "venda" ? "Valor de Mão de Obra (R$)" : "Taxa de Instalação (R$)"}
+          </label>
           <input
             type="number"
             min={0}
@@ -748,22 +784,24 @@ export function QuoteEditor({ id }: { id?: string }) {
             onFocus={(e) => e.target.select()}
           />
         </div>
-        <div>
-          <label className="mb-1 block text-xs font-semibold text-slate-600">Mensalidade Monitoramento (R$)</label>
-          <input
-            type="number"
-            min={0}
-            step="0.01"
-            inputMode="decimal"
-            className="w-full rounded border border-slate-300 px-3 py-2 text-sm"
-            value={mensalidade || ""}
-            onChange={(e) => {
-              const v = e.target.value;
-              setMensalidade(v === "" ? 0 : Number(v));
-            }}
-            onFocus={(e) => e.target.select()}
-          />
-        </div>
+        {modalidade === "comodato" && (
+          <div>
+            <label className="mb-1 block text-xs font-semibold text-slate-600">Mensalidade Monitoramento (R$)</label>
+            <input
+              type="number"
+              min={0}
+              step="0.01"
+              inputMode="decimal"
+              className="w-full rounded border border-slate-300 px-3 py-2 text-sm"
+              value={mensalidade || ""}
+              onChange={(e) => {
+                const v = e.target.value;
+                setMensalidade(v === "" ? 0 : Number(v));
+              }}
+              onFocus={(e) => e.target.select()}
+            />
+          </div>
+        )}
 
         <div>
           <label className="mb-1 block text-xs font-semibold text-slate-600">Buscar produto</label>
