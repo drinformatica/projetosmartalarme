@@ -1,6 +1,6 @@
 // Simple offline outbox for quote saves. Persists pending writes in localStorage
 // and flushes them when the browser reports it is back online.
-import type { QuoteStatus } from "@/lib/quotes.functions";
+import type { QuoteStatus, QuoteModalidade } from "@/lib/quotes.functions";
 
 const KEY = "quote-outbox-v1";
 
