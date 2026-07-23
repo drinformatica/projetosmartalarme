@@ -26,6 +26,7 @@ export type QueuedQuote = {
     mensalidade: number;
     observacoes: string;
     status: QuoteStatus;
+    modalidade: QuoteModalidade;
     total_venda: number;
     total_custo: number;
   };
