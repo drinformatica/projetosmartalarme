@@ -997,38 +997,66 @@ export function QuoteEditor({ id }: { id?: string }) {
       </section>
 
 
-      {/* ROI */}
-      <section className="mt-6 grid gap-4 lg:grid-cols-2">
-        <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-          <h3 className="mb-3 text-sm font-semibold text-slate-700">Análise de ROI</h3>
-          <div className="space-y-2 text-sm">
-            <Row label="Custo produtos" value={BRL(totalCusto)} />
-            <Row label="Taxa de instalação (cobrada)" value={BRL(Number(taxaInstalacao))} />
-            <Row label="Venda de Equipamentos / Comodato" value={BRL(totalVenda)} />
-            <Row label="Lucro Venda de Equipamentos / Comodato" value={BRL(lucro)} bold color="text-green-700" />
-            <div className="my-2 border-t border-slate-200" />
-            <Row label="Investimento a recuperar (venda − inst.)" value={BRL(investimentoInicial)} />
-            <Row label="Mensalidade monitoramento" value={BRL(Number(mensalidade))} />
-            <Row
-              label="Payback"
-              value={mensalidade > 0 ? `${paybackMeses.toFixed(1)} meses` : "—"}
-              bold
-              color="text-amber-700"
-            />
+      {/* ROI / Resumo */}
+      {modalidade === "venda" ? (
+        <section className="mt-6 grid gap-4 lg:grid-cols-2">
+          <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+            <h3 className="mb-3 text-sm font-semibold text-slate-700">Resumo da Venda</h3>
+            <div className="space-y-2 text-sm">
+              <Row label="Custo produtos" value={BRL(totalCusto)} />
+              <Row label="Total produtos (c/ margem)" value={BRL(totalVenda)} />
+              <Row label="Mão de obra" value={BRL(Number(taxaInstalacao))} />
+              <div className="my-2 border-t border-slate-200" />
+              <Row
+                label="Valor final ao cliente"
+                value={BRL(totalVenda + Number(taxaInstalacao || 0))}
+                bold
+                color="text-green-700"
+              />
+              <Row label="Lucro estimado" value={BRL(lucro)} bold color="text-green-700" />
+            </div>
           </div>
-        </div>
-        <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-          <h3 className="mb-3 text-sm font-semibold text-slate-700">Receita projetada monitoramento</h3>
-          <div className="space-y-2 text-sm">
-            <Row label="12 meses" value={BRL(receita12)} />
-            <Row label="24 meses" value={BRL(receita24)} />
-            <Row label="36 meses" value={BRL(receita36)} bold color="text-green-700" />
+          <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+            <h3 className="mb-3 text-sm font-semibold text-slate-700">Composição</h3>
+            <p className="text-xs text-slate-500">
+              Nesta modalidade, o cliente adquire os equipamentos e paga a mão de obra
+              da instalação. Sem mensalidade de monitoramento.
+            </p>
           </div>
-          <p className="mt-4 text-xs text-slate-500">
-            Baseado apenas no contrato de monitoramento recorrente.
-          </p>
-        </div>
-      </section>
+        </section>
+      ) : (
+        <section className="mt-6 grid gap-4 lg:grid-cols-2">
+          <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+            <h3 className="mb-3 text-sm font-semibold text-slate-700">Análise de ROI</h3>
+            <div className="space-y-2 text-sm">
+              <Row label="Custo produtos" value={BRL(totalCusto)} />
+              <Row label="Taxa de instalação (cobrada)" value={BRL(Number(taxaInstalacao))} />
+              <Row label="Venda de Equipamentos / Comodato" value={BRL(totalVenda)} />
+              <Row label="Lucro Venda de Equipamentos / Comodato" value={BRL(lucro)} bold color="text-green-700" />
+              <div className="my-2 border-t border-slate-200" />
+              <Row label="Investimento a recuperar (venda − inst.)" value={BRL(investimentoInicial)} />
+              <Row label="Mensalidade monitoramento" value={BRL(Number(mensalidade))} />
+              <Row
+                label="Payback"
+                value={mensalidade > 0 ? `${paybackMeses.toFixed(1)} meses` : "—"}
+                bold
+                color="text-amber-700"
+              />
+            </div>
+          </div>
+          <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+            <h3 className="mb-3 text-sm font-semibold text-slate-700">Receita projetada monitoramento</h3>
+            <div className="space-y-2 text-sm">
+              <Row label="12 meses" value={BRL(receita12)} />
+              <Row label="24 meses" value={BRL(receita24)} />
+              <Row label="36 meses" value={BRL(receita36)} bold color="text-green-700" />
+            </div>
+            <p className="mt-4 text-xs text-slate-500">
+              Baseado apenas no contrato de monitoramento recorrente.
+            </p>
+          </div>
+        </section>
+      )}
 
       <section className="mt-6">
         <label className="mb-1 block text-xs font-semibold text-slate-600">
