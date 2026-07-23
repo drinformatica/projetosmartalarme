@@ -50,7 +50,7 @@ function AuthPage() {
         ) => Promise<{ data: boolean | null; error: unknown }>)("cpf_cnpj_exists", {
           _cnpj: onlyDigits(cnpj),
         });
-        if (existsErr) throw existsErr;
+        if (existsErr) throw existsErr as Error;
         if (exists) {
           setErr("Este CPF/CNPJ já está cadastrado em nossa base. Faça login ou recupere sua senha.");
           setLoading(false);
