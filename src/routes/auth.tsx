@@ -44,7 +44,10 @@ function AuthPage() {
     setLoading(true);
     try {
       if (mode === "signup") {
-        const { data: exists, error: existsErr } = await supabase.rpc("cpf_cnpj_exists", {
+        const { data: exists, error: existsErr } = await (supabase.rpc as unknown as (
+          fn: string,
+          args: Record<string, unknown>,
+        ) => Promise<{ data: boolean | null; error: unknown }>)("cpf_cnpj_exists", {
           _cnpj: onlyDigits(cnpj),
         });
         if (existsErr) throw existsErr;
