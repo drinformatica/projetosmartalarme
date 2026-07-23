@@ -95,7 +95,7 @@ function AuthPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
+    <div className="flex min-h-[calc(100svh-64px)] items-center justify-center bg-slate-50 px-4 py-6">
       <div className="w-full max-w-md rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
         <div className="mb-6 text-center">
           <div className="mx-auto mb-3 inline-block rounded-full bg-green-100 px-4 py-1 text-xs font-semibold text-green-800">
