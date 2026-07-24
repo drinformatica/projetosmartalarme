@@ -242,6 +242,7 @@ export type Database = {
         Args: { _make_admin: boolean; _user_id: string }
         Returns: undefined
       }
+      cpf_cnpj_exists: { Args: { _cnpj: string }; Returns: boolean }
       get_user_roles: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"][]
