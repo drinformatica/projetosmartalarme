@@ -10,7 +10,7 @@ import stepSensorImg from "@/assets/step-sensor.jpg";
 import stepCentralImg from "@/assets/step-central.jpg";
 import stepNotifImg from "@/assets/step-notif.png";
 import stepViewImg from "@/assets/step-view.jpg";
-import partnerBadgeAsset from "@/assets/parceiro-credenciado.png.asset.json";
+
 
 const loadImg = (src: string): Promise<HTMLImageElement> =>
   new Promise((resolve, reject) => {
@@ -223,12 +223,11 @@ export function QuoteEditor({ id }: { id?: string }) {
       }
     }
 
-    const [stepSensor, stepCentral, stepNotif, stepView, partnerBadge] = await Promise.all([
+    const [stepSensor, stepCentral, stepNotif, stepView] = await Promise.all([
       loadImgSafe(stepSensorImg),
       loadImgSafe(stepCentralImg),
       loadImgSafe(stepNotifImg),
       loadImgSafe(stepViewImg),
-      loadImgSafe(partnerBadgeAsset.url),
     ]);
     const stepImgs = [stepSensor, stepCentral, stepNotif, stepView];
     const stepFmts = ["JPEG", "JPEG", "PNG", "JPEG"] as const;
@@ -336,21 +335,6 @@ export function QuoteEditor({ id }: { id?: string }) {
       }
     }
 
-    // Selo "Parceiro Credenciado Intelbras" — abaixo da logo, dentro do hero
-    if (partnerBadge) {
-      const sealW = 55;
-      const sealH = 55;
-      const sx = pageW - 40 - sealW;
-      const sy = logoBottomY + 16;
-      // Garante que o selo não ultrapasse a faixa de features
-      if (sy + sealH <= heroH - 20) {
-        try {
-          doc.addImage(partnerBadge, "PNG", sx, sy, sealW, sealH);
-        } catch {
-          try { doc.addImage(partnerBadge, "JPEG", sx, sy, sealW, sealH); } catch {}
-        }
-      }
-    }
 
     // ============ FAIXA DE FEATURES (fundo escuro secundário) ============
     const featY = heroH;
