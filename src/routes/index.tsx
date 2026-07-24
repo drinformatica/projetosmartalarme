@@ -58,20 +58,15 @@ function Landing() {
 
         {/* Hero — centered, focused */}
         <section className="mx-auto flex max-w-3xl flex-1 flex-col items-center text-center">
-          <span className="animate-rise inline-flex items-center gap-2 rounded-full border border-primary/20 bg-accent/60 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-primary-deep">
-            <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-            Parceiro credenciado Intelbras
-          </span>
-
-          <h1 className="animate-rise-delay-1 mt-6 font-display text-5xl font-black leading-[1.02] tracking-tight text-balance sm:text-6xl">
-            Propostas comerciais{" "}
+          <h1 className="animate-rise-delay-1 font-display text-5xl font-black leading-[1.02] tracking-tight text-balance sm:text-6xl">
+            Propostas comerciais de alta conversão{" "}
             <span className="bg-emerald-gradient bg-clip-text text-transparent">
               com acabamento premium.
             </span>
           </h1>
 
           <p className="animate-rise-delay-2 mt-6 max-w-xl text-base leading-relaxed text-muted-foreground text-balance sm:text-lg">
-            Orçamentos, ROI e pipeline de vendas de alarme Intelbras — numa única plataforma.
+            Orçamentos, ROI e pipeline de vendas e orçamentos de soluções — numa única plataforma.
           </p>
 
           <div className="animate-rise-delay-3 mt-9">
