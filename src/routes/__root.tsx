@@ -180,6 +180,14 @@ function RootComponent() {
     return () => window.removeEventListener("online", doFlush);
   }, [save]);
 
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isAuthedLayout =
+    pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/orcamento") ||
+    pathname.startsWith("/pipeline") ||
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/perfil");
+
   return (
     <QueryClientProvider client={queryClient}>
       <div className="flex min-h-svh flex-col">
@@ -187,7 +195,7 @@ function RootComponent() {
         <div className="flex flex-1 flex-col">
           <Outlet />
         </div>
-        <Footer />
+        {!isAuthedLayout && <Footer />}
       </div>
       <InstallPrompt />
       <SpeedInsights />
