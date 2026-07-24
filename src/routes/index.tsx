@@ -10,7 +10,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Plataforma premium para gerar propostas em PDF, calcular ROI e gerenciar o pipeline de vendas de alarme e monitoramento Intelbras.",
+          "Orçamentos inteligentes, análise de ROI e gestão completa do pipeline de vendas — tudo em uma única plataforma.",
       },
       { property: "og:title", content: "Intrusão 2.0 — Orçamentos & Pipeline" },
       {
@@ -66,7 +66,7 @@ function Landing() {
           </h1>
 
           <p className="animate-rise-delay-2 mt-6 max-w-xl text-base leading-relaxed text-muted-foreground text-balance sm:text-lg">
-            Orçamentos, ROI e pipeline de vendas e orçamentos de soluções — numa única plataforma.
+            Orçamentos inteligentes, análise de ROI e gestão completa do pipeline de vendas — tudo em uma única plataforma.
           </p>
 
           <div className="animate-rise-delay-3 mt-9">
