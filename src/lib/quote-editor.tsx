@@ -256,6 +256,12 @@ export function QuoteEditor({ id }: { id?: string }) {
     if (profile?.logo_url) {
       try { logoImg = await loadImg(profile.logo_url); } catch { logoImg = null; }
     }
+    // Selo Parceiro Credenciado Intelbras (asset local do projeto)
+    let seloImg: HTMLImageElement | null = null;
+    try {
+      const seloMod: any = await import("@/assets/parceiro-credenciado.png.asset.json");
+      seloImg = await loadImg(seloMod?.default?.url || seloMod?.url);
+    } catch { seloImg = null; }
     const logoBandH = 0;
     const heroH = 220;
     doc.setFillColor(...DARK);
@@ -333,6 +339,17 @@ export function QuoteEditor({ id }: { id?: string }) {
       } catch {
         try { doc.addImage(logoImg, "PNG", lx, ly, w, h); } catch {}
       }
+    }
+
+
+    // Selo Parceiro Credenciado — logo abaixo da logo do perfil, alinhado à direita
+    if (seloImg) {
+      const sH = 56;
+      const sRatio = seloImg.width / seloImg.height || 1;
+      const sW = sH * sRatio;
+      const sx = pageW - 40 - sW;
+      const sy = logoBottomY + 10;
+      try { doc.addImage(seloImg, "PNG", sx, sy, sW, sH); } catch {}
     }
 
 
