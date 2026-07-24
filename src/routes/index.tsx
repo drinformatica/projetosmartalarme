@@ -6,17 +6,17 @@ export const Route = createFileRoute("/")({
   component: Landing,
   head: () => ({
     meta: [
-      { title: "Intrusão 2.0 — Orçamentos premium e pipeline de vendas" },
+      { title: "Intrusão 2.0 — Orçamentos, ROI e pipeline comercial" },
       {
         name: "description",
         content:
-          "Orçamentos inteligentes, análise de ROI e gestão completa do pipeline de vendas — tudo em uma única plataforma.",
+          "Crie propostas profissionais, analise o retorno do investimento e acompanhe cada oportunidade até o fechamento.",
       },
-      { property: "og:title", content: "Intrusão 2.0 — Orçamentos & Pipeline" },
+      { property: "og:title", content: "Intrusão 2.0 — Orçamentos, ROI e pipeline comercial" },
       {
         property: "og:description",
         content:
-          "Orçamentos formais, ROI, comodato ou venda e Kanban de vendas — tudo em uma experiência refinada.",
+          "Crie propostas profissionais, analise o retorno do investimento e acompanhe cada oportunidade até o fechamento.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -32,7 +32,7 @@ function Landing() {
 
   const cta = signedIn
     ? { to: "/dashboard", label: "Ir para o Dashboard" }
-    : { to: "/auth", label: "Entrar / Cadastrar" };
+    : { to: "/auth", label: "Começar Gratuitamente" };
 
   return (
     <div className="relative min-h-[calc(100svh-64px)] overflow-hidden bg-hero text-foreground">
@@ -52,21 +52,22 @@ function Landing() {
             to={cta.to}
             className="rounded-full border border-border/70 bg-white/70 px-4 py-1.5 text-xs font-semibold shadow-sm backdrop-blur transition hover:border-primary/40 hover:text-primary sm:text-sm"
           >
-            {signedIn ? "Dashboard →" : "Acessar"}
+            {signedIn ? "Dashboard →" : "Entrar"}
           </Link>
         </div>
 
         {/* Hero — centered, focused */}
         <section className="mx-auto flex max-w-3xl flex-1 flex-col items-center text-center">
           <h1 className="animate-rise-delay-1 font-display text-5xl font-black leading-[1.02] tracking-tight text-balance sm:text-6xl">
-            Propostas comerciais de alta conversão{" "}
-            <span className="bg-emerald-gradient bg-clip-text text-transparent">
-              com acabamento premium.
+            Orçamentos, ROI e pipeline comercial{" "}
+            <span className="relative inline-block">
+              <span className="absolute inset-x-0 bottom-[12%] h-[40%] rounded-full bg-gradient-to-r from-primary/30 via-primary-glow/40 to-primary/20 blur-md" aria-hidden="true" />
+              em uma única plataforma.
             </span>
           </h1>
 
           <p className="animate-rise-delay-2 mt-6 max-w-xl text-base leading-relaxed text-muted-foreground text-balance sm:text-lg">
-            Orçamentos inteligentes, análise de ROI e gestão completa do pipeline de vendas — tudo em uma única plataforma.
+            Crie propostas profissionais, analise o retorno do investimento e acompanhe cada oportunidade até o fechamento.
           </p>
 
           <div className="animate-rise-delay-3 mt-9">
@@ -79,11 +80,15 @@ function Landing() {
             </Link>
           </div>
 
+          <p className="animate-rise-delay-3 mt-4 max-w-lg text-xs text-muted-foreground/80 text-balance sm:text-sm">
+            Utilizado por integradores, distribuidores e equipes comerciais para acelerar o fechamento de projetos.
+          </p>
+
           {/* Compact features row */}
-          <div className="animate-rise-delay-4 mt-16 grid w-full grid-cols-1 gap-3 sm:mt-20 sm:grid-cols-3">
+          <div className="animate-rise-delay-4 mt-14 grid w-full grid-cols-1 gap-3 sm:mt-16 sm:grid-cols-3">
             <Feature title="Solução completa" desc="Catálogo, desconto CNAE, comodato, venda ou híbrido." />
-            <Feature title="ROI em tempo real" desc="Payback calculado automaticamente." />
-            <Feature title="Pipeline Kanban" desc="Arraste, priorize e feche negócios." />
+            <Feature title="ROI instantâneo" desc="Calcule payback e retorno financeiro em segundos." />
+            <Feature title="Pipeline comercial" desc="Acompanhe oportunidades do orçamento ao fechamento." />
           </div>
         </section>
       </main>
