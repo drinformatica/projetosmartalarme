@@ -795,7 +795,11 @@ export function QuoteEditor({ id }: { id?: string }) {
         </div>
         <div>
           <label className="mb-1 block text-xs font-semibold text-slate-600">
-            {modalidade === "venda" ? "Valor de Mão de Obra (R$)" : "Taxa de Instalação (R$)"}
+            {modalidade === "venda"
+              ? "Valor de Mão de Obra (R$)"
+              : modalidade === "hibrido"
+              ? "Mão de Obra Instalação (R$)"
+              : "Taxa de Instalação (R$)"}
           </label>
           <input
             type="number"
@@ -811,7 +815,7 @@ export function QuoteEditor({ id }: { id?: string }) {
             onFocus={(e) => e.target.select()}
           />
         </div>
-        {modalidade === "comodato" && (
+        {(modalidade === "comodato" || modalidade === "hibrido") && (
           <div>
             <label className="mb-1 block text-xs font-semibold text-slate-600">Mensalidade Monitoramento (R$)</label>
             <input
