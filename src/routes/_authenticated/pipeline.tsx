@@ -121,15 +121,18 @@ function Pipeline() {
   );
 
   return (
-    <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold">Pipeline de Vendas</h1>
-          <p className="text-sm text-slate-500">Arraste seus orçamentos entre as etapas</p>
+    <main className="mx-auto max-w-7xl px-3 py-5 sm:px-6 sm:py-6">
+      <div className="mb-5 flex flex-wrap items-center justify-between gap-3 sm:mb-6">
+        <div className="min-w-0">
+          <h1 className="font-display text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">Pipeline de Vendas</h1>
+          <p className="text-xs text-slate-500 sm:text-sm">
+            <span className="hidden sm:inline">Arraste seus orçamentos entre as etapas</span>
+            <span className="sm:hidden">Deslize as colunas ou use o seletor no card</span>
+          </p>
         </div>
         <Link
           to="/orcamento"
-          className="rounded-md bg-green-700 px-4 py-2 text-sm font-semibold text-white hover:bg-green-800"
+          className="hidden rounded-full bg-primary-deep px-4 py-2 text-sm font-semibold text-white shadow-sm hover:brightness-110 sm:inline-flex"
         >
           + Novo Orçamento
         </Link>
@@ -150,7 +153,8 @@ function Pipeline() {
           </Link>
         </div>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+        <div className="-mx-3 flex snap-x snap-mandatory gap-3 overflow-x-auto px-3 pb-3 [scrollbar-width:thin] sm:mx-0 sm:grid sm:snap-none sm:gap-4 sm:overflow-visible sm:px-0 sm:pb-0 md:grid-cols-2 lg:grid-cols-5">
+
           {COLUMNS.map((col) => {
             const items = quotes.filter((q) => q.status === col.id);
             const t = totals[col.id];
