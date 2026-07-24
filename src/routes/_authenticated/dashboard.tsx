@@ -190,58 +190,62 @@ function DashboardPage() {
 
           <div className="mt-6 grid gap-6 lg:grid-cols-3">
             {/* Distribuição do pipeline */}
-            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:col-span-2">
-              <div className="mb-4 flex items-center justify-between">
-                <div>
+            <div className="min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:col-span-2">
+              <div className="mb-4 flex items-center justify-between gap-2">
+                <div className="min-w-0">
                   <h2 className="font-display text-lg font-bold text-slate-900">Distribuição do pipeline</h2>
-                  <p className="text-xs text-slate-500">Total em negociação: {BRL(metrics.pipelineValor)}</p>
+                  <p className="truncate text-xs text-slate-500">Total em negociação: {BRL(metrics.pipelineValor)}</p>
                 </div>
-                <Target className="h-5 w-5 text-emerald-600" />
+                <Target className="h-5 w-5 shrink-0 text-emerald-600" />
               </div>
-              <div className="space-y-3">
-                {(Object.keys(STATUS_LABEL) as QuoteStatus[]).map((s) => {
-                  const count = metrics.porStatus[s];
-                  const pct = metrics.total > 0 ? (count / metrics.total) * 100 : 0;
-                  return (
-                    <div key={s}>
-                      <div className="mb-1 flex items-center justify-between text-xs">
-                        <span className={`rounded-full px-2 py-0.5 font-semibold ${STATUS_COLOR[s]}`}>{STATUS_LABEL[s]}</span>
-                        <span className="text-slate-500">{count} · {pct.toFixed(0)}%</span>
+              <div className="-mx-2 overflow-x-auto px-2 [scrollbar-width:thin]">
+                <div className="min-w-[320px] space-y-3">
+                  {(Object.keys(STATUS_LABEL) as QuoteStatus[]).map((s) => {
+                    const count = metrics.porStatus[s];
+                    const pct = metrics.total > 0 ? (count / metrics.total) * 100 : 0;
+                    return (
+                      <div key={s}>
+                        <div className="mb-1 flex items-center justify-between gap-3 text-xs">
+                          <span className={`whitespace-nowrap rounded-full px-2 py-0.5 font-semibold ${STATUS_COLOR[s]}`}>{STATUS_LABEL[s]}</span>
+                          <span className="whitespace-nowrap text-slate-500">{count} · {pct.toFixed(0)}%</span>
+                        </div>
+                        <div className="h-2 overflow-hidden rounded-full bg-slate-100">
+                          <div
+                            className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-700 transition-all"
+                            style={{ width: `${pct}%` }}
+                          />
+                        </div>
                       </div>
-                      <div className="h-2 overflow-hidden rounded-full bg-slate-100">
-                        <div
-                          className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-700 transition-all"
-                          style={{ width: `${pct}%` }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
             </div>
 
             {/* Top produtos */}
-            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-              <div className="mb-4 flex items-center justify-between">
-                <h2 className="font-display text-lg font-bold text-slate-900">Top produtos</h2>
-                <Package className="h-5 w-5 text-emerald-600" />
+            <div className="min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div className="mb-4 flex items-center justify-between gap-2">
+                <h2 className="min-w-0 truncate font-display text-lg font-bold text-slate-900">Top produtos</h2>
+                <Package className="h-5 w-5 shrink-0 text-emerald-600" />
               </div>
               {metrics.topProdutos.length === 0 ? (
                 <p className="text-sm text-slate-500">Feche orçamentos para ver os produtos mais vendidos.</p>
               ) : (
-                <ol className="space-y-2">
-                  {metrics.topProdutos.map((p, i) => (
-                    <li key={p.nome} className="flex items-center gap-3 rounded-lg bg-slate-50 p-2">
-                      <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-primary-deep text-xs font-bold text-white">
-                        {i + 1}
-                      </span>
-                      <span className="flex-1 truncate text-sm text-slate-700">{p.nome}</span>
-                      <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-800">
-                        {p.qtde}x
-                      </span>
-                    </li>
-                  ))}
-                </ol>
+                <div className="-mx-2 overflow-x-auto px-2 [scrollbar-width:thin]">
+                  <ol className="min-w-[280px] space-y-2">
+                    {metrics.topProdutos.map((p, i) => (
+                      <li key={p.nome} className="flex items-center gap-3 rounded-lg bg-slate-50 p-2">
+                        <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-primary-deep text-xs font-bold text-white">
+                          {i + 1}
+                        </span>
+                        <span className="min-w-0 flex-1 truncate text-sm text-slate-700">{p.nome}</span>
+                        <span className="shrink-0 whitespace-nowrap rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-800">
+                          {p.qtde}x
+                        </span>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
               )}
             </div>
           </div>
