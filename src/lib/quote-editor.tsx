@@ -1060,6 +1060,38 @@ export function QuoteEditor({ id }: { id?: string }) {
             </p>
           </div>
         </section>
+      ) : modalidade === "hibrido" ? (
+        <section className="mt-6 grid gap-4 lg:grid-cols-2">
+          <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+            <h3 className="mb-3 text-sm font-semibold text-slate-700">Resumo Híbrido</h3>
+            <div className="space-y-2 text-sm">
+              <Row label="Custo produtos" value={BRL(totalCusto)} />
+              <Row label="Equipamentos (c/ margem)" value={BRL(totalVenda)} />
+              <Row label="Mão de obra instalação" value={BRL(Number(taxaInstalacao))} />
+              <div className="my-2 border-t border-slate-200" />
+              <Row
+                label="Total à vista"
+                value={BRL(totalVenda + Number(taxaInstalacao || 0))}
+                bold
+                color="text-green-700"
+              />
+              <Row label="Mensalidade monitoramento" value={BRL(Number(mensalidade))} />
+              <Row label="Lucro na venda" value={BRL(lucro)} bold color="text-green-700" />
+            </div>
+          </div>
+          <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+            <h3 className="mb-3 text-sm font-semibold text-slate-700">Receita recorrente projetada</h3>
+            <div className="space-y-2 text-sm">
+              <Row label="12 meses" value={BRL(receita12)} />
+              <Row label="24 meses" value={BRL(receita24)} />
+              <Row label="36 meses" value={BRL(receita36)} bold color="text-green-700" />
+            </div>
+            <p className="mt-4 text-xs text-slate-500">
+              Cliente adquire os equipamentos, paga a mão de obra à vista e o
+              monitoramento mensal.
+            </p>
+          </div>
+        </section>
       ) : (
         <section className="mt-6 grid gap-4 lg:grid-cols-2">
           <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
