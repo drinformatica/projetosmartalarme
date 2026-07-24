@@ -133,27 +133,30 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function Footer() {
   return (
-    <footer className="border-t border-slate-200 bg-white py-4 text-center text-sm text-slate-600">
-      <p>
-        Plataforma desenvolvido pelo executivo{" "}
-        <a
-          href="https://www.linkedin.com/in/david-ramon-nascimento-6982b5164/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="font-medium text-green-700 hover:underline"
-        >
-          David Nascimento
-        </a>{" "}
-        e Executivo{" "}
-        <a
-          href="https://www.linkedin.com/in/thiago-garcia-7131b3184?utm_source=share_via&utm_content=profile&utm_medium=member_ios"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="font-medium text-green-700 hover:underline"
-        >
-          Thiago Brito
-        </a>
-      </p>
+    <footer className="border-t border-border/60 bg-background/80 backdrop-blur">
+      <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-6 py-5 text-center text-xs text-muted-foreground sm:flex-row sm:text-sm">
+        <p className="tracking-tight">
+          Plataforma desenvolvida pelos executivos{" "}
+          <a
+            href="https://www.linkedin.com/in/david-ramon-nascimento-6982b5164/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-primary transition-colors hover:text-primary-deep"
+          >
+            David Nascimento
+          </a>{" "}
+          &{" "}
+          <a
+            href="https://www.linkedin.com/in/thiago-garcia-7131b3184?utm_source=share_via&utm_content=profile&utm_medium=member_ios"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-primary transition-colors hover:text-primary-deep"
+          >
+            Thiago Brito
+          </a>
+        </p>
+        <p className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground/70">Intrusão 2.0</p>
+      </div>
     </footer>
   );
 }
