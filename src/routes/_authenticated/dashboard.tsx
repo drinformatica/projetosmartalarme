@@ -283,12 +283,12 @@ function DashboardPage() {
                           {q.client_company || q.client_name || "Sem cliente"}
                         </div>
                       </div>
-                      <div className="hidden text-right sm:block">
-                        <div className="text-sm font-semibold text-slate-800">
+                      <div className="text-right">
+                        <div className="text-xs font-semibold text-slate-800 sm:text-sm">
                           {BRL(Number(q.total_venda) + Number(q.taxa_instalacao))}
                         </div>
                         {Number(q.mensalidade) > 0 && (
-                          <div className="text-[11px] text-slate-500">MRR {BRL(Number(q.mensalidade))}</div>
+                          <div className="text-[10px] text-slate-500 sm:text-[11px]">MRR {BRL(Number(q.mensalidade))}</div>
                         )}
                       </div>
                       <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${STATUS_COLOR[q.status]}`}>
