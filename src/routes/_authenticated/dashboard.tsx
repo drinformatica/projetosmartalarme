@@ -299,7 +299,13 @@ function DashboardPage() {
               </ul>
             )}
           </div>
+
+          {/* Anúncios */}
+          <div className="mt-6">
+            <AdsCarousel />
+          </div>
         </>
+
       )}
     </main>
   );
