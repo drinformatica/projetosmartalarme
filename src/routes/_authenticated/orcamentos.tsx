@@ -98,21 +98,22 @@ function OrcamentosPage() {
   };
 
   return (
-    <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
-      <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="font-display text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">Orçamentos</h1>
-          <p className="text-sm text-slate-500">
+    <main className="mx-auto max-w-7xl px-3 py-5 sm:px-6 sm:py-6">
+      <div className="mb-5 flex flex-wrap items-end justify-between gap-3 sm:mb-6">
+        <div className="min-w-0">
+          <h1 className="font-display text-xl font-bold tracking-tight text-slate-900 sm:text-3xl">Orçamentos</h1>
+          <p className="text-xs text-slate-500 sm:text-sm">
             {loading ? "Carregando..." : `${filtered.length} de ${quotes.length} orçamento(s)`}
           </p>
         </div>
         <Link
           to="/orcamento"
-          className="inline-flex items-center gap-2 rounded-full bg-primary-deep px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-900/20 transition hover:brightness-110"
+          className="hidden items-center gap-2 rounded-full bg-primary-deep px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-900/20 transition hover:brightness-110 sm:inline-flex"
         >
           <Plus className="h-4 w-4" /> Novo orçamento
         </Link>
       </div>
+
 
       <div className="mb-4 flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm sm:flex-row sm:items-center">
         <div className="relative flex-1">
