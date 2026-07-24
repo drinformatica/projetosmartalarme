@@ -81,7 +81,7 @@ function Landing() {
 
           {/* Compact features row */}
           <div className="animate-rise-delay-4 mt-16 grid w-full grid-cols-1 gap-3 sm:mt-20 sm:grid-cols-3">
-            <Feature title="Editor completo" desc="Catálogo, desconto CNAE, comodato ou venda." />
+            <Feature title="Solução completa" desc="Catálogo, desconto CNAE, comodato, venda ou híbrido." />
             <Feature title="ROI em tempo real" desc="Payback calculado automaticamente." />
             <Feature title="Pipeline Kanban" desc="Arraste, priorize e feche negócios." />
           </div>
