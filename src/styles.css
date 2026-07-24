@@ -19,6 +19,10 @@
  */
 
 @theme inline {
+  --font-sans: var(--font-body);
+  --font-display: var(--font-display);
+  --color-primary-deep: var(--primary-deep);
+  --color-primary-glow: var(--primary-glow);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -59,42 +63,59 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-primary-deep: var(--primary-deep);
+  --color-primary-glow: var(--primary-glow);
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
+  --radius: 0.875rem;
+  --background: oklch(0.99 0.003 250);
+  --foreground: oklch(0.18 0.02 240);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.129 0.042 264.695);
+  --card-foreground: oklch(0.18 0.02 240);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.984 0.003 247.858);
-  --secondary: oklch(0.968 0.007 247.896);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
-  --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.046 257.417);
-  --accent: oklch(0.968 0.007 247.896);
-  --accent-foreground: oklch(0.208 0.042 265.755);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(0.929 0.013 255.508);
-  --input: oklch(0.929 0.013 255.508);
-  --ring: oklch(0.704 0.04 256.788);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.984 0.003 247.858);
-  --sidebar-foreground: oklch(0.129 0.042 264.695);
-  --sidebar-primary: oklch(0.208 0.042 265.755);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.968 0.007 247.896);
-  --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
-  --sidebar-border: oklch(0.929 0.013 255.508);
-  --sidebar-ring: oklch(0.704 0.04 256.788);
+  --popover-foreground: oklch(0.18 0.02 240);
+  --primary: oklch(0.52 0.12 165);
+  --primary-foreground: oklch(0.99 0.003 250);
+  --primary-deep: oklch(0.36 0.09 165);
+  --primary-glow: oklch(0.7 0.14 165);
+  --secondary: oklch(0.96 0.008 240);
+  --secondary-foreground: oklch(0.22 0.02 240);
+  --muted: oklch(0.96 0.008 240);
+  --muted-foreground: oklch(0.5 0.02 240);
+  --accent: oklch(0.94 0.03 165);
+  --accent-foreground: oklch(0.28 0.06 165);
+  --destructive: oklch(0.6 0.22 25);
+  --destructive-foreground: oklch(0.99 0.003 250);
+  --border: oklch(0.92 0.008 240);
+  --input: oklch(0.92 0.008 240);
+  --ring: oklch(0.52 0.12 165);
+  --chart-1: oklch(0.52 0.12 165);
+  --chart-2: oklch(0.7 0.14 165);
+  --chart-3: oklch(0.36 0.09 165);
+  --chart-4: oklch(0.72 0.12 90);
+  --chart-5: oklch(0.55 0.15 245);
+  --sidebar: oklch(0.98 0.005 240);
+  --sidebar-foreground: oklch(0.18 0.02 240);
+  --sidebar-primary: oklch(0.52 0.12 165);
+  --sidebar-primary-foreground: oklch(0.99 0.003 250);
+  --sidebar-accent: oklch(0.94 0.03 165);
+  --sidebar-accent-foreground: oklch(0.28 0.06 165);
+  --sidebar-border: oklch(0.92 0.008 240);
+  --sidebar-ring: oklch(0.52 0.12 165);
+
+  --font-display: "Urbanist", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Epilogue", ui-sans-serif, system-ui, sans-serif;
+
+  --gradient-hero: radial-gradient(1200px 600px at 15% -10%, oklch(0.94 0.06 165 / 0.7), transparent 60%), radial-gradient(900px 500px at 100% 10%, oklch(0.9 0.05 200 / 0.55), transparent 55%), linear-gradient(180deg, oklch(0.99 0.003 250), oklch(0.97 0.008 220));
+  --gradient-emerald: linear-gradient(135deg, oklch(0.36 0.09 165), oklch(0.52 0.12 165) 60%, oklch(0.7 0.14 165));
+  --gradient-mesh: radial-gradient(600px 400px at 20% 20%, oklch(0.7 0.14 165 / 0.18), transparent 60%), radial-gradient(500px 400px at 80% 60%, oklch(0.55 0.15 245 / 0.14), transparent 60%);
+
+  --shadow-xs: 0 1px 2px oklch(0.2 0.02 240 / 0.04);
+  --shadow-sm: 0 2px 8px -2px oklch(0.2 0.02 240 / 0.06), 0 1px 2px oklch(0.2 0.02 240 / 0.04);
+  --shadow-md: 0 10px 30px -12px oklch(0.2 0.02 240 / 0.12), 0 2px 6px oklch(0.2 0.02 240 / 0.04);
+  --shadow-lg: 0 24px 60px -20px oklch(0.2 0.02 240 / 0.18), 0 6px 20px -8px oklch(0.2 0.02 240 / 0.08);
+  --shadow-emerald: 0 20px 50px -18px oklch(0.36 0.09 165 / 0.45);
 }
 
 .dark {
@@ -142,3 +163,37 @@
     color: var(--color-foreground);
   }
 }
+
+@layer base {
+  html, body { font-family: var(--font-body); }
+  h1, h2, h3, h4, .font-display { font-family: var(--font-display); letter-spacing: -0.02em; }
+  body { font-feature-settings: "ss01", "cv11"; }
+}
+
+@utility bg-hero { background: var(--gradient-hero); }
+@utility bg-emerald-gradient { background: var(--gradient-emerald); }
+@utility bg-mesh { background: var(--gradient-mesh); }
+@utility shadow-soft { box-shadow: var(--shadow-md); }
+@utility shadow-elevate { box-shadow: var(--shadow-lg); }
+@utility shadow-emerald { box-shadow: var(--shadow-emerald); }
+@utility glass-card {
+  background: color-mix(in oklab, white 70%, transparent);
+  backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid color-mix(in oklab, white 60%, transparent);
+}
+@utility text-balance { text-wrap: balance; }
+
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@utility animate-rise { animation: rise-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both; }
+@utility animate-rise-delay-1 { animation: rise-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both; }
+@utility animate-rise-delay-2 { animation: rise-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.16s both; }
+@utility animate-rise-delay-3 { animation: rise-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.24s both; }
+@utility animate-rise-delay-4 { animation: rise-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.32s both; }
+@utility animate-rise-delay-5 { animation: rise-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.4s both; }

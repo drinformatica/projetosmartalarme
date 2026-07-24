@@ -132,85 +132,69 @@ function AuthPage() {
   };
 
   return (
-    <div className="flex min-h-[calc(100svh-64px)] items-center justify-center bg-slate-50 px-4 py-6">
-      <div className="w-full max-w-md rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-        <div className="mb-6 text-center">
-          <div className="mx-auto mb-3 inline-block rounded-full bg-green-100 px-4 py-1 text-xs font-semibold text-green-800">
-            Intrusão 2.0
+    <div className="relative flex min-h-[calc(100svh-64px)] items-center justify-center overflow-hidden bg-hero px-4 py-10">
+      <div className="pointer-events-none absolute inset-0 bg-mesh opacity-70" />
+      <div className="pointer-events-none absolute -top-32 left-1/2 h-[420px] w-[420px] -translate-x-1/2 rounded-full bg-primary-glow/25 blur-3xl" />
+
+      <div className="animate-rise relative w-full max-w-md rounded-3xl border border-border/70 bg-white/75 p-8 shadow-elevate backdrop-blur-xl">
+        <div className="mb-7 text-center">
+          <div className="mx-auto grid h-11 w-11 place-items-center rounded-2xl bg-emerald-gradient shadow-emerald">
+            <span className="font-display text-base font-black text-white">I</span>
           </div>
-          <h1 className="text-2xl font-bold">
-            {mode === "login" ? "Entrar" : mode === "signup" ? "Criar conta" : "Recuperar senha"}
+          <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.22em] text-primary-deep">Intrusão 2.0</p>
+          <h1 className="mt-2 font-display text-3xl font-black tracking-tight">
+            {mode === "login" ? "Bem-vindo de volta" : mode === "signup" ? "Criar sua conta" : "Recuperar senha"}
           </h1>
-          <p className="text-sm text-slate-500">
-            Gerador de orçamentos & pipeline de vendas
+          <p className="mt-2 text-sm text-muted-foreground">
+            {mode === "forgot" ? "Enviaremos um link para redefinir sua senha." : "Orçamentos premium e pipeline de vendas."}
           </p>
         </div>
 
-
-        <form onSubmit={submit} className="space-y-3">
+        <form onSubmit={submit} className="space-y-4">
           {mode === "signup" && (
-            <div>
-              <label className="mb-1 block text-xs font-semibold text-slate-600">Nome completo</label>
-              <input
-                required
-                className="w-full rounded border border-slate-300 px-3 py-2 text-sm"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-            </div>
+            <Field label="Nome completo">
+              <input required value={name} onChange={(e) => setName(e.target.value)} className={inputCls} />
+            </Field>
           )}
           {mode === "signup" && (
-            <div>
-              <label className="mb-1 block text-xs font-semibold text-slate-600">
-                CPF ou CNPJ <span className="text-red-500">*</span>
-              </label>
+            <Field label="CPF ou CNPJ" required>
               <input
                 required
                 inputMode="numeric"
                 placeholder="000.000.000-00 ou 00.000.000/0000-00"
-                className="w-full rounded border border-slate-300 px-3 py-2 text-sm"
+                className={inputCls}
                 value={cnpj}
                 onChange={(e) => setCnpj(formatCpfCnpj(e.target.value))}
               />
-            </div>
+            </Field>
           )}
-          <div>
-            <label className="mb-1 block text-xs font-semibold text-slate-600">Email</label>
-            <input
-              required
-              type="email"
-              className="w-full rounded border border-slate-300 px-3 py-2 text-sm"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
+          <Field label="E-mail">
+            <input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={inputCls} />
+          </Field>
           {mode !== "forgot" && (
-            <div>
-              <label className="mb-1 block text-xs font-semibold text-slate-600">Senha</label>
+            <Field label="Senha">
               <input
                 required
                 type="password"
                 minLength={6}
-                className="w-full rounded border border-slate-300 px-3 py-2 text-sm"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                className={inputCls}
               />
-            </div>
+            </Field>
           )}
-          {err && <div className="rounded bg-red-50 p-2 text-sm text-red-700">{err}</div>}
-          {msg && <div className="rounded bg-green-50 p-2 text-sm text-green-700">{msg}</div>}
+
+          {err && <div className="rounded-xl border border-destructive/20 bg-destructive/5 px-3 py-2 text-sm text-destructive">{err}</div>}
+          {msg && <div className="rounded-xl border border-primary/20 bg-accent/60 px-3 py-2 text-sm text-primary-deep">{msg}</div>}
+
           <button
             disabled={loading || locked}
-            className="w-full rounded-md bg-green-700 py-2 text-sm font-semibold text-white hover:bg-green-800 disabled:opacity-50"
+            className="group flex w-full items-center justify-center gap-2 rounded-full bg-emerald-gradient py-3 text-sm font-semibold text-white shadow-emerald transition-all duration-300 hover:-translate-y-0.5 hover:shadow-elevate disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
           >
-            {loading
-              ? "Aguarde..."
-              : mode === "login"
-                ? "Entrar"
-                : mode === "signup"
-                  ? "Cadastrar"
-                  : "Enviar link de recuperação"}
+            {loading ? "Aguarde..." : mode === "login" ? "Entrar" : mode === "signup" ? "Criar conta" : "Enviar link"}
+            {!loading && <span className="transition-transform group-hover:translate-x-1">→</span>}
           </button>
+
           {locked && (
             <button
               type="button"
@@ -220,36 +204,26 @@ function AuthPage() {
                 setMsg(null);
                 setFailedAttempts(0);
               }}
-              className="w-full rounded-md border border-green-700 bg-white py-2 text-sm font-semibold text-green-700 hover:bg-green-50"
+              className="w-full rounded-full border border-primary/40 bg-white/60 py-3 text-sm font-semibold text-primary-deep transition hover:bg-accent/60"
             >
               Recuperar minha senha
             </button>
           )}
         </form>
 
-        <div className="mt-4 space-y-2 text-center text-sm text-slate-600">
+        <div className="mt-6 space-y-2 text-center text-sm text-muted-foreground">
           {mode === "login" && (
             <>
+              <button
+                type="button"
+                className="font-semibold text-primary transition hover:text-primary-deep"
+                onClick={() => { setMode("forgot"); setErr(null); setMsg(null); }}
+              >
+                Esqueci minha senha
+              </button>
               <div>
-                <button
-                  type="button"
-                  className="font-semibold text-green-700 hover:underline"
-                  onClick={() => {
-                    setMode("forgot");
-                    setErr(null);
-                    setMsg(null);
-                  }}
-                >
-                  Esqueci minha senha
-                </button>
-              </div>
-              <div>
-                Não tem conta?{" "}
-                <button
-                  type="button"
-                  className="font-semibold text-green-700"
-                  onClick={() => setMode("signup")}
-                >
+                Ainda não tem conta?{" "}
+                <button type="button" className="font-semibold text-primary transition hover:text-primary-deep" onClick={() => setMode("signup")}>
                   Cadastre-se
                 </button>
               </div>
@@ -258,35 +232,42 @@ function AuthPage() {
           {mode === "signup" && (
             <div>
               Já tem conta?{" "}
-              <button
-                type="button"
-                className="font-semibold text-green-700"
-                onClick={() => setMode("login")}
-              >
+              <button type="button" className="font-semibold text-primary transition hover:text-primary-deep" onClick={() => setMode("login")}>
                 Entrar
               </button>
             </div>
           )}
           {mode === "forgot" && (
-            <div>
-              <button
-                type="button"
-                className="font-semibold text-green-700 hover:underline"
-                onClick={() => {
-                  setMode("login");
-                  setErr(null);
-                  setMsg(null);
-                }}
-              >
-                ← Voltar para login
-              </button>
-            </div>
+            <button
+              type="button"
+              className="font-semibold text-primary transition hover:text-primary-deep"
+              onClick={() => { setMode("login"); setErr(null); setMsg(null); }}
+            >
+              ← Voltar para login
+            </button>
           )}
         </div>
-        <div className="mt-4 text-center">
-          <Link to="/" className="text-xs text-slate-500 hover:underline">← Voltar</Link>
+
+        <div className="mt-6 text-center">
+          <Link to="/" className="text-xs uppercase tracking-[0.2em] text-muted-foreground/70 transition hover:text-foreground">
+            ← Início
+          </Link>
         </div>
       </div>
     </div>
+  );
+}
+
+const inputCls =
+  "w-full rounded-xl border border-border/70 bg-white/80 px-3.5 py-2.5 text-sm text-foreground shadow-xs outline-none transition placeholder:text-muted-foreground/60 focus:border-primary/50 focus:ring-4 focus:ring-primary/10";
+
+function Field({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) {
+  return (
+    <label className="block">
+      <span className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">
+        {label} {required && <span className="text-destructive">*</span>}
+      </span>
+      {children}
+    </label>
   );
 }
