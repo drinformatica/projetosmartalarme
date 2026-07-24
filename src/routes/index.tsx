@@ -6,17 +6,17 @@ export const Route = createFileRoute("/")({
   component: Landing,
   head: () => ({
     meta: [
-      { title: "Intrusão 2.0 — Orçamentos premium e pipeline de vendas" },
+      { title: "Intrusão 2.0 — Orçamentos, ROI e pipeline comercial" },
       {
         name: "description",
         content:
-          "Orçamentos inteligentes, análise de ROI e gestão completa do pipeline de vendas — tudo em uma única plataforma.",
+          "Crie propostas profissionais, analise o retorno do investimento e acompanhe cada oportunidade até o fechamento.",
       },
-      { property: "og:title", content: "Intrusão 2.0 — Orçamentos & Pipeline" },
+      { property: "og:title", content: "Intrusão 2.0 — Orçamentos, ROI e pipeline comercial" },
       {
         property: "og:description",
         content:
-          "Orçamentos formais, ROI, comodato ou venda e Kanban de vendas — tudo em uma experiência refinada.",
+          "Crie propostas profissionais, analise o retorno do investimento e acompanhe cada oportunidade até o fechamento.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
