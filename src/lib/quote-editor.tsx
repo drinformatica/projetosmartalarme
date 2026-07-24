@@ -508,6 +508,56 @@ export function QuoteEditor({ id }: { id?: string }) {
       doc.setFont("helvetica", "bold");
       doc.setFontSize(9);
       doc.text("GARANTIA DE 2 ANOS", pageW / 2 + 40, finalY + 118);
+    } else if (modalidade === "hibrido") {
+      // ===== HÍBRIDO: Equipamentos + Mão de Obra (à vista) + Mensalidade =====
+      const maoObra = Number(taxaInstalacao) || 0;
+      const totalAVista = totalVenda + maoObra;
+
+      doc.setTextColor(220);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+      doc.text("Equipamentos", 60, finalY + 48);
+      doc.setTextColor(255);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(13);
+      doc.text(BRL(totalVenda), 60, finalY + 66);
+
+      doc.setTextColor(220);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+      doc.text("Mão de Obra Instalação", 60, finalY + 86);
+      doc.setTextColor(255);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(13);
+      doc.text(BRL(maoObra), 60, finalY + 104);
+
+      // Divisor
+      doc.setDrawColor(60, 70, 78);
+      doc.setLineWidth(0.5);
+      doc.line(pageW / 2 + 20, finalY + 20, pageW / 2 + 20, finalY + invH - 20);
+
+      doc.setTextColor(...GREEN);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9);
+      doc.text("TOTAL À VISTA", pageW / 2 + 40, finalY + 40);
+      doc.setTextColor(255);
+      doc.setFontSize(18);
+      doc.text(BRL(totalAVista), pageW / 2 + 40, finalY + 62);
+
+      if (mensalidade > 0) {
+        doc.setTextColor(...GREEN);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(9);
+        doc.text("MONITORAMENTO 24H", pageW / 2 + 40, finalY + 84);
+        doc.setTextColor(255);
+        doc.setFontSize(14);
+        doc.text(BRL(Number(mensalidade)) + " /mês", pageW / 2 + 40, finalY + 102);
+      }
+
+      doc.setTextColor(...GREEN);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8);
+      doc.text("GARANTIA DE 2 ANOS", pageW / 2 + 40, finalY + 118);
     } else {
       // ===== COMODATO: Taxa Instalação + Mensalidade =====
       if (Number(taxaInstalacao) > 0) {
