@@ -12,6 +12,7 @@ import {
   Target,
 } from "lucide-react";
 import { listQuotes, type QuoteStatus, type QuoteModalidade } from "@/lib/quotes.functions";
+import { AdsCarousel } from "@/components/AdsCarousel";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   component: DashboardPage,
@@ -298,7 +299,13 @@ function DashboardPage() {
               </ul>
             )}
           </div>
+
+          {/* Anúncios */}
+          <div className="mt-6">
+            <AdsCarousel />
+          </div>
         </>
+
       )}
     </main>
   );
