@@ -6,6 +6,7 @@ import {
   useRouter,
   HeadContent,
   Scripts,
+  useRouterState,
 } from "@tanstack/react-router";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import { Analytics } from "@vercel/analytics/react";
@@ -131,7 +132,7 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
-function Footer() {
+export function Footer() {
   return (
     <footer className="border-t border-border/60 bg-background/80 backdrop-blur">
       <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-6 py-5 text-center text-xs text-muted-foreground sm:flex-row sm:text-sm">
@@ -179,6 +180,14 @@ function RootComponent() {
     return () => window.removeEventListener("online", doFlush);
   }, [save]);
 
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isAuthedLayout =
+    pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/orcamento") ||
+    pathname.startsWith("/pipeline") ||
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/perfil");
+
   return (
     <QueryClientProvider client={queryClient}>
       <div className="flex min-h-svh flex-col">
@@ -186,7 +195,7 @@ function RootComponent() {
         <div className="flex flex-1 flex-col">
           <Outlet />
         </div>
-        <Footer />
+        {!isAuthedLayout && <Footer />}
       </div>
       <InstallPrompt />
       <SpeedInsights />
