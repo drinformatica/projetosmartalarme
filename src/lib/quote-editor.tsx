@@ -256,6 +256,12 @@ export function QuoteEditor({ id }: { id?: string }) {
     if (profile?.logo_url) {
       try { logoImg = await loadImg(profile.logo_url); } catch { logoImg = null; }
     }
+    // Selo Parceiro Credenciado Intelbras (asset local do projeto)
+    let seloImg: HTMLImageElement | null = null;
+    try {
+      const seloMod: any = await import("@/assets/parceiro-credenciado.png.asset.json");
+      seloImg = await loadImg(seloMod?.default?.url || seloMod?.url);
+    } catch { seloImg = null; }
     const logoBandH = 0;
     const heroH = 220;
     doc.setFillColor(...DARK);
