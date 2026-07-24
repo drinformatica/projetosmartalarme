@@ -1,25 +1,32 @@
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { listQuotes, updateQuoteStatus, deleteQuote, type QuoteStatus } from "@/lib/quotes.functions";
-import { getMyRoles } from "@/lib/admin.functions";
-import { AdsCarousel } from "@/components/AdsCarousel";
-
+import {
+  TrendingUp,
+  CheckCircle2,
+  Clock,
+  DollarSign,
+  Repeat,
+  Package,
+  ArrowRight,
+  Target,
+} from "lucide-react";
+import { listQuotes, type QuoteStatus, type QuoteModalidade } from "@/lib/quotes.functions";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
-  component: Dashboard,
-  head: () => ({ meta: [{ title: "Pipeline - Intrusão 2.0" }] }),
+  component: DashboardPage,
+  head: () => ({
+    meta: [
+      { title: "Dashboard - Intrusão 2.0" },
+      { name: "description", content: "Visão geral de orçamentos, receita e produtos." },
+    ],
+  }),
 });
 
-const BRL = (n: number) => (n || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+const BRL = (n: number) =>
+  (n || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
 
-const COLUMNS: { id: QuoteStatus; label: string; color: string }[] = [
-  { id: "rascunho", label: "Rascunho", color: "bg-slate-200 text-slate-800" },
-  { id: "enviado", label: "Enviado", color: "bg-blue-200 text-blue-900" },
-  { id: "negociacao", label: "Negociação", color: "bg-amber-200 text-amber-900" },
-  { id: "fechado", label: "Fechado", color: "bg-green-200 text-green-900" },
-  { id: "perdido", label: "Perdido", color: "bg-red-200 text-red-900" },
-];
+type QuoteItem = { codigo: string; nome: string; qtde: number; psd: number };
 
 type Quote = {
   id: string;
@@ -27,261 +34,272 @@ type Quote = {
   client_name: string | null;
   client_company: string | null;
   status: QuoteStatus;
+  modalidade: QuoteModalidade;
   total_venda: number;
+  total_custo: number;
   taxa_instalacao: number;
   mensalidade: number;
+  items: QuoteItem[] | null;
   created_at: string;
 };
 
-function Dashboard() {
+const STATUS_LABEL: Record<QuoteStatus, string> = {
+  rascunho: "Rascunho",
+  enviado: "Enviado",
+  negociacao: "Negociação",
+  fechado: "Fechado",
+  perdido: "Perdido",
+};
+
+const STATUS_COLOR: Record<QuoteStatus, string> = {
+  rascunho: "bg-slate-100 text-slate-700",
+  enviado: "bg-blue-100 text-blue-800",
+  negociacao: "bg-amber-100 text-amber-800",
+  fechado: "bg-emerald-100 text-emerald-800",
+  perdido: "bg-red-100 text-red-800",
+};
+
+function DashboardPage() {
   const list = useServerFn(listQuotes);
-  const setStatus = useServerFn(updateQuoteStatus);
-  const remove = useServerFn(deleteQuote);
-  const fetchRoles = useServerFn(getMyRoles);
-  const router = useRouter();
   const [quotes, setQuotes] = useState<Quote[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [draggingId, setDraggingId] = useState<string | null>(null);
-  const [dragOverCol, setDragOverCol] = useState<QuoteStatus | null>(null);
-  const [confirmDelete, setConfirmDelete] = useState<Quote | null>(null);
-  const [deleting, setDeleting] = useState(false);
-
-
-  const load = async () => {
-    setLoading(true);
-    const data = (await list()) as Quote[];
-    setQuotes(data);
-    setLoading(false);
-  };
 
   useEffect(() => {
-    load();
-    fetchRoles().then((rs) => setIsAdmin(rs.includes("super_admin") || rs.includes("admin"))).catch(() => {});
+    (async () => {
+      const data = (await list()) as Quote[];
+      setQuotes(data);
+      setLoading(false);
+    })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const metrics = useMemo(() => {
+    const total = quotes.length;
+    const fechados = quotes.filter((q) => q.status === "fechado");
+    const emAndamento = quotes.filter((q) => q.status === "enviado" || q.status === "negociacao");
+    const receitaFechada = fechados.reduce(
+      (s, q) => s + Number(q.total_venda || 0) + Number(q.taxa_instalacao || 0),
+      0,
+    );
+    const mrrFechado = fechados.reduce((s, q) => s + Number(q.mensalidade || 0), 0);
+    const pipelineValor = emAndamento.reduce(
+      (s, q) => s + Number(q.total_venda || 0) + Number(q.taxa_instalacao || 0),
+      0,
+    );
+    const decididos = fechados.length + quotes.filter((q) => q.status === "perdido").length;
+    const conversao = decididos > 0 ? (fechados.length / decididos) * 100 : 0;
 
-  const move = async (id: string, status: QuoteStatus) => {
-    setQuotes((prev) => prev.map((q) => (q.id === id ? { ...q, status } : q)));
-    try {
-      await setStatus({ data: { id, status } });
-    } finally {
-      await load();
-    }
-  };
+    // distribuição por status
+    const porStatus: Record<QuoteStatus, number> = {
+      rascunho: 0,
+      enviado: 0,
+      negociacao: 0,
+      fechado: 0,
+      perdido: 0,
+    };
+    quotes.forEach((q) => (porStatus[q.status] = (porStatus[q.status] || 0) + 1));
 
-  const onDragStart = (e: React.DragEvent, id: string) => {
-    setDraggingId(id);
-    e.dataTransfer.effectAllowed = "move";
-    e.dataTransfer.setData("text/plain", id);
-  };
-  const onDragEnd = () => {
-    setDraggingId(null);
-    setDragOverCol(null);
-  };
-  const onDragOverCol = (e: React.DragEvent, col: QuoteStatus) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = "move";
-    if (dragOverCol !== col) setDragOverCol(col);
-  };
-  const onDropCol = (e: React.DragEvent, col: QuoteStatus) => {
-    e.preventDefault();
-    const id = e.dataTransfer.getData("text/plain") || draggingId;
-    setDragOverCol(null);
-    setDraggingId(null);
-    if (!id) return;
-    const q = quotes.find((x) => x.id === id);
-    if (!q || q.status === col) return;
-    move(id, col);
-  };
+    // top produtos (baseado em orçamentos fechados)
+    const prodMap = new Map<string, { nome: string; qtde: number }>();
+    fechados.forEach((q) => {
+      (q.items || []).forEach((it) => {
+        const key = it.codigo || it.nome;
+        const cur = prodMap.get(key) || { nome: it.nome || it.codigo, qtde: 0 };
+        cur.qtde += Number(it.qtde || 0);
+        prodMap.set(key, cur);
+      });
+    });
+    const topProdutos = Array.from(prodMap.values())
+      .sort((a, b) => b.qtde - a.qtde)
+      .slice(0, 5);
 
-  const askDelete = (q: Quote) => setConfirmDelete(q);
-  const confirmDeleteAction = async () => {
-    if (!confirmDelete) return;
-    setDeleting(true);
-    try {
-      await remove({ data: { id: confirmDelete.id } });
-      setConfirmDelete(null);
-      await load();
-    } finally {
-      setDeleting(false);
-    }
-  };
+    return { total, fechados: fechados.length, emAndamento: emAndamento.length, receitaFechada, mrrFechado, pipelineValor, conversao, porStatus, topProdutos };
+  }, [quotes]);
 
-  const totals = COLUMNS.reduce<Record<QuoteStatus, { count: number; venda: number; mrr: number }>>(
-    (acc, c) => {
-      const items = quotes.filter((q) => q.status === c.id);
-      acc[c.id] = {
-        count: items.length,
-        venda: items.reduce((s, q) => s + Number(q.total_venda || 0) + Number(q.taxa_instalacao || 0), 0),
-        mrr: items.reduce((s, q) => s + Number(q.mensalidade || 0), 0),
-      };
-      return acc;
+  const recentes = quotes.slice(0, 5);
+
+  const kpis = [
+    {
+      label: "Orçamentos",
+      value: metrics.total.toString(),
+      hint: `${metrics.emAndamento} em andamento`,
+      icon: TrendingUp,
+      gradient: "from-emerald-500 to-emerald-700",
     },
-    {} as Record<QuoteStatus, { count: number; venda: number; mrr: number }>,
-  );
+    {
+      label: "Fechados",
+      value: metrics.fechados.toString(),
+      hint: `Conversão ${metrics.conversao.toFixed(0)}%`,
+      icon: CheckCircle2,
+      gradient: "from-teal-500 to-emerald-600",
+    },
+    {
+      label: "Receita Fechada",
+      value: BRL(metrics.receitaFechada),
+      hint: "Venda + Instalação",
+      icon: DollarSign,
+      gradient: "from-emerald-600 to-green-700",
+    },
+    {
+      label: "MRR Fechado",
+      value: BRL(metrics.mrrFechado),
+      hint: "Receita recorrente",
+      icon: Repeat,
+      gradient: "from-lime-600 to-emerald-700",
+    },
+  ];
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">Pipeline de Vendas</h1>
-          <p className="text-sm text-slate-500">Arraste seus orçamentos entre as etapas</p>
+          <h1 className="font-display text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">Dashboard</h1>
+          <p className="text-sm text-slate-500">Resumo do seu funil e performance comercial</p>
         </div>
-        <div className="flex flex-wrap gap-2">
-          {isAdmin && (
-            <Link
-              to="/admin"
-              className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
-            >
-              Admin
-            </Link>
-          )}
-          <Link
-            to="/orcamento"
-            className="rounded-md bg-green-700 px-4 py-2 text-sm font-semibold text-white hover:bg-green-800"
-          >
-            + Novo Orçamento
-          </Link>
-        </div>
+        <Link
+          to="/orcamento"
+          className="inline-flex items-center gap-2 rounded-full bg-primary-deep px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-900/20 transition hover:brightness-110"
+        >
+          Novo orçamento <ArrowRight className="h-4 w-4" />
+        </Link>
       </div>
 
-
       {loading ? (
-        <div className="rounded-lg border border-slate-200 bg-white p-6 text-center text-slate-500">
-          Carregando...
-        </div>
-      ) : quotes.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-slate-300 bg-white p-10 text-center">
-          <p className="mb-3 text-slate-600">Nenhum orçamento ainda.</p>
-          <Link
-            to="/orcamento"
-            className="inline-block rounded-md bg-green-700 px-4 py-2 text-sm font-semibold text-white hover:bg-green-800"
-          >
-            Criar primeiro orçamento
-          </Link>
-        </div>
+        <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center text-slate-500">Carregando...</div>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-          {COLUMNS.map((col) => {
-            const items = quotes.filter((q) => q.status === col.id);
-            const t = totals[col.id];
-            return (
+        <>
+          {/* KPIs */}
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {kpis.map((k) => (
               <div
-                key={col.id}
-                onDragOver={(e) => onDragOverCol(e, col.id)}
-                onDragLeave={() => setDragOverCol((c) => (c === col.id ? null : c))}
-                onDrop={(e) => onDropCol(e, col.id)}
-                className={`rounded-lg border bg-white transition ${
-                  dragOverCol === col.id ? "border-green-500 ring-2 ring-green-300" : "border-slate-200"
-                }`}
+                key={k.label}
+                className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:shadow-md"
               >
-                <div className={`flex items-center justify-between rounded-t-lg px-3 py-2 text-xs font-semibold ${col.color}`}>
-                  <span>{col.label}</span>
-                  <span>{t.count}</span>
+                <div className={`absolute -right-8 -top-8 h-24 w-24 rounded-full bg-gradient-to-br ${k.gradient} opacity-10`} />
+                <div className={`inline-flex rounded-xl bg-gradient-to-br ${k.gradient} p-2 text-white shadow`}>
+                  <k.icon className="h-4 w-4" />
                 </div>
-                <div className="border-b border-slate-100 px-3 py-2 text-[11px] text-slate-500">
-                  <div>Venda + Inst.: {BRL(t.venda)}</div>
-                  <div>MRR: {BRL(t.mrr)}</div>
+                <div className="mt-3 text-xs font-medium uppercase tracking-wider text-slate-500">{k.label}</div>
+                <div className="mt-1 font-display text-2xl font-bold text-slate-900">{k.value}</div>
+                <div className="mt-0.5 text-xs text-slate-500">{k.hint}</div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-6 grid gap-6 lg:grid-cols-3">
+            {/* Distribuição do pipeline */}
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:col-span-2">
+              <div className="mb-4 flex items-center justify-between">
+                <div>
+                  <h2 className="font-display text-lg font-bold text-slate-900">Distribuição do pipeline</h2>
+                  <p className="text-xs text-slate-500">Total em negociação: {BRL(metrics.pipelineValor)}</p>
                 </div>
-                <div className={`min-h-[80px] space-y-2 p-2 ${items.length > 4 ? "max-h-[420px] overflow-y-auto" : ""}`}>
-                  {items.map((q) => (
-                    <div
-                      key={q.id}
-                      draggable
-                      onDragStart={(e) => onDragStart(e, q.id)}
-                      onDragEnd={onDragEnd}
-                      className={`cursor-grab rounded border border-slate-200 bg-slate-50 p-2 text-sm active:cursor-grabbing ${
-                        draggingId === q.id ? "opacity-40" : ""
-                      }`}
-                    >
-                      <div
-                        className="cursor-pointer font-semibold text-slate-800 hover:text-green-700"
-                        onClick={() => router.navigate({ to: "/orcamento/$id", params: { id: q.id } })}
-                      >
-                        {q.title}
+                <Target className="h-5 w-5 text-emerald-600" />
+              </div>
+              <div className="space-y-3">
+                {(Object.keys(STATUS_LABEL) as QuoteStatus[]).map((s) => {
+                  const count = metrics.porStatus[s];
+                  const pct = metrics.total > 0 ? (count / metrics.total) * 100 : 0;
+                  return (
+                    <div key={s}>
+                      <div className="mb-1 flex items-center justify-between text-xs">
+                        <span className={`rounded-full px-2 py-0.5 font-semibold ${STATUS_COLOR[s]}`}>{STATUS_LABEL[s]}</span>
+                        <span className="text-slate-500">{count} · {pct.toFixed(0)}%</span>
                       </div>
-                      <div className="mt-0.5 text-xs text-slate-500">
-                        {q.client_company || q.client_name || "Sem cliente"}
-                      </div>
-                      <div className="mt-1 text-xs text-slate-700">
-                        Venda: <span className="font-semibold">{BRL(Number(q.total_venda) + Number(q.taxa_instalacao))}</span>
-                      </div>
-                      {Number(q.mensalidade) > 0 && (
-                        <div className="text-xs text-slate-700">
-                          MRR: <span className="font-semibold">{BRL(Number(q.mensalidade))}</span>
-                        </div>
-                      )}
-                      <div className="mt-2 flex flex-wrap gap-1">
-                        <select
-                          value={q.status}
-                          onChange={(e) => move(q.id, e.target.value as QuoteStatus)}
-                          className="flex-1 rounded border border-slate-300 bg-white px-1 py-1 text-[11px]"
-                        >
-                          {COLUMNS.map((c) => (
-                            <option key={c.id} value={c.id}>{c.label}</option>
-                          ))}
-                        </select>
-                        <button
-                          onClick={() => askDelete(q)}
-                          className="rounded border border-red-200 px-2 py-1 text-[11px] text-red-700 hover:bg-red-50"
-                        >
-                          ×
-                        </button>
+                      <div className="h-2 overflow-hidden rounded-full bg-slate-100">
+                        <div
+                          className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-700 transition-all"
+                          style={{ width: `${pct}%` }}
+                        />
                       </div>
                     </div>
-                  ))}
-                </div>
+                  );
+                })}
               </div>
-            );
-          })}
-        </div>
-      )}
+            </div>
 
-      <AdsCarousel />
-
-      {confirmDelete && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
-          onClick={() => !deleting && setConfirmDelete(null)}
-        >
-          <div
-            className="w-full max-w-sm rounded-lg bg-white p-5 shadow-xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2 className="text-lg font-bold text-slate-800">Excluir orçamento?</h2>
-            <p className="mt-2 text-sm text-slate-600">
-              Tem certeza que deseja excluir{" "}
-              <span className="font-semibold text-slate-800">
-                {confirmDelete.title}
-              </span>
-              {confirmDelete.client_company || confirmDelete.client_name ? (
-                <> de <span className="font-semibold text-slate-800">{confirmDelete.client_company || confirmDelete.client_name}</span></>
-              ) : null}
-              ? Esta ação não pode ser desfeita.
-            </p>
-            <div className="mt-5 flex justify-end gap-2">
-              <button
-                onClick={() => setConfirmDelete(null)}
-                disabled={deleting}
-                className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={confirmDeleteAction}
-                disabled={deleting}
-                className="rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-50"
-              >
-                {deleting ? "Excluindo..." : "Excluir"}
-              </button>
+            {/* Top produtos */}
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div className="mb-4 flex items-center justify-between">
+                <h2 className="font-display text-lg font-bold text-slate-900">Top produtos</h2>
+                <Package className="h-5 w-5 text-emerald-600" />
+              </div>
+              {metrics.topProdutos.length === 0 ? (
+                <p className="text-sm text-slate-500">Feche orçamentos para ver os produtos mais vendidos.</p>
+              ) : (
+                <ol className="space-y-2">
+                  {metrics.topProdutos.map((p, i) => (
+                    <li key={p.nome} className="flex items-center gap-3 rounded-lg bg-slate-50 p-2">
+                      <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-primary-deep text-xs font-bold text-white">
+                        {i + 1}
+                      </span>
+                      <span className="flex-1 truncate text-sm text-slate-700">{p.nome}</span>
+                      <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-800">
+                        {p.qtde}x
+                      </span>
+                    </li>
+                  ))}
+                </ol>
+              )}
             </div>
           </div>
-        </div>
+
+          {/* Recentes */}
+          <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div className="mb-4 flex items-center justify-between">
+              <div>
+                <h2 className="font-display text-lg font-bold text-slate-900">Orçamentos recentes</h2>
+                <p className="text-xs text-slate-500">Últimos 5 criados</p>
+              </div>
+              <Link to="/orcamentos" className="text-xs font-semibold text-primary-deep hover:underline">
+                Ver todos →
+              </Link>
+            </div>
+            {recentes.length === 0 ? (
+              <div className="flex flex-col items-center gap-2 py-8 text-center">
+                <Clock className="h-8 w-8 text-slate-300" />
+                <p className="text-sm text-slate-500">Nenhum orçamento ainda.</p>
+                <Link
+                  to="/orcamento"
+                  className="mt-2 inline-flex items-center gap-2 rounded-full bg-primary-deep px-4 py-2 text-xs font-semibold text-white hover:brightness-110"
+                >
+                  Criar primeiro <ArrowRight className="h-3 w-3" />
+                </Link>
+              </div>
+            ) : (
+              <ul className="divide-y divide-slate-100">
+                {recentes.map((q) => (
+                  <li key={q.id}>
+                    <Link
+                      to="/orcamento/$id"
+                      params={{ id: q.id }}
+                      className="flex items-center gap-3 rounded-lg px-2 py-3 transition hover:bg-slate-50"
+                    >
+                      <div className="min-w-0 flex-1">
+                        <div className="truncate text-sm font-semibold text-slate-800">{q.title}</div>
+                        <div className="truncate text-xs text-slate-500">
+                          {q.client_company || q.client_name || "Sem cliente"}
+                        </div>
+                      </div>
+                      <div className="hidden text-right sm:block">
+                        <div className="text-sm font-semibold text-slate-800">
+                          {BRL(Number(q.total_venda) + Number(q.taxa_instalacao))}
+                        </div>
+                        {Number(q.mensalidade) > 0 && (
+                          <div className="text-[11px] text-slate-500">MRR {BRL(Number(q.mensalidade))}</div>
+                        )}
+                      </div>
+                      <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${STATUS_COLOR[q.status]}`}>
+                        {STATUS_LABEL[q.status]}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </>
       )}
-
     </main>
-
   );
 }
