@@ -1,0 +1,2 @@
+ALTER TABLE public.quotes DROP CONSTRAINT IF EXISTS quotes_modalidade_check;
+ALTER TABLE public.quotes ADD CONSTRAINT quotes_modalidade_check CHECK (modalidade = ANY (ARRAY['comodato'::text, 'venda'::text, 'hibrido'::text]));
