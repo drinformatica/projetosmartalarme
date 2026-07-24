@@ -342,6 +342,17 @@ export function QuoteEditor({ id }: { id?: string }) {
     }
 
 
+    // Selo Parceiro Credenciado — logo abaixo da logo do perfil, alinhado à direita
+    if (seloImg) {
+      const sH = 56;
+      const sRatio = seloImg.width / seloImg.height || 1;
+      const sW = sH * sRatio;
+      const sx = pageW - 40 - sW;
+      const sy = logoBottomY + 10;
+      try { doc.addImage(seloImg, "PNG", sx, sy, sW, sH); } catch {}
+    }
+
+
     // ============ FAIXA DE FEATURES (fundo escuro secundário) ============
     const featY = heroH;
     const featH = 90;
