@@ -747,34 +747,32 @@ export function QuoteEditor({ id }: { id?: string }) {
       {/* Modalidade */}
       <section className="mb-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
         <h2 className="mb-3 text-sm font-semibold text-slate-700">Modalidade do Orçamento</h2>
-        <div className="grid grid-cols-2 gap-2">
-          <button
-            type="button"
-            onClick={() => setModalidade("comodato")}
-            className={`rounded-md border px-3 py-2 text-sm font-semibold transition ${
-              modalidade === "comodato"
-                ? "border-green-700 bg-green-700 text-white"
-                : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
-            }`}
-          >
-            Comodato
-          </button>
-          <button
-            type="button"
-            onClick={() => setModalidade("venda")}
-            className={`rounded-md border px-3 py-2 text-sm font-semibold transition ${
-              modalidade === "venda"
-                ? "border-green-700 bg-green-700 text-white"
-                : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
-            }`}
-          >
-            Venda
-          </button>
+        <div className="grid grid-cols-3 gap-2">
+          {([
+            { v: "comodato", l: "Comodato" },
+            { v: "venda", l: "Venda" },
+            { v: "hibrido", l: "Híbrido" },
+          ] as { v: QuoteModalidade; l: string }[]).map((opt) => (
+            <button
+              key={opt.v}
+              type="button"
+              onClick={() => setModalidade(opt.v)}
+              className={`rounded-md border px-3 py-2 text-sm font-semibold transition ${
+                modalidade === opt.v
+                  ? "border-green-700 bg-green-700 text-white"
+                  : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
+              }`}
+            >
+              {opt.l}
+            </button>
+          ))}
         </div>
         <p className="mt-2 text-xs text-slate-500">
           {modalidade === "comodato"
             ? "Comodato: cliente paga taxa de instalação e mensalidade de monitoramento."
-            : "Venda: cliente paga o valor total dos produtos + mão de obra."}
+            : modalidade === "venda"
+            ? "Venda: cliente paga o valor total dos produtos + mão de obra."
+            : "Híbrido: cliente compra os produtos, paga mão de obra de instalação e mensalidade de monitoramento."}
         </p>
       </section>
 
