@@ -603,15 +603,22 @@ export function QuoteEditor({ id }: { id?: string }) {
         doc.setFontSize(8);
         doc.text("Central 24h · Alertas em tempo real", pageW / 2 + 40, finalY + 82);
       }
-      // Garantia badge
+      // Garantia badge (varia por modalidade)
+      const garantiaTitulo =
+        modalidade === "comodato" ? "GARANTIA VITALÍCIA" : "GARANTIA DE 1 ANO";
+      const garantiaSub =
+        modalidade === "comodato"
+          ? "Durante toda a vigência do contrato"
+          : "Cobertura de fábrica · Suporte técnico";
       doc.setTextColor(...GREEN);
       doc.setFont("helvetica", "bold");
       doc.setFontSize(9);
-      doc.text("GARANTIA DE 2 ANOS", pageW / 2 + 40, finalY + 104);
+      doc.text(garantiaTitulo, pageW / 2 + 40, finalY + 104);
       doc.setTextColor(180);
       doc.setFont("helvetica", "normal");
       doc.setFontSize(7.5);
-      doc.text("Suporte técnico especializado", pageW / 2 + 40, finalY + 115);
+      doc.text(garantiaSub, pageW / 2 + 40, finalY + 115);
+
     }
 
     finalY += invH + 20;
