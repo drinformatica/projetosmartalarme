@@ -92,7 +92,7 @@ export function QuoteEditor({ id }: { id?: string }) {
           setObs(q.observacoes ?? "");
           setStatus(q.status);
           const qMod = (q as unknown as { modalidade?: string }).modalidade;
-          if (qMod === "venda" || qMod === "comodato") setModalidade(qMod);
+          if (qMod === "venda" || qMod === "comodato" || qMod === "hibrido") setModalidade(qMod);
           const map: Record<string, number> = {};
           (q.items as { codigo: string; qtde: number }[]).forEach((it) => {
             map[it.codigo] = Number(it.qtde) || 0;
@@ -508,6 +508,56 @@ export function QuoteEditor({ id }: { id?: string }) {
       doc.setFont("helvetica", "bold");
       doc.setFontSize(9);
       doc.text("GARANTIA DE 2 ANOS", pageW / 2 + 40, finalY + 118);
+    } else if (modalidade === "hibrido") {
+      // ===== HÍBRIDO: Equipamentos + Mão de Obra (à vista) + Mensalidade =====
+      const maoObra = Number(taxaInstalacao) || 0;
+      const totalAVista = totalVenda + maoObra;
+
+      doc.setTextColor(220);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+      doc.text("Equipamentos", 60, finalY + 48);
+      doc.setTextColor(255);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(13);
+      doc.text(BRL(totalVenda), 60, finalY + 66);
+
+      doc.setTextColor(220);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+      doc.text("Mão de Obra Instalação", 60, finalY + 86);
+      doc.setTextColor(255);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(13);
+      doc.text(BRL(maoObra), 60, finalY + 104);
+
+      // Divisor
+      doc.setDrawColor(60, 70, 78);
+      doc.setLineWidth(0.5);
+      doc.line(pageW / 2 + 20, finalY + 20, pageW / 2 + 20, finalY + invH - 20);
+
+      doc.setTextColor(...GREEN);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9);
+      doc.text("TOTAL À VISTA", pageW / 2 + 40, finalY + 40);
+      doc.setTextColor(255);
+      doc.setFontSize(18);
+      doc.text(BRL(totalAVista), pageW / 2 + 40, finalY + 62);
+
+      if (mensalidade > 0) {
+        doc.setTextColor(...GREEN);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(9);
+        doc.text("MONITORAMENTO 24H", pageW / 2 + 40, finalY + 84);
+        doc.setTextColor(255);
+        doc.setFontSize(14);
+        doc.text(BRL(Number(mensalidade)) + " /mês", pageW / 2 + 40, finalY + 102);
+      }
+
+      doc.setTextColor(...GREEN);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8);
+      doc.text("GARANTIA DE 2 ANOS", pageW / 2 + 40, finalY + 118);
     } else {
       // ===== COMODATO: Taxa Instalação + Mensalidade =====
       if (Number(taxaInstalacao) > 0) {
@@ -747,34 +797,32 @@ export function QuoteEditor({ id }: { id?: string }) {
       {/* Modalidade */}
       <section className="mb-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
         <h2 className="mb-3 text-sm font-semibold text-slate-700">Modalidade do Orçamento</h2>
-        <div className="grid grid-cols-2 gap-2">
-          <button
-            type="button"
-            onClick={() => setModalidade("comodato")}
-            className={`rounded-md border px-3 py-2 text-sm font-semibold transition ${
-              modalidade === "comodato"
-                ? "border-green-700 bg-green-700 text-white"
-                : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
-            }`}
-          >
-            Comodato
-          </button>
-          <button
-            type="button"
-            onClick={() => setModalidade("venda")}
-            className={`rounded-md border px-3 py-2 text-sm font-semibold transition ${
-              modalidade === "venda"
-                ? "border-green-700 bg-green-700 text-white"
-                : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
-            }`}
-          >
-            Venda
-          </button>
+        <div className="grid grid-cols-3 gap-2">
+          {([
+            { v: "comodato", l: "Comodato" },
+            { v: "venda", l: "Venda" },
+            { v: "hibrido", l: "Híbrido" },
+          ] as { v: QuoteModalidade; l: string }[]).map((opt) => (
+            <button
+              key={opt.v}
+              type="button"
+              onClick={() => setModalidade(opt.v)}
+              className={`rounded-md border px-3 py-2 text-sm font-semibold transition ${
+                modalidade === opt.v
+                  ? "border-green-700 bg-green-700 text-white"
+                  : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
+              }`}
+            >
+              {opt.l}
+            </button>
+          ))}
         </div>
         <p className="mt-2 text-xs text-slate-500">
           {modalidade === "comodato"
             ? "Comodato: cliente paga taxa de instalação e mensalidade de monitoramento."
-            : "Venda: cliente paga o valor total dos produtos + mão de obra."}
+            : modalidade === "venda"
+            ? "Venda: cliente paga o valor total dos produtos + mão de obra."
+            : "Híbrido: cliente compra os produtos, paga mão de obra de instalação e mensalidade de monitoramento."}
         </p>
       </section>
 
@@ -797,7 +845,11 @@ export function QuoteEditor({ id }: { id?: string }) {
         </div>
         <div>
           <label className="mb-1 block text-xs font-semibold text-slate-600">
-            {modalidade === "venda" ? "Valor de Mão de Obra (R$)" : "Taxa de Instalação (R$)"}
+            {modalidade === "venda"
+              ? "Valor de Mão de Obra (R$)"
+              : modalidade === "hibrido"
+              ? "Mão de Obra Instalação (R$)"
+              : "Taxa de Instalação (R$)"}
           </label>
           <input
             type="number"
@@ -813,7 +865,7 @@ export function QuoteEditor({ id }: { id?: string }) {
             onFocus={(e) => e.target.select()}
           />
         </div>
-        {modalidade === "comodato" && (
+        {(modalidade === "comodato" || modalidade === "hibrido") && (
           <div>
             <label className="mb-1 block text-xs font-semibold text-slate-600">Mensalidade Monitoramento (R$)</label>
             <input
@@ -1005,6 +1057,38 @@ export function QuoteEditor({ id }: { id?: string }) {
             <p className="text-xs text-slate-500">
               Nesta modalidade, o cliente adquire os equipamentos e paga a mão de obra
               da instalação. Sem mensalidade de monitoramento.
+            </p>
+          </div>
+        </section>
+      ) : modalidade === "hibrido" ? (
+        <section className="mt-6 grid gap-4 lg:grid-cols-2">
+          <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+            <h3 className="mb-3 text-sm font-semibold text-slate-700">Resumo Híbrido</h3>
+            <div className="space-y-2 text-sm">
+              <Row label="Custo produtos" value={BRL(totalCusto)} />
+              <Row label="Equipamentos (c/ margem)" value={BRL(totalVenda)} />
+              <Row label="Mão de obra instalação" value={BRL(Number(taxaInstalacao))} />
+              <div className="my-2 border-t border-slate-200" />
+              <Row
+                label="Total à vista"
+                value={BRL(totalVenda + Number(taxaInstalacao || 0))}
+                bold
+                color="text-green-700"
+              />
+              <Row label="Mensalidade monitoramento" value={BRL(Number(mensalidade))} />
+              <Row label="Lucro na venda" value={BRL(lucro)} bold color="text-green-700" />
+            </div>
+          </div>
+          <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+            <h3 className="mb-3 text-sm font-semibold text-slate-700">Receita recorrente projetada</h3>
+            <div className="space-y-2 text-sm">
+              <Row label="12 meses" value={BRL(receita12)} />
+              <Row label="24 meses" value={BRL(receita24)} />
+              <Row label="36 meses" value={BRL(receita36)} bold color="text-green-700" />
+            </div>
+            <p className="mt-4 text-xs text-slate-500">
+              Cliente adquire os equipamentos, paga a mão de obra à vista e o
+              monitoramento mensal.
             </p>
           </div>
         </section>

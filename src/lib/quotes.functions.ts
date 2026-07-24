@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 export type QuoteStatus = "rascunho" | "enviado" | "negociacao" | "fechado" | "perdido";
-export type QuoteModalidade = "comodato" | "venda";
+export type QuoteModalidade = "comodato" | "venda" | "hibrido";
 
 export type QuoteItem = {
   codigo: string;
