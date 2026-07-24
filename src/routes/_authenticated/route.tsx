@@ -15,8 +15,8 @@ export const Route = createFileRoute("/_authenticated")({
 
 function AuthedLayout() {
   return (
-    <SidebarProvider>
-      <div className="flex min-h-screen w-full bg-background text-foreground">
+    <SidebarProvider className="flex flex-1 min-h-0">
+      <div className="flex w-full flex-1 bg-background text-foreground">
         <AppSidebar />
         <SidebarInset className="min-w-0 flex-1 bg-background">
           <header className="sticky top-0 z-20 flex h-14 items-center gap-2 border-b border-slate-200/70 bg-white/80 px-3 backdrop-blur-xl sm:px-5">
