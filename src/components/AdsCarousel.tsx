@@ -70,7 +70,7 @@ export function AdsCarousel() {
         </div>
 
         {ads.length > 1 && (
-          <div className="pointer-events-none absolute bottom-16 left-0 right-0 flex justify-center gap-1.5">
+          <div className="pointer-events-none absolute inset-x-0 bottom-14 flex justify-center gap-1.5 sm:bottom-16">
             {ads.map((a, i) => (
               <button
                 key={a.id}
@@ -80,7 +80,7 @@ export function AdsCarousel() {
                 }}
                 aria-label={`Ir para anúncio ${i + 1}`}
                 className={`pointer-events-auto h-2 w-2 rounded-full transition ${
-                  i === idx ? "bg-green-600" : "bg-white/80 ring-1 ring-slate-300"
+                  i === idx ? "bg-green-600" : "bg-white/90 ring-1 ring-slate-300"
                 }`}
               />
             ))}
