@@ -62,7 +62,7 @@ function Landing() {
             Orçamentos, ROI e pipeline comercial{" "}
             <span className="relative inline-block">
               <span className="absolute inset-x-0 bottom-[12%] h-[40%] rounded-full bg-gradient-to-r from-primary/30 via-primary-glow/40 to-primary/20 blur-md" aria-hidden="true" />
-              em uma única plataforma.
+              <span className="relative text-primary-deep">em uma única plataforma.</span>
             </span>
           </h1>
 
