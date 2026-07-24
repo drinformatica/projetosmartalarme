@@ -187,15 +187,23 @@ const Sidebar = React.forwardRef<
     }
 
     if (isMobile) {
+      const { style: propStyle, className: propClassName, ...restProps } = props as {
+        style?: React.CSSProperties;
+        className?: string;
+      } & React.ComponentProps<typeof Sheet>;
       return (
-        <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
+        <Sheet open={openMobile} onOpenChange={setOpenMobile} {...restProps}>
           <SheetContent
             data-sidebar="sidebar"
             data-mobile="true"
-            className="w-(--sidebar-width) bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden"
+            className={cn(
+              "w-(--sidebar-width) bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden",
+              propClassName,
+            )}
             style={
               {
                 "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
+                ...propStyle,
               } as React.CSSProperties
             }
             side={side}
