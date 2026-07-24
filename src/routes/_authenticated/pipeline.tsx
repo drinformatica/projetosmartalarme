@@ -164,7 +164,7 @@ function Pipeline() {
                 onDragOver={(e) => onDragOverCol(e, col.id)}
                 onDragLeave={() => setDragOverCol((c) => (c === col.id ? null : c))}
                 onDrop={(e) => onDropCol(e, col.id)}
-                className={`rounded-lg border bg-white transition ${
+                className={`w-[82vw] max-w-[320px] shrink-0 snap-start rounded-lg border bg-white transition sm:w-auto sm:max-w-none sm:shrink ${
                   dragOverCol === col.id ? "border-green-500 ring-2 ring-green-300" : "border-slate-200"
                 }`}
               >
