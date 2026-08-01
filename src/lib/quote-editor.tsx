@@ -1061,6 +1061,18 @@ export function QuoteEditor({ id }: { id?: string }) {
             <span className="text-slate-600">Total venda</span>
             <span className="font-semibold tabular-nums text-green-700">{BRL(totalVenda)}</span>
           </div>
+          <div className="mt-1 flex justify-between">
+            <span className="text-slate-600">Lucro bruto</span>
+            <span className="font-semibold tabular-nums text-green-700">{BRL(lucroBruto)}</span>
+          </div>
+          <div className="mt-1 flex justify-between">
+            <span className="text-slate-600">Margem de lucro</span>
+            <span className="font-semibold tabular-nums">{PCT(margemLucro)}</span>
+          </div>
+          <div className="mt-1 flex justify-between">
+            <span className="text-slate-600">Markup</span>
+            <span className="font-semibold tabular-nums">{PCT(markup)}</span>
+          </div>
         </div>
       </section>
 
