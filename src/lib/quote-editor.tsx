@@ -1094,6 +1094,9 @@ export function QuoteEditor({ id }: { id?: string }) {
                 color="text-green-700"
               />
               <Row label="Lucro estimado" value={BRL(lucro)} bold color="text-green-700" />
+              <Row label="Lucro bruto" value={BRL(lucroBruto)} bold color="text-green-700" />
+              <Row label="Margem de lucro" value={PCT(margemLucro)} />
+              <Row label="Markup" value={PCT(markup)} />
             </div>
           </div>
           <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
@@ -1121,6 +1124,9 @@ export function QuoteEditor({ id }: { id?: string }) {
               />
               <Row label="Mensalidade monitoramento" value={BRL(Number(mensalidade))} />
               <Row label="Lucro na venda" value={BRL(lucro)} bold color="text-green-700" />
+              <Row label="Lucro bruto" value={BRL(lucroBruto)} bold color="text-green-700" />
+              <Row label="Margem de lucro" value={PCT(margemLucro)} />
+              <Row label="Markup" value={PCT(markup)} />
             </div>
           </div>
           <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
@@ -1145,6 +1151,9 @@ export function QuoteEditor({ id }: { id?: string }) {
               <Row label="Taxa de instalação (cobrada)" value={BRL(Number(taxaInstalacao))} />
               <Row label="Venda de Equipamentos / Comodato" value={BRL(totalVenda)} />
               <Row label="Lucro Venda de Equipamentos / Comodato" value={BRL(lucro)} bold color="text-green-700" />
+              <Row label="Lucro bruto" value={BRL(lucroBruto)} bold color="text-green-700" />
+              <Row label="Margem de lucro" value={PCT(margemLucro)} />
+              <Row label="Markup" value={PCT(markup)} />
               <div className="my-2 border-t border-slate-200" />
               <Row label="Investimento a recuperar (venda − inst.)" value={BRL(investimentoInicial)} />
               <Row label="Mensalidade monitoramento" value={BRL(Number(mensalidade))} />
