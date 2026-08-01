@@ -153,6 +153,14 @@ export function QuoteEditor({ id }: { id?: string }) {
   const totalCusto = linhas.reduce((s, l) => s + l.custoTotal, 0);
   const totalVenda = linhas.reduce((s, l) => s + l.venda, 0);
   const lucro = totalVenda - totalCusto;
+  // Lucro bruto = preço de venda − preço de custo
+  const lucroBruto = lucro;
+  // Margem de lucro = lucro bruto / preço de venda
+  const margemLucro = totalVenda > 0 ? lucroBruto / totalVenda : 0;
+  // Markup = lucro bruto / preço de custo
+  const markup = totalCusto > 0 ? lucroBruto / totalCusto : 0;
+  const PCT = (v: number) =>
+    `${(v * 100).toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%`;
   // Investimento a recuperar = preço de venda (com margem) menos a taxa de instalação já cobrada do cliente
   const investimentoInicial = Math.max(0, totalVenda - Number(taxaInstalacao || 0));
   const paybackMeses = mensalidade > 0 ? investimentoInicial / mensalidade : 0;
@@ -1053,6 +1061,18 @@ export function QuoteEditor({ id }: { id?: string }) {
             <span className="text-slate-600">Total venda</span>
             <span className="font-semibold tabular-nums text-green-700">{BRL(totalVenda)}</span>
           </div>
+          <div className="mt-1 flex justify-between">
+            <span className="text-slate-600">Lucro bruto</span>
+            <span className="font-semibold tabular-nums text-green-700">{BRL(lucroBruto)}</span>
+          </div>
+          <div className="mt-1 flex justify-between">
+            <span className="text-slate-600">Margem de lucro</span>
+            <span className="font-semibold tabular-nums">{PCT(margemLucro)}</span>
+          </div>
+          <div className="mt-1 flex justify-between">
+            <span className="text-slate-600">Markup</span>
+            <span className="font-semibold tabular-nums">{PCT(markup)}</span>
+          </div>
         </div>
       </section>
 
@@ -1074,6 +1094,9 @@ export function QuoteEditor({ id }: { id?: string }) {
                 color="text-green-700"
               />
               <Row label="Lucro estimado" value={BRL(lucro)} bold color="text-green-700" />
+              <Row label="Lucro bruto" value={BRL(lucroBruto)} bold color="text-green-700" />
+              <Row label="Margem de lucro" value={PCT(margemLucro)} />
+              <Row label="Markup" value={PCT(markup)} />
             </div>
           </div>
           <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
@@ -1101,6 +1124,9 @@ export function QuoteEditor({ id }: { id?: string }) {
               />
               <Row label="Mensalidade monitoramento" value={BRL(Number(mensalidade))} />
               <Row label="Lucro na venda" value={BRL(lucro)} bold color="text-green-700" />
+              <Row label="Lucro bruto" value={BRL(lucroBruto)} bold color="text-green-700" />
+              <Row label="Margem de lucro" value={PCT(margemLucro)} />
+              <Row label="Markup" value={PCT(markup)} />
             </div>
           </div>
           <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
@@ -1125,6 +1151,9 @@ export function QuoteEditor({ id }: { id?: string }) {
               <Row label="Taxa de instalação (cobrada)" value={BRL(Number(taxaInstalacao))} />
               <Row label="Venda de Equipamentos / Comodato" value={BRL(totalVenda)} />
               <Row label="Lucro Venda de Equipamentos / Comodato" value={BRL(lucro)} bold color="text-green-700" />
+              <Row label="Lucro bruto" value={BRL(lucroBruto)} bold color="text-green-700" />
+              <Row label="Margem de lucro" value={PCT(margemLucro)} />
+              <Row label="Markup" value={PCT(markup)} />
               <div className="my-2 border-t border-slate-200" />
               <Row label="Investimento a recuperar (venda − inst.)" value={BRL(investimentoInicial)} />
               <Row label="Mensalidade monitoramento" value={BRL(Number(mensalidade))} />
