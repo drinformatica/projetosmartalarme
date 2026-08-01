@@ -153,6 +153,14 @@ export function QuoteEditor({ id }: { id?: string }) {
   const totalCusto = linhas.reduce((s, l) => s + l.custoTotal, 0);
   const totalVenda = linhas.reduce((s, l) => s + l.venda, 0);
   const lucro = totalVenda - totalCusto;
+  // Lucro bruto = preço de venda − preço de custo
+  const lucroBruto = lucro;
+  // Margem de lucro = lucro bruto / preço de venda
+  const margemLucro = totalVenda > 0 ? lucroBruto / totalVenda : 0;
+  // Markup = lucro bruto / preço de custo
+  const markup = totalCusto > 0 ? lucroBruto / totalCusto : 0;
+  const PCT = (v: number) =>
+    `${(v * 100).toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%`;
   // Investimento a recuperar = preço de venda (com margem) menos a taxa de instalação já cobrada do cliente
   const investimentoInicial = Math.max(0, totalVenda - Number(taxaInstalacao || 0));
   const paybackMeses = mensalidade > 0 ? investimentoInicial / mensalidade : 0;
