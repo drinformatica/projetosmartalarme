@@ -982,7 +982,7 @@ export function QuoteEditor({ id }: { id?: string }) {
                 </tr>
               ))}
             </tbody>
-            <tfoot className="bg-slate-100 font-semibold">
+            <tfoot className="sticky bottom-0 z-10 bg-slate-100 font-semibold shadow-[0_-1px_0_rgba(0,0,0,0.05)]">
               <tr>
                 <td colSpan={possuiCnae ? 5 : 4} className="px-3 py-2 text-right">TOTAL</td>
                 <td className="px-3 py-2 text-right tabular-nums">{BRL(totalCusto)}</td>
