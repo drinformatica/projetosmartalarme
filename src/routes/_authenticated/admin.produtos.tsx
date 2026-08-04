@@ -116,7 +116,7 @@ function AdminProdutos() {
         });
       }
 
-      if (rows.length === 0) throw new Error("Nenhum produto válido encontrado. Verifique as colunas: codigo, psd, cnae.");
+      if (rows.length === 0) throw new Error("Nenhum produto válido encontrado. Verifique as colunas obrigatórias: codigo, psd, descrição do produto.");
       setBatchImport(s => ({ ...s, parsing: false, rows }));
     } catch (e: any) {
       setBatchImport(s => ({ ...s, parsing: false, error: e.message }));
