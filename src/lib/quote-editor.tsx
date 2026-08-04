@@ -942,9 +942,9 @@ export function QuoteEditor({ id }: { id?: string }) {
 
       {/* Produtos - desktop (tabela) */}
       <section className="hidden overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm md:block">
-        <div className="overflow-x-auto">
+        <div className="max-h-[700px] overflow-auto">
           <table className="min-w-full text-sm">
-            <thead className="bg-green-700 text-white">
+            <thead className="sticky top-0 z-10 bg-green-700 text-white shadow-sm">
               <tr>
                 <th className="px-3 py-2 text-left font-semibold">Código</th>
                 <th className="px-3 py-2 text-left font-semibold">Produto</th>
@@ -982,7 +982,7 @@ export function QuoteEditor({ id }: { id?: string }) {
                 </tr>
               ))}
             </tbody>
-            <tfoot className="bg-slate-100 font-semibold">
+            <tfoot className="sticky bottom-0 z-10 bg-slate-100 font-semibold shadow-[0_-1px_0_rgba(0,0,0,0.05)]">
               <tr>
                 <td colSpan={possuiCnae ? 5 : 4} className="px-3 py-2 text-right">TOTAL</td>
                 <td className="px-3 py-2 text-right tabular-nums">{BRL(totalCusto)}</td>
@@ -994,11 +994,11 @@ export function QuoteEditor({ id }: { id?: string }) {
       </section>
 
       {/* Produtos - mobile (cards) */}
-      <section className="space-y-2 md:hidden">
-        <div className="rounded-t-lg bg-green-700 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-white">
+      <section className="flex max-h-[700px] flex-col overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm md:hidden">
+        <div className="shrink-0 bg-green-700 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-white">
           Produtos ({filtradas.length})
         </div>
-        <ul className="space-y-2">
+        <ul className="flex-1 overflow-y-auto space-y-2 bg-slate-50/30 p-2">
           {filtradas.map((l) => {
             const ativo = l.qtde > 0;
             return (
@@ -1052,7 +1052,7 @@ export function QuoteEditor({ id }: { id?: string }) {
             );
           })}
         </ul>
-        <div className="mt-2 rounded-lg border border-slate-200 bg-slate-100 p-3 text-sm">
+        <div className="shrink-0 border-t border-slate-200 bg-slate-100 p-3 text-sm">
           <div className="flex justify-between">
             <span className="text-slate-600">Total custo</span>
             <span className="font-semibold tabular-nums">{BRL(totalCusto)}</span>
