@@ -184,8 +184,21 @@ function AdminProdutos() {
 
         if (!codKey || !psdKey) continue;
         const codigo = String(r[codKey] ?? "").trim();
-        const raw = String(r[psdKey] ?? "").replace(/[R$\s.]/g, "").replace(",", ".");
-        const psd = Number(raw);
+        const psdRaw = r[psdKey];
+        let psd = 0;
+        
+        if (typeof psdRaw === 'number') {
+          psd = psdRaw;
+        } else {
+          const cleanStr = String(psdRaw).replace(/[R$\s]/g, "");
+          if (cleanStr.includes(".") && cleanStr.includes(",")) {
+            psd = Number(cleanStr.replace(/\./g, "").replace(",", "."));
+          } else if (cleanStr.includes(",")) {
+            psd = Number(cleanStr.replace(",", "."));
+          } else {
+            psd = Number(cleanStr);
+          }
+        }
         if (!codigo || !Number.isFinite(psd)) continue;
         rows.push({ codigo, psd });
       }
