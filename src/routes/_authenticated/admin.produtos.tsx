@@ -7,10 +7,26 @@ import {
   upsertProduct,
   deleteProduct,
   bulkUpdatePrices,
+  bulkInsertProducts,
   type Product,
   type ProductInput,
+  type BulkProductInput,
 } from "@/lib/products.functions";
 import * as XLSX from "xlsx";
+import { 
+  ChevronDown, 
+  FileSpreadsheet, 
+  Plus, 
+  Upload, 
+  Check, 
+  AlertCircle 
+} from "lucide-react";
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuTrigger 
+} from "@/components/ui/dropdown-menu";
 
 
 export const Route = createFileRoute("/_authenticated/admin/produtos")({
@@ -39,6 +55,84 @@ function AdminProdutos() {
   const saveFn = useServerFn(upsertProduct);
   const delFn = useServerFn(deleteProduct);
   const bulkFn = useServerFn(bulkUpdatePrices);
+  const bulkInsertFn = useServerFn(bulkInsertProducts);
+
+  const [batchImport, setBatchImport] = useState<{
+    open: boolean;
+    parsing: boolean;
+    saving: boolean;
+    rows: BulkProductInput[];
+    error: string | null;
+    success: number | null;
+  }>({ open: false, parsing: false, saving: false, rows: [], error: null, success: null });
+
+  const generateCommercialDescription = (name: string) => {
+    const templates = [
+      `Solução de alta performance ${name}, projetada para máxima eficiência e durabilidade em sistemas de segurança de última geração.`,
+      `O componente ${name} oferece integração perfeita e tecnologia avançada para garantir a proteção total do seu patrimônio.`,
+      `Desenvolvido com padrão de qualidade superior, o ${name} é a escolha ideal para quem busca confiabilidade e inovação tecnológica.`,
+      `Aumente a inteligência do seu sistema com o ${name}, proporcionando monitoramento preciso e resposta rápida em qualquer situação.`
+    ];
+    return templates[Math.floor(Math.random() * templates.length)];
+  };
+
+  const handleBatchFile = async (file: File) => {
+    setBatchImport(s => ({ ...s, parsing: true, error: null, rows: [], success: null }));
+    try {
+      const buf = await file.arrayBuffer();
+      const wb = XLSX.read(buf, { type: "array" });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const json: any[] = XLSX.utils.sheet_to_json(ws, { defval: "" });
+      
+      const rows: BulkProductInput[] = [];
+      const norm = (s: string) => s.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+      for (const r of json) {
+        const keys = Object.keys(r);
+        const codKey = keys.find(k => norm(k) === "codigo" || norm(k) === "cod");
+        const psdKey = keys.find(k => norm(k) === "psd" || norm(k) === "preço");
+        const cnaeKey = keys.find(k => norm(k) === "cnae");
+        const descKey = keys.find(k => norm(k) === "descricao" || norm(k) === "nome");
+
+        if (!codKey || !psdKey) continue;
+
+        const codigo = String(r[codKey]).trim();
+        const rawName = descKey ? String(r[descKey]).trim() : codigo;
+        const psdStr = String(r[psdKey]).replace(/[R$\s.]/g, "").replace(",", ".");
+        const psd = Number(psdStr);
+        
+        const cnaeVal = cnaeKey ? String(r[cnaeKey]).toLowerCase() : "";
+        const noCnae = cnaeVal === "não" || cnaeVal === "nao" || cnaeVal === "no";
+
+        if (!codigo || isNaN(psd)) continue;
+
+        rows.push({
+          codigo,
+          nome: rawName,
+          psd,
+          descricao_orcamento: rawName,
+          descricao_proposta: generateCommercialDescription(rawName),
+          no_cnae_discount: noCnae
+        });
+      }
+
+      if (rows.length === 0) throw new Error("Nenhum produto válido encontrado. Verifique as colunas: codigo, psd, cnae.");
+      setBatchImport(s => ({ ...s, parsing: false, rows }));
+    } catch (e: any) {
+      setBatchImport(s => ({ ...s, parsing: false, error: e.message }));
+    }
+  };
+
+  const confirmBatchImport = async () => {
+    setBatchImport(s => ({ ...s, saving: true, error: null }));
+    try {
+      const res = await bulkInsertFn({ data: { products: batchImport.rows } });
+      setBatchImport(s => ({ ...s, saving: false, success: res.count, rows: [] }));
+      await refresh();
+    } catch (e: any) {
+      setBatchImport(s => ({ ...s, saving: false, error: e.message }));
+    }
+  };
 
   const [priceImport, setPriceImport] = useState<{
     open: boolean;
@@ -221,12 +315,28 @@ function AdminProdutos() {
           >
             ⤴ Atualizar Preços
           </button>
-          <button
-            onClick={startNew}
-            className="rounded bg-green-700 px-3 py-1.5 font-semibold text-white hover:bg-green-800"
-          >
-            + Novo Produto
-          </button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="flex items-center gap-2 rounded bg-green-700 px-4 py-2 text-sm font-semibold text-white hover:bg-green-800 transition-colors shadow-sm">
+                <Plus className="h-4 w-4" />
+                Novo Produto
+                <ChevronDown className="h-4 w-4 opacity-70" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem onClick={startNew} className="cursor-pointer">
+                <Plus className="mr-2 h-4 w-4" />
+                Adicionar 1 a 1
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={() => setBatchImport(s => ({ ...s, open: true }))}
+                className="cursor-pointer"
+              >
+                <FileSpreadsheet className="mr-2 h-4 w-4" />
+                Adicionar em lote
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
@@ -568,6 +678,140 @@ function AdminProdutos() {
                 </button>
               )}
             </div>
+          </div>
+        </div>
+      )}
+      {batchImport.open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="w-full max-w-xl rounded-xl bg-white p-6 shadow-2xl animate-in fade-in zoom-in duration-200">
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-xl font-bold text-slate-800">Adicionar Produtos em Lote</h2>
+              <button 
+                onClick={() => setBatchImport(s => ({ ...s, open: false, error: null, success: null, rows: [] }))}
+                className="text-slate-400 hover:text-slate-600"
+              >
+                ✕
+              </button>
+            </div>
+            
+            {!batchImport.success ? (
+              <>
+                <div className="mb-6 rounded-lg bg-emerald-50 border border-emerald-100 p-4 text-sm text-emerald-800">
+                  <p className="font-semibold mb-2">Instruções da Planilha:</p>
+                  <ul className="list-disc ml-4 space-y-1 opacity-90">
+                    <li>Colunas obrigatórias: <b>codigo</b> e <b>psd</b>.</li>
+                    <li>Coluna opcional: <b>Cnae</b> (Sim para aplicar desconto, Não para sem desconto).</li>
+                    <li>O sistema gerará automaticamente descrições comerciais para o PDF.</li>
+                  </ul>
+                </div>
+
+                <div className="relative mb-6">
+                  <input
+                    type="file"
+                    accept=".xlsx,.xls"
+                    id="batch-upload"
+                    className="hidden"
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (f) handleBatchFile(f);
+                    }}
+                  />
+                  <label 
+                    htmlFor="batch-upload"
+                    className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-slate-300 p-8 cursor-pointer hover:border-emerald-500 hover:bg-emerald-50 transition-all group"
+                  >
+                    <Upload className="h-10 w-10 text-slate-400 group-hover:text-emerald-600 mb-2" />
+                    <span className="text-sm font-medium text-slate-600 group-hover:text-emerald-700">
+                      Clique para selecionar ou arraste a planilha
+                    </span>
+                    <span className="text-xs text-slate-400 mt-1">Apenas arquivos .xlsx ou .xls</span>
+                  </label>
+                </div>
+
+                {batchImport.parsing && (
+                  <div className="flex items-center justify-center py-4 text-slate-600 animate-pulse">
+                    <FileSpreadsheet className="h-5 w-5 mr-2" />
+                    Processando arquivo...
+                  </div>
+                )}
+
+                {batchImport.error && (
+                  <div className="mb-4 flex items-start gap-2 rounded-lg bg-red-50 p-4 text-sm text-red-700 border border-red-100">
+                    <AlertCircle className="h-5 w-5 shrink-0" />
+                    {batchImport.error}
+                  </div>
+                )}
+
+                {batchImport.rows.length > 0 && (
+                  <div className="mb-6">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-semibold text-slate-700">Prévia ({batchImport.rows.length} itens)</span>
+                    </div>
+                    <div className="max-h-48 overflow-auto rounded-lg border border-slate-200">
+                      <table className="min-w-full text-xs">
+                        <thead className="bg-slate-50 sticky top-0 border-b">
+                          <tr>
+                            <th className="px-3 py-2 text-left">Código</th>
+                            <th className="px-3 py-2 text-right">PSD</th>
+                            <th className="px-3 py-2 text-center">CNAE</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100">
+                          {batchImport.rows.slice(0, 5).map((r, i) => (
+                            <tr key={i} className="hover:bg-slate-50">
+                              <td className="px-3 py-2 font-mono">{r.codigo}</td>
+                              <td className="px-3 py-2 text-right">{BRL(r.psd)}</td>
+                              <td className="px-3 py-2 text-center">
+                                {r.no_cnae_discount ? "Não" : "Sim"}
+                              </td>
+                            </tr>
+                          ))}
+                          {batchImport.rows.length > 5 && (
+                            <tr>
+                              <td colSpan={3} className="px-3 py-2 text-center text-slate-400 bg-slate-50">
+                                ... e mais {batchImport.rows.length - 5} produtos
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex justify-end gap-3">
+                  <button
+                    onClick={() => setBatchImport(s => ({ ...s, open: false, rows: [] }))}
+                    className="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    onClick={confirmBatchImport}
+                    disabled={batchImport.rows.length === 0 || batchImport.saving}
+                    className="flex items-center gap-2 rounded-lg bg-emerald-600 px-6 py-2 text-sm font-bold text-white hover:bg-emerald-700 disabled:opacity-50 transition-colors shadow-lg shadow-emerald-200"
+                  >
+                    {batchImport.saving ? "Cadastrando..." : "Cadastrar Tudo"}
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div className="text-center py-8">
+                <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-emerald-100 text-emerald-600 mb-4">
+                  <Check className="h-8 w-8" />
+                </div>
+                <h3 className="text-xl font-bold text-slate-800 mb-2">Sucesso!</h3>
+                <p className="text-slate-600 mb-6">
+                  {batchImport.success} produtos foram adicionados com sucesso ao banco de dados.
+                </p>
+                <button
+                  onClick={() => setBatchImport(s => ({ ...s, open: false, success: null }))}
+                  className="w-full rounded-lg bg-slate-800 py-3 font-bold text-white hover:bg-slate-900 transition-colors"
+                >
+                  Continuar
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}

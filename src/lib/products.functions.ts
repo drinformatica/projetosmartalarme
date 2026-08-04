@@ -115,3 +115,28 @@ export const bulkUpdatePrices = createServerFn({ method: "POST" })
     return { updated, notFound, total: data.updates.length };
   });
 
+export type BulkProductInput = {
+  codigo: string;
+  nome: string;
+  psd: number;
+  descricao_orcamento: string;
+  descricao_proposta: string;
+  no_cnae_discount: boolean;
+};
+
+export const bulkInsertProducts = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { products: BulkProductInput[] }) => data)
+  .handler(async ({ data, context }) => {
+    const { error } = await context.supabase
+      .from("products")
+      .insert(data.products.map(p => ({
+        ...p,
+        active: true,
+        sort_order: 0
+      })));
+    if (error) throw new Error(error.message);
+    return { count: data.products.length };
+  });
+
+
