@@ -786,6 +786,7 @@ function AdminProdutos() {
                         <thead className="bg-slate-50 sticky top-0 border-b">
                           <tr>
                             <th className="px-3 py-2 text-left">Código</th>
+                            <th className="px-3 py-2 text-left">Descrição</th>
                             <th className="px-3 py-2 text-right">PSD</th>
                             <th className="px-3 py-2 text-center">CNAE</th>
                           </tr>
@@ -794,6 +795,7 @@ function AdminProdutos() {
                           {batchImport.rows.slice(0, 5).map((r, i) => (
                             <tr key={i} className="hover:bg-slate-50">
                               <td className="px-3 py-2 font-mono">{r.codigo}</td>
+                              <td className="px-3 py-2 truncate max-w-[150px]">{r.nome}</td>
                               <td className="px-3 py-2 text-right">{BRL(r.psd)}</td>
                               <td className="px-3 py-2 text-center">
                                 {r.no_cnae_discount ? "Não" : "Sim"}
@@ -802,7 +804,7 @@ function AdminProdutos() {
                           ))}
                           {batchImport.rows.length > 5 && (
                             <tr>
-                              <td colSpan={3} className="px-3 py-2 text-center text-slate-400 bg-slate-50">
+                              <td colSpan={4} className="px-3 py-2 text-center text-slate-400 bg-slate-50">
                                 ... e mais {batchImport.rows.length - 5} produtos
                               </td>
                             </tr>
