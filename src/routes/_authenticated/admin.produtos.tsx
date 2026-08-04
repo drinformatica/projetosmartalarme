@@ -92,31 +92,31 @@ function AdminProdutos() {
         const codKey = keys.find(k => norm(k) === "codigo" || norm(k) === "cod");
         const psdKey = keys.find(k => norm(k) === "psd" || norm(k) === "preço");
         const cnaeKey = keys.find(k => norm(k) === "cnae");
-        const descKey = keys.find(k => norm(k) === "descricao" || norm(k) === "nome");
+        const nameKey = keys.find(k => norm(k) === "descricao do produto" || norm(k) === "nome");
 
-        if (!codKey || !psdKey) continue;
+        if (!codKey || !psdKey || !nameKey) continue;
 
         const codigo = String(r[codKey]).trim();
-        const rawName = descKey ? String(r[descKey]).trim() : codigo;
+        const nome = String(r[nameKey]).trim();
         const psdStr = String(r[psdKey]).replace(/[R$\s.]/g, "").replace(",", ".");
         const psd = Number(psdStr);
         
         const cnaeVal = cnaeKey ? String(r[cnaeKey]).toLowerCase() : "";
         const noCnae = cnaeVal === "não" || cnaeVal === "nao" || cnaeVal === "no";
 
-        if (!codigo || isNaN(psd)) continue;
+        if (!codigo || !nome || isNaN(psd)) continue;
 
         rows.push({
           codigo,
-          nome: rawName,
+          nome,
           psd,
-          descricao_orcamento: rawName,
-          descricao_proposta: generateCommercialDescription(rawName),
+          descricao_orcamento: nome,
+          descricao_proposta: generateCommercialDescription(nome),
           no_cnae_discount: noCnae
         });
       }
 
-      if (rows.length === 0) throw new Error("Nenhum produto válido encontrado. Verifique as colunas: codigo, psd, cnae.");
+      if (rows.length === 0) throw new Error("Nenhum produto válido encontrado. Verifique as colunas obrigatórias: codigo, psd, descrição do produto.");
       setBatchImport(s => ({ ...s, parsing: false, rows }));
     } catch (e: any) {
       setBatchImport(s => ({ ...s, parsing: false, error: e.message }));
@@ -699,7 +699,7 @@ function AdminProdutos() {
                 <div className="mb-6 rounded-lg bg-emerald-50 border border-emerald-100 p-4 text-sm text-emerald-800">
                   <p className="font-semibold mb-2">Instruções da Planilha:</p>
                   <ul className="list-disc ml-4 space-y-1 opacity-90">
-                    <li>Colunas obrigatórias: <b>codigo</b> e <b>psd</b>.</li>
+                    <li>Colunas obrigatórias: <b>codigo</b>, <b>psd</b> e <b>descrição do produto</b>.</li>
                     <li>Coluna opcional: <b>Cnae</b> (Sim para aplicar desconto, Não para sem desconto).</li>
                     <li>O sistema gerará automaticamente descrições comerciais para o PDF.</li>
                   </ul>
