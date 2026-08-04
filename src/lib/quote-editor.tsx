@@ -994,11 +994,11 @@ export function QuoteEditor({ id }: { id?: string }) {
       </section>
 
       {/* Produtos - mobile (cards) */}
-      <section className="space-y-2 md:hidden">
-        <div className="sticky top-0 z-10 rounded-t-lg bg-green-700 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-white shadow-sm">
+      <section className="flex max-h-[700px] flex-col overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm md:hidden">
+        <div className="shrink-0 bg-green-700 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-white">
           Produtos ({filtradas.length})
         </div>
-        <ul className="max-h-[700px] overflow-y-auto space-y-2 pr-1">
+        <ul className="flex-1 overflow-y-auto space-y-2 bg-slate-50/30 p-2">
           {filtradas.map((l) => {
             const ativo = l.qtde > 0;
             return (
