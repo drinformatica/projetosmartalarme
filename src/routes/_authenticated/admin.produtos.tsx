@@ -92,11 +92,12 @@ function AdminProdutos() {
         const codKey = keys.find(k => norm(k) === "codigo" || norm(k) === "cod");
         const psdKey = keys.find(k => norm(k) === "psd" || norm(k) === "preço");
         const cnaeKey = keys.find(k => norm(k) === "cnae");
+        const descKey = keys.find(k => norm(k) === "descricao" || norm(k) === "nome");
 
         if (!codKey || !psdKey) continue;
 
         const codigo = String(r[codKey]).trim();
-        const nome = codigo; // "utilizar o mesmo nome" para descrição de orçamento (aqui tratamos nome como a descrição curta)
+        const rawName = descKey ? String(r[descKey]).trim() : codigo;
         const psdStr = String(r[psdKey]).replace(/[R$\s.]/g, "").replace(",", ".");
         const psd = Number(psdStr);
         
@@ -107,10 +108,10 @@ function AdminProdutos() {
 
         rows.push({
           codigo,
-          nome,
+          nome: rawName,
           psd,
-          descricao_orcamento: nome,
-          descricao_proposta: generateCommercialDescription(nome),
+          descricao_orcamento: rawName,
+          descricao_proposta: generateCommercialDescription(rawName),
           no_cnae_discount: noCnae
         });
       }
