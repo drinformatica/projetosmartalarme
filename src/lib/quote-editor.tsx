@@ -942,7 +942,7 @@ export function QuoteEditor({ id }: { id?: string }) {
 
       {/* Produtos - desktop (tabela) */}
       <section className="hidden overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm md:block">
-        <div className="overflow-x-auto">
+        <div className="max-h-[700px] overflow-auto">
           <table className="min-w-full text-sm">
             <thead className="bg-green-700 text-white">
               <tr>
@@ -998,7 +998,7 @@ export function QuoteEditor({ id }: { id?: string }) {
         <div className="rounded-t-lg bg-green-700 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-white">
           Produtos ({filtradas.length})
         </div>
-        <ul className="space-y-2">
+        <ul className="max-h-[700px] overflow-y-auto space-y-2 pr-1">
           {filtradas.map((l) => {
             const ativo = l.qtde > 0;
             return (
