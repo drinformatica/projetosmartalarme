@@ -944,7 +944,7 @@ export function QuoteEditor({ id }: { id?: string }) {
       <section className="hidden overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm md:block">
         <div className="max-h-[700px] overflow-auto">
           <table className="min-w-full text-sm">
-            <thead className="bg-green-700 text-white">
+            <thead className="sticky top-0 z-10 bg-green-700 text-white shadow-sm">
               <tr>
                 <th className="px-3 py-2 text-left font-semibold">Código</th>
                 <th className="px-3 py-2 text-left font-semibold">Produto</th>
