@@ -1052,7 +1052,7 @@ export function QuoteEditor({ id }: { id?: string }) {
             );
           })}
         </ul>
-        <div className="mt-2 rounded-lg border border-slate-200 bg-slate-100 p-3 text-sm">
+        <div className="shrink-0 border-t border-slate-200 bg-slate-100 p-3 text-sm">
           <div className="flex justify-between">
             <span className="text-slate-600">Total custo</span>
             <span className="font-semibold tabular-nums">{BRL(totalCusto)}</span>
