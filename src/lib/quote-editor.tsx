@@ -995,7 +995,7 @@ export function QuoteEditor({ id }: { id?: string }) {
 
       {/* Produtos - mobile (cards) */}
       <section className="space-y-2 md:hidden">
-        <div className="rounded-t-lg bg-green-700 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-white">
+        <div className="sticky top-0 z-10 rounded-t-lg bg-green-700 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-white shadow-sm">
           Produtos ({filtradas.length})
         </div>
         <ul className="max-h-[700px] overflow-y-auto space-y-2 pr-1">
