@@ -98,8 +98,29 @@ function AdminProdutos() {
 
         const codigo = String(r[codKey]).trim();
         const nome = String(r[nameKey]).trim();
-        const psdStr = String(r[psdKey]).replace(/[R$\s.]/g, "").replace(",", ".");
-        const psd = Number(psdStr);
+        const psdRaw = r[psdKey];
+        let psd = 0;
+        
+        if (typeof psdRaw === 'number') {
+          psd = psdRaw;
+        } else {
+          // Trata strings formatadas como "159,73" ou "1.597,30"
+          const cleanStr = String(psdRaw).replace(/[R$\s]/g, "");
+          
+          // Lógica para detectar se o separador decimal é vírgula (formato brasileiro comum em Excel)
+          // Se tiver um ponto e uma vírgula, o ponto é milhar e a vírgula é decimal
+          if (cleanStr.includes(".") && cleanStr.includes(",")) {
+            psd = Number(cleanStr.replace(/\./g, "").replace(",", "."));
+          } 
+          // Se tiver apenas vírgula, tratamos como decimal
+          else if (cleanStr.includes(",")) {
+            psd = Number(cleanStr.replace(",", "."));
+          }
+          // Caso padrão (já está em formato numérico JS ou possui apenas pontos de milhar que o Number() pode interpretar errado)
+          else {
+            psd = Number(cleanStr);
+          }
+        }
         
         const cnaeVal = cnaeKey ? String(r[cnaeKey]).toLowerCase() : "";
         const noCnae = cnaeVal === "não" || cnaeVal === "nao" || cnaeVal === "no";
@@ -163,8 +184,21 @@ function AdminProdutos() {
 
         if (!codKey || !psdKey) continue;
         const codigo = String(r[codKey] ?? "").trim();
-        const raw = String(r[psdKey] ?? "").replace(/[R$\s.]/g, "").replace(",", ".");
-        const psd = Number(raw);
+        const psdRaw = r[psdKey];
+        let psd = 0;
+        
+        if (typeof psdRaw === 'number') {
+          psd = psdRaw;
+        } else {
+          const cleanStr = String(psdRaw).replace(/[R$\s]/g, "");
+          if (cleanStr.includes(".") && cleanStr.includes(",")) {
+            psd = Number(cleanStr.replace(/\./g, "").replace(",", "."));
+          } else if (cleanStr.includes(",")) {
+            psd = Number(cleanStr.replace(",", "."));
+          } else {
+            psd = Number(cleanStr);
+          }
+        }
         if (!codigo || !Number.isFinite(psd)) continue;
         rows.push({ codigo, psd });
       }
