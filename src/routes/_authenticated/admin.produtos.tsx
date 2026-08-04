@@ -679,6 +679,7 @@ function AdminProdutos() {
             </div>
           </div>
         </div>
+      )}
       {batchImport.open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="w-full max-w-xl rounded-xl bg-white p-6 shadow-2xl animate-in fade-in zoom-in duration-200">
