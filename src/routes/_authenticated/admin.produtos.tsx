@@ -699,7 +699,7 @@ function AdminProdutos() {
                 <div className="mb-6 rounded-lg bg-emerald-50 border border-emerald-100 p-4 text-sm text-emerald-800">
                   <p className="font-semibold mb-2">Instruções da Planilha:</p>
                   <ul className="list-disc ml-4 space-y-1 opacity-90">
-                    <li>Colunas obrigatórias: <b>codigo</b> e <b>psd</b>.</li>
+                    <li>Colunas obrigatórias: <b>codigo</b>, <b>psd</b> e <b>descrição do produto</b>.</li>
                     <li>Coluna opcional: <b>Cnae</b> (Sim para aplicar desconto, Não para sem desconto).</li>
                     <li>O sistema gerará automaticamente descrições comerciais para o PDF.</li>
                   </ul>
