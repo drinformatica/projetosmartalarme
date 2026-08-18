@@ -2,6 +2,16 @@ import { createFileRoute, useRouter, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatCpfCnpj, isValidCpfCnpj, onlyDigits } from "@/lib/br-doc";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Mail } from "lucide-react";
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
@@ -20,6 +30,7 @@ function AuthPage() {
   const [msg, setMsg] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [failedAttempts, setFailedAttempts] = useState(0);
+  const [showVerifyModal, setShowVerifyModal] = useState(false);
   const MAX_ATTEMPTS = 5;
   const locked = mode === "login" && failedAttempts >= MAX_ATTEMPTS;
 
@@ -67,9 +78,7 @@ function AuthPage() {
           },
         });
         if (error) throw error;
-        setMsg(
-          "Cadastro criado! Enviamos um e-mail de confirmação. Confirme o e-mail para acessar sua conta.",
-        );
+        setShowVerifyModal(true);
         setMode("login");
         setPassword("");
       } else if (mode === "forgot") {
@@ -254,6 +263,34 @@ function AuthPage() {
           </Link>
         </div>
       </div>
+
+      <Dialog open={showVerifyModal} onOpenChange={setShowVerifyModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader className="flex flex-col items-center text-center">
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <Mail className="h-6 w-6" />
+            </div>
+            <DialogTitle className="font-display text-2xl font-black">Valide seu e-mail</DialogTitle>
+            <DialogDescription className="mt-2 text-balance text-slate-600">
+              Obrigado por se cadastrar! Enviamos um link de confirmação para <span className="font-semibold text-slate-900">{email}</span>.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="bg-slate-50 p-4 rounded-2xl text-sm text-slate-600 border border-slate-100">
+            <p>
+              Por favor, verifique sua caixa de entrada. Se não encontrar o e-mail em alguns minutos,{" "}
+              <strong className="text-primary-deep">verifique também a sua caixa de spam ou lixo eletrônico.</strong>
+            </p>
+          </div>
+          <DialogFooter className="mt-4">
+            <Button
+              className="w-full rounded-full bg-emerald-gradient font-bold text-white shadow-emerald"
+              onClick={() => setShowVerifyModal(false)}
+            >
+              Entendi
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
