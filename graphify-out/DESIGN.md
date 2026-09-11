@@ -1,0 +1,228 @@
+# Design system
+
+Generated: 2026-09-11T01:46:17.729155+00:00
+
+## Tokens
+- --font-sans: var(--font-body) (src/styles.css)
+- --font-display: var(--font-display) (src/styles.css)
+- --color-primary-deep: var(--primary-deep) (src/styles.css)
+- --color-primary-glow: var(--primary-glow) (src/styles.css)
+- --radius-sm: calc(var(--radius) - 4px) (src/styles.css)
+- --radius-md: calc(var(--radius) - 2px) (src/styles.css)
+- --radius-lg: var(--radius) (src/styles.css)
+- --radius-xl: calc(var(--radius) + 4px) (src/styles.css)
+- --radius-2xl: calc(var(--radius) + 8px) (src/styles.css)
+- --radius-3xl: calc(var(--radius) + 12px) (src/styles.css)
+- --radius-4xl: calc(var(--radius) + 16px) (src/styles.css)
+- --color-background: var(--background) (src/styles.css)
+- --color-foreground: var(--foreground) (src/styles.css)
+- --color-card: var(--card) (src/styles.css)
+- --color-card-foreground: var(--card-foreground) (src/styles.css)
+- --color-popover: var(--popover) (src/styles.css)
+- --color-popover-foreground: var(--popover-foreground) (src/styles.css)
+- --color-primary: var(--primary) (src/styles.css)
+- --color-primary-foreground: var(--primary-foreground) (src/styles.css)
+- --color-secondary: var(--secondary) (src/styles.css)
+- --color-secondary-foreground: var(--secondary-foreground) (src/styles.css)
+- --color-muted: var(--muted) (src/styles.css)
+- --color-muted-foreground: var(--muted-foreground) (src/styles.css)
+- --color-accent: var(--accent) (src/styles.css)
+- --color-accent-foreground: var(--accent-foreground) (src/styles.css)
+- --color-destructive: var(--destructive) (src/styles.css)
+- --color-destructive-foreground: var(--destructive-foreground) (src/styles.css)
+- --color-border: var(--border) (src/styles.css)
+- --color-input: var(--input) (src/styles.css)
+- --color-ring: var(--ring) (src/styles.css)
+- --color-ring-offset-background: var(--background) (src/styles.css)
+- --color-chart-1: var(--chart-1) (src/styles.css)
+- --color-chart-2: var(--chart-2) (src/styles.css)
+- --color-chart-3: var(--chart-3) (src/styles.css)
+- --color-chart-4: var(--chart-4) (src/styles.css)
+- --color-chart-5: var(--chart-5) (src/styles.css)
+- --color-sidebar: var(--sidebar) (src/styles.css)
+- --color-sidebar-foreground: var(--sidebar-foreground) (src/styles.css)
+- --color-sidebar-primary: var(--sidebar-primary) (src/styles.css)
+- --color-sidebar-primary-foreground: var(--sidebar-primary-foreground) (src/styles.css)
+- --color-sidebar-accent: var(--sidebar-accent) (src/styles.css)
+- --color-sidebar-accent-foreground: var(--sidebar-accent-foreground) (src/styles.css)
+- --color-sidebar-border: var(--sidebar-border) (src/styles.css)
+- --color-sidebar-ring: var(--sidebar-ring) (src/styles.css)
+- --color-primary-deep: var(--primary-deep) (src/styles.css)
+- --color-primary-glow: var(--primary-glow) (src/styles.css)
+- --radius: 0.875rem (src/styles.css)
+- --background: oklch(0.99 0.003 250) (src/styles.css)
+- --foreground: oklch(0.18 0.02 240) (src/styles.css)
+- --card: oklch(1 0 0) (src/styles.css)
+- --card-foreground: oklch(0.18 0.02 240) (src/styles.css)
+- --popover: oklch(1 0 0) (src/styles.css)
+- --popover-foreground: oklch(0.18 0.02 240) (src/styles.css)
+- --primary: oklch(0.52 0.12 165) (src/styles.css)
+- --primary-foreground: oklch(0.99 0.003 250) (src/styles.css)
+- --primary-deep: oklch(0.36 0.09 165) (src/styles.css)
+- --primary-glow: oklch(0.7 0.14 165) (src/styles.css)
+- --secondary: oklch(0.96 0.008 240) (src/styles.css)
+- --secondary-foreground: oklch(0.22 0.02 240) (src/styles.css)
+- --muted: oklch(0.96 0.008 240) (src/styles.css)
+- --muted-foreground: oklch(0.5 0.02 240) (src/styles.css)
+- --accent: oklch(0.94 0.03 165) (src/styles.css)
+- --accent-foreground: oklch(0.28 0.06 165) (src/styles.css)
+- --destructive: oklch(0.6 0.22 25) (src/styles.css)
+- --destructive-foreground: oklch(0.99 0.003 250) (src/styles.css)
+- --border: oklch(0.92 0.008 240) (src/styles.css)
+- --input: oklch(0.92 0.008 240) (src/styles.css)
+- --ring: oklch(0.52 0.12 165) (src/styles.css)
+- --chart-1: oklch(0.52 0.12 165) (src/styles.css)
+- --chart-2: oklch(0.7 0.14 165) (src/styles.css)
+- --chart-3: oklch(0.36 0.09 165) (src/styles.css)
+- --chart-4: oklch(0.72 0.12 90) (src/styles.css)
+- --chart-5: oklch(0.55 0.15 245) (src/styles.css)
+- --sidebar: oklch(0.98 0.005 240) (src/styles.css)
+- --sidebar-foreground: oklch(0.18 0.02 240) (src/styles.css)
+- --sidebar-primary: oklch(0.52 0.12 165) (src/styles.css)
+- --sidebar-primary-foreground: oklch(0.99 0.003 250) (src/styles.css)
+- --sidebar-accent: oklch(0.94 0.03 165) (src/styles.css)
+- --sidebar-accent-foreground: oklch(0.28 0.06 165) (src/styles.css)
+- --sidebar-border: oklch(0.92 0.008 240) (src/styles.css)
+- --sidebar-ring: oklch(0.52 0.12 165) (src/styles.css)
+- --font-display: "Urbanist", ui-sans-serif, system-ui, sans-serif (src/styles.css)
+- --font-body: "Epilogue", ui-sans-serif, system-ui, sans-serif (src/styles.css)
+- --gradient-hero: radial-gradient(1200px 600px at 15% -10%, oklch(0.94 0.06 165 / 0.7), transparent 60%), radial-gradient(900px 500px at 100% 10%, oklch(0.9 0.05 200 / 0.55), transparent 55%), linear-gradient(180deg, oklch(0.99 0.003 250), oklch(0.97 0.008 220)) (src/styles.css)
+- --gradient-emerald: linear-gradient(135deg, oklch(0.36 0.09 165), oklch(0.52 0.12 165) 60%, oklch(0.7 0.14 165)) (src/styles.css)
+- --gradient-mesh: radial-gradient(600px 400px at 20% 20%, oklch(0.7 0.14 165 / 0.18), transparent 60%), radial-gradient(500px 400px at 80% 60%, oklch(0.55 0.15 245 / 0.14), transparent 60%) (src/styles.css)
+- --shadow-xs: 0 1px 2px oklch(0.2 0.02 240 / 0.04) (src/styles.css)
+- --shadow-sm: 0 2px 8px -2px oklch(0.2 0.02 240 / 0.06), 0 1px 2px oklch(0.2 0.02 240 / 0.04) (src/styles.css)
+- --shadow-md: 0 10px 30px -12px oklch(0.2 0.02 240 / 0.12), 0 2px 6px oklch(0.2 0.02 240 / 0.04) (src/styles.css)
+- --shadow-lg: 0 24px 60px -20px oklch(0.2 0.02 240 / 0.18), 0 6px 20px -8px oklch(0.2 0.02 240 / 0.08) (src/styles.css)
+- --shadow-emerald: 0 20px 50px -18px oklch(0.36 0.09 165 / 0.45) (src/styles.css)
+- --background: oklch(0.129 0.042 264.695) (src/styles.css)
+- --foreground: oklch(0.984 0.003 247.858) (src/styles.css)
+- --card: oklch(0.208 0.042 265.755) (src/styles.css)
+- --card-foreground: oklch(0.984 0.003 247.858) (src/styles.css)
+- --popover: oklch(0.208 0.042 265.755) (src/styles.css)
+- --popover-foreground: oklch(0.984 0.003 247.858) (src/styles.css)
+- --primary: oklch(0.929 0.013 255.508) (src/styles.css)
+- --primary-foreground: oklch(0.208 0.042 265.755) (src/styles.css)
+- --secondary: oklch(0.279 0.041 260.031) (src/styles.css)
+- --secondary-foreground: oklch(0.984 0.003 247.858) (src/styles.css)
+- --muted: oklch(0.279 0.041 260.031) (src/styles.css)
+- --muted-foreground: oklch(0.704 0.04 256.788) (src/styles.css)
+- --accent: oklch(0.279 0.041 260.031) (src/styles.css)
+- --accent-foreground: oklch(0.984 0.003 247.858) (src/styles.css)
+- --destructive: oklch(0.704 0.191 22.216) (src/styles.css)
+- --destructive-foreground: oklch(0.984 0.003 247.858) (src/styles.css)
+- --border: oklch(1 0 0 / 10%) (src/styles.css)
+- --input: oklch(1 0 0 / 15%) (src/styles.css)
+- --ring: oklch(0.551 0.027 264.364) (src/styles.css)
+- --chart-1: oklch(0.488 0.243 264.376) (src/styles.css)
+- --chart-2: oklch(0.696 0.17 162.48) (src/styles.css)
+- --chart-3: oklch(0.769 0.188 70.08) (src/styles.css)
+- --chart-4: oklch(0.627 0.265 303.9) (src/styles.css)
+- --chart-5: oklch(0.645 0.246 16.439) (src/styles.css)
+- --sidebar: oklch(0.208 0.042 265.755) (src/styles.css)
+- --sidebar-foreground: oklch(0.984 0.003 247.858) (src/styles.css)
+- --sidebar-primary: oklch(0.488 0.243 264.376) (src/styles.css)
+- --sidebar-primary-foreground: oklch(0.984 0.003 247.858) (src/styles.css)
+- --sidebar-accent: oklch(0.279 0.041 260.031) (src/styles.css)
+- --sidebar-accent-foreground: oklch(0.984 0.003 247.858) (src/styles.css)
+- --sidebar-border: oklch(1 0 0 / 10%) (src/styles.css)
+- --sidebar-ring: oklch(0.551 0.027 264.364) (src/styles.css)
+
+## UI components
+- accordion
+- alert
+- alert-dialog
+- aspect-ratio
+- avatar
+- badge
+- breadcrumb
+- button
+- calendar
+- card
+- carousel
+- chart
+- checkbox
+- collapsible
+- command
+- context-menu
+- dialog
+- drawer
+- dropdown-menu
+- form
+- hover-card
+- input
+- input-otp
+- label
+- menubar
+- navigation-menu
+- pagination
+- popover
+- progress
+- radio-group
+- resizable
+- scroll-area
+- select
+- separator
+- sheet
+- sidebar
+- skeleton
+- slider
+- sonner
+- switch
+- table
+- tabs
+- textarea
+- toggle
+- toggle-group
+- tooltip
+
+## Project components
+- src/components/AdsCarousel.tsx
+- src/components/AdsManager.tsx
+- src/components/AppSidebar.tsx
+- src/components/InstallPrompt.tsx
+- src/components/ui/accordion.tsx
+- src/components/ui/alert-dialog.tsx
+- src/components/ui/alert.tsx
+- src/components/ui/aspect-ratio.tsx
+- src/components/ui/avatar.tsx
+- src/components/ui/badge.tsx
+- src/components/ui/breadcrumb.tsx
+- src/components/ui/button.tsx
+- src/components/ui/calendar.tsx
+- src/components/ui/card.tsx
+- src/components/ui/carousel.tsx
+- src/components/ui/chart.tsx
+- src/components/ui/checkbox.tsx
+- src/components/ui/collapsible.tsx
+- src/components/ui/command.tsx
+- src/components/ui/context-menu.tsx
+- src/components/ui/dialog.tsx
+- src/components/ui/drawer.tsx
+- src/components/ui/dropdown-menu.tsx
+- src/components/ui/form.tsx
+- src/components/ui/hover-card.tsx
+- src/components/ui/input-otp.tsx
+- src/components/ui/input.tsx
+- src/components/ui/label.tsx
+- src/components/ui/menubar.tsx
+- src/components/ui/navigation-menu.tsx
+- src/components/ui/pagination.tsx
+- src/components/ui/popover.tsx
+- src/components/ui/progress.tsx
+- src/components/ui/radio-group.tsx
+- src/components/ui/resizable.tsx
+- src/components/ui/scroll-area.tsx
+- src/components/ui/select.tsx
+- src/components/ui/separator.tsx
+- src/components/ui/sheet.tsx
+- src/components/ui/sidebar.tsx
+- src/components/ui/skeleton.tsx
+- src/components/ui/slider.tsx
+- src/components/ui/sonner.tsx
+- src/components/ui/switch.tsx
+- src/components/ui/table.tsx
+- src/components/ui/tabs.tsx
+- src/components/ui/textarea.tsx
+- src/components/ui/toggle-group.tsx
+- src/components/ui/toggle.tsx
+- src/components/ui/tooltip.tsx
