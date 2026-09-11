@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-11T01:46:17.729155+00:00",
+  "generated_at": "2026-09-11T02:03:16.767733+00:00",
   "files": [
     {
       "path": "components.json",
@@ -32,6 +32,10 @@
     {
       "path": ".lovable/project.json",
       "bytes": 124
+    },
+    {
+      "path": ".lovasiri/sync.json",
+      "bytes": 80
     },
     {
       "path": "src/routeTree.gen.ts",
@@ -84,6 +88,10 @@
     {
       "path": "supabase/migrations/20260718032143_13fecf37-e241-4ac2-bf5c-1d51b84a95d6.sql",
       "bytes": 7350
+    },
+    {
+      "path": "supabase/migrations/20260725000000_add_segmento_to_products.sql",
+      "bytes": 840
     },
     {
       "path": "supabase/migrations/20260724201852_ef1e8f3b-3e0d-486e-afdf-75d843c9d482.sql",
@@ -179,7 +187,7 @@
     },
     {
       "path": "src/lib/products.functions.ts",
-      "bytes": 4325
+      "bytes": 5182
     },
     {
       "path": "src/lib/utils.ts",
@@ -251,11 +259,11 @@
     },
     {
       "path": "src/routes/_authenticated/admin.produtos.tsx",
-      "bytes": 36260
+      "bytes": 33274
     },
     {
       "path": "src/integrations/supabase/client.ts",
-      "bytes": 865
+      "bytes": 852
     },
     {
       "path": "src/integrations/supabase/client.server.ts",
@@ -271,7 +279,7 @@
     },
     {
       "path": "src/integrations/supabase/types.ts",
-      "bytes": 11781
+      "bytes": 11863
     },
     {
       "path": "src/components/ui/alert.tsx",
@@ -1050,14 +1058,6 @@
     {
       "source": "src/integrations/supabase/client.ts",
       "target": "@supabase/supabase-js"
-    },
-    {
-      "source": "src/integrations/supabase/client.ts",
-      "target": "./types"
-    },
-    {
-      "source": "src/integrations/supabase/client.ts",
-      "target": "@/integrations/supabase/client"
     },
     {
       "source": "src/integrations/supabase/client.server.ts",
