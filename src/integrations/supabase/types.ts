@@ -61,6 +61,7 @@ export type Database = {
           no_cnae_discount: boolean
           nome: string
           psd: number
+          segmento: string
           sort_order: number
           updated_at: string
         }
@@ -74,6 +75,7 @@ export type Database = {
           no_cnae_discount?: boolean
           nome: string
           psd?: number
+          segmento: string
           sort_order?: number
           updated_at?: string
         }
@@ -87,6 +89,7 @@ export type Database = {
           no_cnae_discount?: boolean
           nome?: string
           psd?: number
+          segmento?: string
           sort_order?: number
           updated_at?: string
         }

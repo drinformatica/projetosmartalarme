@@ -3,6 +3,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 export type Product = {
   id: string;
+  segmento: string;
   codigo: string;
   nome: string;
   psd: number;
@@ -15,6 +16,7 @@ export type Product = {
 
 export type ProductInput = {
   id?: string;
+  segmento?: string;
   codigo: string;
   nome: string;
   psd: number;
@@ -42,6 +44,7 @@ export const upsertProduct = createServerFn({ method: "POST" })
   .inputValidator((data: ProductInput) => data)
   .handler(async ({ data, context }) => {
     const payload = {
+      segmento: (data.segmento ?? "").trim(),
       codigo: data.codigo.trim(),
       nome: data.nome.trim(),
       psd: Number(data.psd) || 0,
@@ -116,6 +119,7 @@ export const bulkUpdatePrices = createServerFn({ method: "POST" })
   });
 
 export type BulkProductInput = {
+  segmento: string;
   codigo: string;
   nome: string;
   psd: number;
@@ -128,15 +132,32 @@ export const bulkInsertProducts = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: { products: BulkProductInput[] }) => data)
   .handler(async ({ data, context }) => {
-    const { error } = await context.supabase
-      .from("products")
-      .insert(data.products.map(p => ({
-        ...p,
-        active: true,
-        sort_order: 0
-      })));
+    const products = data.products.map((product) => ({
+      segmento: product.segmento.trim(),
+      codigo: product.codigo.trim(),
+      nome: product.nome.trim(),
+      psd: Number(product.psd),
+      descricao_orcamento: product.descricao_orcamento.trim(),
+      descricao_proposta: product.descricao_proposta.trim(),
+      no_cnae_discount: Boolean(product.no_cnae_discount),
+      active: true,
+      sort_order: 0,
+    }));
+
+    for (const [index, product] of products.entries()) {
+      if (
+        !product.segmento ||
+        !product.codigo ||
+        !product.nome ||
+        !product.descricao_orcamento ||
+        !Number.isFinite(product.psd) ||
+        product.psd < 0
+      ) {
+        throw new Error(`Produto inválido na linha ${index + 2}. Verifique Segmento, Código, PSD, Nome do produto e Descrição do produto.`);
+      }
+    }
+
+    const { error } = await context.supabase.from("products").insert(products);
     if (error) throw new Error(error.message);
-    return { count: data.products.length };
+    return { count: products.length };
   });
-
-
