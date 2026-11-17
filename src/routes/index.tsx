@@ -27,6 +27,12 @@ export const Route = createFileRoute("/")({
 function Landing() {
   const [signedIn, setSignedIn] = useState(false);
   useEffect(() => {
+    // Fallback: links de confirmação que caem na página inicial
+    const h = window.location.hash + window.location.search;
+    if (/type=(signup|email)|token_hash=|error_code=/.test(h)) {
+      window.location.replace("/confirmar-email" + window.location.search + window.location.hash);
+      return;
+    }
     supabase.auth.getUser().then(({ data }) => setSignedIn(!!data.user));
   }, []);
 

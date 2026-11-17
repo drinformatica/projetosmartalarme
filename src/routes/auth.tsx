@@ -73,7 +73,7 @@ function AuthPage() {
           email,
           password,
           options: {
-            emailRedirectTo: window.location.origin,
+            emailRedirectTo: `${window.location.origin}/confirmar-email`,
             data: { full_name: name, cnpj: onlyDigits(cnpj) },
           },
         });
@@ -110,7 +110,7 @@ function AuthPage() {
             await supabase.auth.resend({
               type: "signup",
               email,
-              options: { emailRedirectTo: `${window.location.origin}/auth` },
+              options: { emailRedirectTo: `${window.location.origin}/confirmar-email` },
             });
           } catch {
             // ignora, apenas informa o usuário
