@@ -1,6 +1,6 @@
 # Design system
 
-Generated: 2026-09-11T02:03:16.767733+00:00
+Generated: 2026-11-17T00:47:58.528180+00:00
 
 ## Tokens
 - --font-sans: var(--font-body) (src/styles.css)
