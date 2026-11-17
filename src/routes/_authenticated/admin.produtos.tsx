@@ -146,16 +146,16 @@ function AdminProdutos() {
 
       rawRows.forEach((row, index) => {
         const sheetLine = index + 2;
-        const segmento = String(row[segmentoKey] ?? "").trim();
-        const codigo = String(row[codigoKey] ?? "").trim();
-        const nome = String(row[nomeKey] ?? "").trim();
-        const descricao = String(row[descricaoKey] ?? "").trim();
-        const psd = parsePrice(row[psdKey]);
+        const segmento = String(row[segmentoKey!] ?? "").trim();
+        const codigo = String(row[codigoKey!] ?? "").trim();
+        const nome = String(row[nomeKey!] ?? "").trim();
+        const descricao = String(row[descricaoKey!] ?? "").trim();
+        const psd = parsePrice(row[psdKey!]);
 
         const missingValues: string[] = [];
         if (!segmento) missingValues.push("Segmento");
         if (!codigo) missingValues.push("Código");
-        if (!String(row[psdKey] ?? "").trim()) missingValues.push("PSD");
+        if (!String(row[psdKey!] ?? "").trim()) missingValues.push("PSD");
         if (!nome) missingValues.push("Nome do produto");
         if (!descricao) missingValues.push("Descrição do produto");
 
